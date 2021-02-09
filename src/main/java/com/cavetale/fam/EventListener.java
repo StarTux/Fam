@@ -71,7 +71,7 @@ public final class EventListener implements Listener {
                                                .event(Text.click("/friends"))
                                                .create());
                             if (playerProgress != null && playerProgress.isRewardAvailable()) {
-                                player.sendMessage(Text.builder("A new valentine reward is available! See").color(Colors.PINK)
+                                player.sendMessage(Text.builder("A new valentine reward is available! See ").color(Colors.PINK)
                                                    .append("/valentine")
                                                    .event(Text.hover(Text.builder("/valentine").color(Colors.PINK).create()))
                                                    .event(Text.click("/valentine"))
