@@ -1,0 +1,53 @@
+main: com.cavetale.fam.FamPlugin
+
+name: Fam
+version: 0.1
+description: Fam Plugin
+api-version: 1.13
+
+author: StarTux
+website: https://github.com/StarTux/Fam
+
+depend: [SQL, Mytems, PlayerCache, Sidebar]
+softdepend: []
+
+commands:
+
+  fam:
+    aliases: []
+    description: Admin command
+    permission: fam.fam
+    usage: |-
+      /fam
+
+  friends:
+    aliases: []
+    description: Friend list
+    permission: fam.friends
+    usage: /friends
+
+  valentine:
+    aliases: []
+    description: Valentine Rewards
+    permission: fam.friends
+    usage: /valentine
+
+  friend:
+    aliases: []
+    description: Friend request
+    permission: fam.friends
+    usage: /friend <player>
+
+permissions:
+
+  fam.fam:
+    description: Use /fam
+    default: op
+
+  fam.friends:
+    description: Make friends and use /friends
+    default: op
+
+  fam.marriage:
+    description: Get married
+    default: false
