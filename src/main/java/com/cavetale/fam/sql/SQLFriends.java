@@ -72,6 +72,11 @@ public final class SQLFriends implements Comparable<SQLFriends> {
     }
 
     public int getHearts() {
-        return Math.min(5, (friendship - 1) / 20 + 1);
+        if (friendship < 1) return 0;
+        if (friendship < 20) return 1;
+        if (friendship < 40) return 2;
+        if (friendship < 60) return 3;
+        if (friendship < 80) return 4;
+        return 5;
     }
 }
