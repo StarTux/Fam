@@ -109,10 +109,42 @@ public final class FamPlugin extends JavaPlugin {
         return FOODS[Timer.getDayOfWeek()];
     }
 
-    public static void openFriendsGui(Player player) {
+    public static ItemStack makeTodaysFoodIcon() {
+        return Items.button(getTodaysFood(),
+                            Arrays.asList(Text.builder("Today's Friendship Gift").color(Colors.PINK).create(),
+                                          Text.builder("One Point per Player.").color(Colors.YELLOW).create(),
+                                          Text.builder("New Item every Day.").color(Colors.YELLOW).create()));
+    }
+
+    public static ItemStack makeSkull(SQLFriends row, UUID perspective) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        UUID friendUuid = row.getOther(perspective);
+        PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
+        meta.setPlayerProfile(profile);
+        Relation relation = row.getRelationFor(perspective);
+        String name = PlayerCache.nameForUuid(friendUuid);
+        if (name == null) name = profile.getName();
+        meta.setDisplayNameComponent(Text.builder(name).color(Colors.PINK).italic(false).bold(true).create());
+        List<BaseComponent[]> lore = new ArrayList<>();
+        lore.add(Text.toHeartString(row.getHearts()));
+        if (relation != null) {
+            lore.add(Text.builder(relation.humanName).color(Colors.PINK).italic(false).create());
+        }
+        if (row.getDailyGift() == Timer.getDayId()) {
+            lore.add(Text.builder("\u2611 Daily Gift").color(Colors.PINK).italic(false).create());
+        } else {
+            lore.add(Text.builder("\u2610 Daily Gift").color(Colors.DARK_GRAY).italic(false).create());
+        }
+        meta.setLoreComponents(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static void openFriendsGui(Player player, int page) {
         instance.database.scheduleAsyncTask(() -> {
                 List<SQLFriends> friends = Database.findFriendsList(player.getUniqueId());
-                Bukkit.getScheduler().runTask(instance, () -> openFriendsGui(player, friends, 1));
+                Bukkit.getScheduler().runTask(instance, () -> openFriendsGui(player, friends, page));
             });
     }
 
@@ -126,33 +158,12 @@ public final class FamPlugin extends JavaPlugin {
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
         gui.title(pageCount > 1 ? ChatColor.RED + "Friends " + pageNumber + "/" + pageCount : ChatColor.RED + "Friends");
-        UUID uuid = player.getUniqueId();
         for (int i = 0; i < pageSize; i += 1) {
             int friendsIndex = offset + i;
             if (friendsIndex >= friendsList.size()) break;
             SQLFriends row = friendsList.get(friendsIndex);
-            ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-            SkullMeta meta = (SkullMeta) item.getItemMeta();
-            UUID friendUuid = row.getOther(uuid);
-            PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
-            meta.setPlayerProfile(profile);
-            Relation relation = row.getRelationFor(uuid);
-            String name = PlayerCache.nameForUuid(friendUuid);
-            if (name == null) name = profile.getName();
-            meta.setDisplayNameComponent(Text.builder(name).color(Colors.PINK).italic(false).bold(true).create());
-            List<BaseComponent[]> lore = new ArrayList<>();
-            lore.add(Text.toHeartString(row.getHearts()));
-            if (relation != null) {
-                lore.add(Text.builder(relation.humanName).color(Colors.PINK).italic(false).create());
-            }
-            if (row.getDailyGift() == Timer.getDayId()) {
-                lore.add(Text.builder("\u2611 Daily Gift").color(Colors.PINK).italic(false).create());
-            } else {
-                lore.add(Text.builder("\u2610 Daily Gift").color(Colors.DARK_GRAY).italic(false).create());
-            }
-            meta.setLoreComponents(lore);
-            item.setItemMeta(meta);
-            gui.setItem(i, item);
+            ItemStack itemStack = makeSkull(row, player.getUniqueId());
+            gui.setItem(i, itemStack, click -> openFriendGui(player, row, pageNumber));
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
@@ -163,6 +174,31 @@ public final class FamPlugin extends JavaPlugin {
             gui.setItem(3 * 9 + 8, Items.button(Material.ARROW, ChatColor.GRAY + "Next Page"), c -> openFriendsGui(player, friendsList, to));
         }
         gui.setItem(3 * 9 + 4, Items.button(getTodaysFood(), ChatColor.GREEN + "Today's Friendship Gift"));
+        gui.open(player);
+        return gui;
+    }
+
+        public static void openFriendGui(Player player, UUID friendUuid, int page) {
+        instance.database.scheduleAsyncTask(() -> {
+                SQLFriends row = Database.findFriends(player.getUniqueId(), friendUuid);
+                final SQLFriends row2 = row != null ? row : new SQLFriends(Database.sorted(player.getUniqueId(), friendUuid));
+                Bukkit.getScheduler().runTask(instance, () -> openFriendGui(player, row2, page));
+            });
+    }
+
+    public static Gui openFriendGui(Player player, SQLFriends row, int page) {
+        UUID friendUuid = row.getOther(player.getUniqueId());
+        PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
+        String name = PlayerCache.nameForUuid(friendUuid);
+        if (name == null) name = profile.getName();
+        Gui gui = new Gui(instance);
+        gui.title(name);
+        gui.size(3 * 9);
+        gui.setItem(9 + 4, makeSkull(row, player.getUniqueId()));
+        if (row.getDailyGift() != Timer.getDayId()) {
+            gui.setItem(9 + 5, makeTodaysFoodIcon());
+        }
+        gui.setItem(Gui.OUTSIDE, null, click -> openFriendsGui(player, page));
         gui.open(player);
         return gui;
     }
@@ -222,9 +258,7 @@ public final class FamPlugin extends JavaPlugin {
                     }
                 });
         }
-        gui.setItem(guiSize - 5, Items.button(getTodaysFood(), Arrays.asList(Text.builder("Today's Friendship Gift").color(Colors.PINK).create(),
-                                                                             Text.builder("One Point per Player.").color(Colors.YELLOW).create(),
-                                                                             Text.builder("New Item every Day.").color(Colors.YELLOW).create())));
+        gui.setItem(guiSize - 5, makeTodaysFoodIcon());
         gui.open(player);
         player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, SoundCategory.MASTER, 0.5f, 1.2f);
         return gui;
