@@ -7,6 +7,7 @@ import com.cavetale.fam.util.Fireworks;
 import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
 import com.destroystokyo.paper.Title;
+import com.winthier.playercache.PlayerCache;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -55,8 +56,32 @@ public final class WeddingRingListener implements Listener {
         if (player.equals(target)) return;
         if (!player.hasPermission("fam.marriage")) return;
         if (!target.hasPermission("fam.marriage")) return;
+        UUID uuid = player.getUniqueId();
+        UUID uuid2 = target.getUniqueId();
         Database.db().scheduleAsyncTask(() -> {
-                SQLFriends row = Database.findFriends(player.getUniqueId(), target.getUniqueId());
+                // Monogamy
+                List<SQLFriends> married = Database.findFriendsList(uuid, Relation.MARRIED);
+                if (!married.isEmpty()) {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                            UUID other = married.get(0).getOther(uuid);
+                            if (other.equals(uuid2)) {
+                                player.sendMessage(ChatColor.RED + "You two are already married. :)");
+                                return;
+                            }
+                            String name = PlayerCache.nameForUuid(married.get(0).getOther(uuid));
+                            if (name == null) name = "somebody";
+                            player.sendMessage(ChatColor.RED + "You're already married to " + name + "!");
+                        });
+                    return;
+                }
+                List<SQLFriends> married2 = Database.findFriendsList(uuid2, Relation.MARRIED);
+                if (!married2.isEmpty()) {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                            player.sendMessage(ChatColor.RED + target.getName() + " is already marred! :(");
+                        });
+                    return;
+                }
+                SQLFriends row = Database.findFriends(uuid, uuid2);
                 Bukkit.getScheduler().runTask(plugin, () -> callback(player, target, row));
             });
     }

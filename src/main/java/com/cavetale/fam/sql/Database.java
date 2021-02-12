@@ -61,6 +61,17 @@ public final class Database {
             .findList();
     }
 
+    public static List<SQLFriends> findFriendsList(UUID uuid, Relation relation) {
+        return db().find(SQLFriends.class)
+            .openParen()
+            .eq("player_a", uuid)
+            .or()
+            .eq("player_b", uuid)
+            .closeParen()
+            .eq("relation", relation.name().toLowerCase())
+            .findList();
+    }
+
     public static boolean dailyGift(UUID a, UUID b, int day) {
         SQLFriends row = findFriends(a, b);
         if (row == null) {
