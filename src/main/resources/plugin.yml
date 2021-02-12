@@ -24,7 +24,7 @@ commands:
     aliases: []
     description: Friend list
     permission: fam.friends
-    usage: /friends
+    usage: /friends [name]
 
   valentine:
     aliases: []

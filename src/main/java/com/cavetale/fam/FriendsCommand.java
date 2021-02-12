@@ -47,6 +47,6 @@ public final class FriendsCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
-        return Collections.emptyList();
+        return args.length == 1 ? null : Collections.emptyList();
     }
 }
