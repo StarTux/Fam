@@ -114,6 +114,8 @@ public final class WeddingRingListener implements Listener {
             target.sendTitle(new Title(Text.builder("Married").color(Colors.PINK).create(),
                                        Text.builder("You married " + player.getName()).color(Colors.PINK).create()));
             weddingTask(player, target);
+            Database.fillCacheAsync(player);
+            Database.fillCacheAsync(target);
         } else {
             requests.put(player.getUniqueId(), target.getUniqueId());
             player.sendMessage(Text.builder("You ask " + target.getName() + " to get married."
