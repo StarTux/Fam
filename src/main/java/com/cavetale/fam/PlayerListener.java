@@ -9,6 +9,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -59,14 +60,15 @@ public final class PlayerListener implements Listener {
                 boolean res = Database.dailyGift(a, b, Timer.getDayId());
                 if (!res) return;
                 final int amount = 4;
-                Database.increaseFriendship(a, b, amount);
                 SQLFriends row = Database.findFriends(a, b);
+                Database.increaseFriendship(a, b, amount);
                 ComponentBuilder hearts = new ComponentBuilder();
-                boolean won = row.getHearts() != row.getHearts(row.getFriendship() - amount);
-                for (int i = 0; i < row.getHearts() - 1; i += 1) {
+                int heartCount = row.getHearts(row.getFriendship() + 4);
+                boolean won = row == null || row.getHearts() != heartCount;
+                for (int i = 0; i < heartCount - 1; i += 1) {
                     hearts.append(Text.HEART_ICON).color(Colors.PINK);
                 }
-                hearts.append(Text.HEART_ICON).color(won ? Colors.PINK : Colors.ORANGE);
+                hearts.append(Text.HEART_ICON).color(won ? Colors.ORANGE : Colors.PINK);
                 final SQLProgress playerProgress;
                 final SQLProgress throwerProgress;
                 if (Timer.isValentineSeason()) {
@@ -93,6 +95,7 @@ public final class PlayerListener implements Listener {
                                                    .create());
                             }
                             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
+                            player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
                         }
                         if (thrower.isOnline()) {
                             thrower.sendMessage(Text.builder("Your friendship with " + player.getName() + " increased!").color(Colors.PINK)
@@ -101,6 +104,7 @@ public final class PlayerListener implements Listener {
                                                 .event(Text.click("/friends"))
                                                 .create());
                             thrower.playSound(thrower.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
+                            thrower.getWorld().spawnParticle(Particle.HEART, thrower.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
                             if (throwerProgress != null && throwerProgress.isRewardAvailable()) {
                                 thrower.sendMessage(Text.builder("A new valentine reward is available! See").color(Colors.PINK)
                                                     .append("/valentine")
