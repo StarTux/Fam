@@ -35,8 +35,10 @@ public final class FamPlugin extends JavaPlugin {
     private FriendsCommand friendsCommand = new FriendsCommand(this);
     private ValentineCommand valentineCommand = new ValentineCommand(this);
     private FriendCommand friendCommand = new FriendCommand(this);
-    private EventListener eventListener = new EventListener(this);
+    private LoveCommand loveCommand = new LoveCommand(this);
+    private PlayerListener eventListener = new PlayerListener(this);
     private WeddingRingListener weddingRingListener = new WeddingRingListener(this);
+    private MarriageListener marriageListener = new MarriageListener(this);
     private SQLDatabase database = new SQLDatabase(this);
     private List<Reward> rewards;
 
@@ -47,12 +49,15 @@ public final class FamPlugin extends JavaPlugin {
         friendsCommand.enable();
         valentineCommand.enable();
         friendCommand.enable();
+        loveCommand.enable();
         eventListener.enable();
         weddingRingListener.enable();
+        marriageListener.enable();
         new SidebarListener(this).enable();
         Database.init();
         Timer.enable();
         for (Player player : Bukkit.getOnlinePlayers()) {
+            Database.fillCacheAsync(player);
             Database.storePlayerProfileAsync(player);
         }
         Gui.enable(this);
@@ -123,9 +128,21 @@ public final class FamPlugin extends JavaPlugin {
         PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
         meta.setPlayerProfile(profile);
         Relation relation = row.getRelationFor(perspective);
-        String name = PlayerCache.nameForUuid(friendUuid);
+        String name = row.getCachedName();
+        if (name == null) name = PlayerCache.nameForUuid(friendUuid);
         if (name == null) name = profile.getName();
-        meta.setDisplayNameComponent(Text.builder(name).color(Colors.PINK).italic(false).bold(true).create());
+        ChatColor color;
+        if (relation == null) {
+            color = Colors.WHITE;
+        } else {
+            switch (relation) {
+            case FRIEND: color = Colors.PINK; break;
+            case MARRIED: color = Colors.ORANGE; break;
+            case CHILD: case PARENT: color = Colors.BLUE; break;
+            default: color = Colors.WHITE;
+            }
+        }
+        meta.setDisplayNameComponent(Text.builder(name).color(color).italic(false).create());
         List<BaseComponent[]> lore = new ArrayList<>();
         lore.add(Text.toHeartString(row.getHearts()));
         if (relation != null) {
@@ -143,8 +160,14 @@ public final class FamPlugin extends JavaPlugin {
 
     public static void openFriendsGui(Player player, int page) {
         instance.database.scheduleAsyncTask(() -> {
-                List<SQLFriends> friends = Database.findFriendsList(player.getUniqueId());
-                Bukkit.getScheduler().runTask(instance, () -> openFriendsGui(player, friends, page));
+                List<SQLFriends> friendsList = Database.findFriendsList(player.getUniqueId());
+                for (SQLFriends row : friendsList) {
+                    UUID uuid = row.getOther(player.getUniqueId());
+                    String name = PlayerCache.nameForUuid(uuid);
+                    row.setCachedName(name != null ? name : "");
+                }
+                Collections.sort(friendsList);
+                Bukkit.getScheduler().runTask(instance, () -> openFriendsGui(player, friendsList, page));
             });
     }
 
@@ -178,7 +201,7 @@ public final class FamPlugin extends JavaPlugin {
         return gui;
     }
 
-        public static void openFriendGui(Player player, UUID friendUuid, int page) {
+    public static void openFriendGui(Player player, UUID friendUuid, int page) {
         instance.database.scheduleAsyncTask(() -> {
                 SQLFriends row = Database.findFriends(player.getUniqueId(), friendUuid);
                 final SQLFriends row2 = row != null ? row : new SQLFriends(Database.sorted(player.getUniqueId(), friendUuid));

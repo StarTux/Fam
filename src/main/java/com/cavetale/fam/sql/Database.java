@@ -8,14 +8,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class Database {
     private Database() { }
-    private static Map<UUID, SQLProfile> profileCache = new HashMap<>();
+    private static Map<UUID, SQLProfile> profileCache = new HashMap<>(); // never flushed
     private static Map<UUID, Integer> scoreCache = new HashMap<>();
+    private static Map<UUID, UUID> marriedCache = new HashMap<>();
 
     public static SQLDatabase db() {
         return FamPlugin.getInstance().getDatabase();
@@ -26,7 +28,6 @@ public final class Database {
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();
-        loadScoresAsync();
         return res;
     }
 
@@ -57,7 +58,6 @@ public final class Database {
             .eq("player_a", uuid)
             .or()
             .eq("player_b", uuid)
-            .orderByDescending("friendship")
             .findList();
     }
 
@@ -144,15 +144,6 @@ public final class Database {
         return row;
     }
 
-    public static void loadScoresAsync() {
-        db().find(SQLProgress.class)
-            .findListAsync(list -> {
-                    for (SQLProgress row : list) {
-                        scoreCache.put(row.getPlayer(), row.getScore());
-                    }
-                });
-    }
-
     public static void addProgress(UUID uuid) {
         String sql = "INSERT INTO `" + db().getTable(SQLProgress.class).getTableName() + "`"
             + " (player, score, claimed)"
@@ -171,5 +162,31 @@ public final class Database {
 
     public static int getCachedScore(UUID uuid) {
         return scoreCache.computeIfAbsent(uuid, u -> 0);
+    }
+
+    public static void fillCacheAsync(Player player) {
+        UUID uuid = player.getUniqueId();
+        db().scheduleAsyncTask(() -> {
+                List<SQLFriends> married = findFriendsList(uuid, Relation.MARRIED);
+                if (!married.isEmpty()) marriedCache.put(uuid, married.get(0).getOther(uuid));
+                SQLProgress progress = findProgress(uuid);
+                scoreCache.put(uuid, progress != null ? progress.getScore() : 0);
+            });
+    }
+
+    public static void clearCacheAsync(Player player) {
+        UUID uuid = player.getUniqueId();
+        marriedCache.remove(uuid);
+        scoreCache.remove(uuid);
+    }
+
+    public static boolean isMarriageCached(Player a, Player b) {
+        return Objects.equals(marriedCache.get(a.getUniqueId()), b.getUniqueId());
+    }
+
+    public static Player getCachedMarriage(Player player) {
+        UUID uuid = marriedCache.get(player.getUniqueId());
+        if (uuid == null) return null;
+        return Bukkit.getPlayer(uuid);
     }
 }

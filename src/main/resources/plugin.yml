@@ -38,6 +38,12 @@ commands:
     permission: fam.friends
     usage: /friend <player>
 
+  love:
+    aliases: []
+    description: Send love to your spouse
+    permission: fam.marriage
+    usage: /love
+
 permissions:
 
   fam.fam:

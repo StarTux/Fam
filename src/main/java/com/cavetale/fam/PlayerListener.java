@@ -1,11 +1,13 @@
 package com.cavetale.fam;
 
 import com.cavetale.fam.sql.Database;
+import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.sql.SQLProgress;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Text;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -18,7 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 @RequiredArgsConstructor
-public final class EventListener implements Listener {
+public final class PlayerListener implements Listener {
     private final FamPlugin plugin;
 
     public void enable() {
@@ -27,13 +29,17 @@ public final class EventListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerJoin(PlayerJoinEvent event) {
-        Database.storePlayerProfileAsync(event.getPlayer());
+        Player player = event.getPlayer();
+        Database.fillCacheAsync(player);
+        Database.storePlayerProfileAsync(player);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getFriendCommand().clearRequest(event.getPlayer());
-        plugin.getWeddingRingListener().clearRequest(event.getPlayer());
+        Player player = event.getPlayer();
+        plugin.getFriendCommand().clearRequest(player);
+        plugin.getWeddingRingListener().clearRequest(player);
+        Database.clearCacheAsync(player);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -52,7 +58,15 @@ public final class EventListener implements Listener {
         Database.db().scheduleAsyncTask(() -> {
                 boolean res = Database.dailyGift(a, b, Timer.getDayId());
                 if (!res) return;
-                Database.increaseFriendship(a, b, 4);
+                final int amount = 4;
+                Database.increaseFriendship(a, b, amount);
+                SQLFriends row = Database.findFriends(a, b);
+                ComponentBuilder hearts = new ComponentBuilder();
+                boolean won = row.getHearts() != row.getHearts(row.getFriendship() - amount);
+                for (int i = 0; i < row.getHearts() - 1; i += 1) {
+                    hearts.append(Text.HEART_ICON).color(Colors.PINK);
+                }
+                hearts.append(Text.HEART_ICON).color(won ? Colors.PINK : Colors.ORANGE);
                 final SQLProgress playerProgress;
                 final SQLProgress throwerProgress;
                 if (Timer.isValentineSeason()) {
@@ -67,6 +81,7 @@ public final class EventListener implements Listener {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                         if (player.isOnline()) {
                             player.sendMessage(Text.builder("Your friendship with " + thrower.getName() + " increased!").color(Colors.PINK)
+                                               .append(" ").append(hearts.create())
                                                .event(Text.hover(Text.builder("/friends").color(Colors.PINK).create()))
                                                .event(Text.click("/friends"))
                                                .create());
@@ -81,6 +96,7 @@ public final class EventListener implements Listener {
                         }
                         if (thrower.isOnline()) {
                             thrower.sendMessage(Text.builder("Your friendship with " + player.getName() + " increased!").color(Colors.PINK)
+                                                .append(" ").append(hearts.create())
                                                 .event(Text.hover(Text.builder("/friends").color(Colors.PINK).create()))
                                                 .event(Text.click("/friends"))
                                                 .create());

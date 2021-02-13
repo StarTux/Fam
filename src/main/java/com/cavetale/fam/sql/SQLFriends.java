@@ -24,6 +24,7 @@ public final class SQLFriends implements Comparable<SQLFriends> {
     int dailyGift;
     @Column(nullable = true)
     String relation;
+    private transient String cachedName; // Cached for sorting
 
     public SQLFriends() { }
 
@@ -35,7 +36,9 @@ public final class SQLFriends implements Comparable<SQLFriends> {
 
     @Override
     public int compareTo(SQLFriends other) {
-        return Integer.compare(friendship, other.friendship);
+        int fr = Integer.compare(other.friendship, friendship); // highest first
+        if (fr != 0 || cachedName == null || other.cachedName == null) return fr;
+        return cachedName.compareToIgnoreCase(other.cachedName);
     }
 
     public UUID getOther(UUID you) {
@@ -72,6 +75,10 @@ public final class SQLFriends implements Comparable<SQLFriends> {
     }
 
     public int getHearts() {
+        return getHearts(friendship);
+    }
+
+    public static int getHearts(int friendship) {
         if (friendship < 1) return 0;
         if (friendship < 20) return 1;
         if (friendship < 40) return 2;
