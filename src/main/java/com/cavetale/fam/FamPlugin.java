@@ -98,6 +98,8 @@ public final class FamPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         Gui.disable(this);
+        database.waitForAsyncTask();
+        database.close();
     }
 
     public static final Material[] FOODS = {
