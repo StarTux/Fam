@@ -1,6 +1,7 @@
 package com.cavetale.fam;
 
 import com.cavetale.fam.sql.Database;
+import com.cavetale.fam.util.Items;
 import com.cavetale.fam.util.Text;
 import com.cavetale.sidebar.PlayerSidebarEvent;
 import com.cavetale.sidebar.Priority;
@@ -27,7 +28,7 @@ public final class SidebarListener implements Listener {
         ChatColor hl = ChatColor.GRAY;
         String text = bg + "Your " + hl + "/valentine" + bg + " score: " + hl
             + Database.getCachedScore(event.getPlayer().getUniqueId())
-            + bg + ". Today's gift item: " + hl + Text.toCamelCase(plugin.getTodaysFood());
+            + bg + ". Today's gift item: " + hl + Items.getDisplayName(plugin.getTodaysFood());
         List<String> lines = Text.wrapLine(text, 18);
         event.addLines(plugin, Priority.DEFAULT, lines);
     }

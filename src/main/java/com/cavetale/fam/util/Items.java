@@ -30,4 +30,11 @@ public final class Items {
         itemStack.setItemMeta(meta);
         return itemStack;
     }
+
+    public static String getDisplayName(Material material) {
+        if (material.isItem()) {
+            return new ItemStack(material).getI18NDisplayName();
+        }
+        return Text.toCamelCase(material);
+    }
 }
