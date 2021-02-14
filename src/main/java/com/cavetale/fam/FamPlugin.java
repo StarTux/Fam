@@ -384,22 +384,25 @@ public final class FamPlugin extends JavaPlugin {
         gui.title(ChatColor.RED + "Valentine Highscore " + pageNumber + "/" + pageCount);
         int score = -1;
         int rank = 0;
-        for (int i = 0; i < pageSize; i += 1) {
-            int listIndex = offset + i;
+        for (int i = 0; i < list.size(); i += 1) {
+            int listIndex = i;
+            int menuIndex = i - offset;
             if (listIndex >= list.size()) break;
+            if (menuIndex >= pageSize) break;
             SQLProgress row = list.get(listIndex);
-            ItemStack itemStack = makeSkull(row.getPlayer());
-            ItemMeta meta = itemStack.getItemMeta();
             if (row.getScore() != score) {
                 score = row.getScore();
                 rank += 1;
             }
+            if (menuIndex < 0) continue;
+            ItemStack itemStack = makeSkull(row.getPlayer());
+            ItemMeta meta = itemStack.getItemMeta();
             List<BaseComponent[]> lore = new ArrayList<>();
             lore.add(Text.builder("Rank #").color(Colors.BLUE).append("" + rank).color(Colors.WHITE).create());
             lore.add(Text.builder("Score ").color(Colors.BLUE).append("" + score).color(Colors.WHITE).create());
             meta.setLoreComponents(lore);
             itemStack.setItemMeta(meta);
-            gui.setItem(i, itemStack);
+            gui.setItem(menuIndex, itemStack);
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
