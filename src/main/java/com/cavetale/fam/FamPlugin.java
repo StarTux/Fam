@@ -25,6 +25,7 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -160,6 +161,18 @@ public final class FamPlugin extends JavaPlugin {
         return item;
     }
 
+    public static ItemStack makeSkull(UUID uuid) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        PlayerProfile profile = Database.getCachedPlayerProfile(uuid);
+        meta.setPlayerProfile(profile);
+        String name = PlayerCache.nameForUuid(uuid);
+        if (name == null) name = profile.getName();
+        meta.setDisplayNameComponent(Text.builder(name).color(Colors.WHITE).italic(false).create());
+        item.setItemMeta(meta);
+        return item;
+    }
+
     public static void openFriendsGui(Player player, int page) {
         instance.database.scheduleAsyncTask(() -> {
                 List<SQLFriends> friendsList = Database.findFriendsList(player.getUniqueId());
@@ -179,7 +192,7 @@ public final class FamPlugin extends JavaPlugin {
         Gui gui = new Gui(instance);
         int pageSize = 3 * 9;
         int pageCount = (friendsList.size() - 1) / pageSize + 1;
-        int pageIndex = Math.min(pageNumber - 1, pageCount - 1);
+        int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
         gui.title(pageCount > 1 ? ChatColor.RED + "Friends " + pageNumber + "/" + pageCount : ChatColor.RED + "Friends");
@@ -188,15 +201,24 @@ public final class FamPlugin extends JavaPlugin {
             if (friendsIndex >= friendsList.size()) break;
             SQLFriends row = friendsList.get(friendsIndex);
             ItemStack itemStack = makeSkull(row, player.getUniqueId());
-            gui.setItem(i, itemStack, click -> openFriendGui(player, row, pageNumber));
+            gui.setItem(i, itemStack, click -> {
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                    openFriendGui(player, row, pageNumber);
+                });
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
-            gui.setItem(3 * 9, Items.button(Material.ARROW, ChatColor.GRAY + "Previous Page"), c -> openFriendsGui(player, friendsList, to));
+            gui.setItem(3 * 9, Items.button(Material.ARROW, ChatColor.GRAY + "Previous Page"), c -> {
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                    openFriendsGui(player, friendsList, to);
+                });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
-            gui.setItem(3 * 9 + 8, Items.button(Material.ARROW, ChatColor.GRAY + "Next Page"), c -> openFriendsGui(player, friendsList, to));
+            gui.setItem(3 * 9 + 8, Items.button(Material.ARROW, ChatColor.GRAY + "Next Page"), c -> {
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                    openFriendsGui(player, friendsList, to);
+                });
         }
         gui.setItem(3 * 9 + 4, Items.button(getTodaysFood(), ChatColor.GREEN + "Today's Friendship Gift"));
         gui.open(player);
@@ -332,6 +354,66 @@ public final class FamPlugin extends JavaPlugin {
                 });
         } else {
             gui.setItem(Gui.OUTSIDE, null, evt -> openRewardsGui(player));
+        }
+        gui.open(player);
+        return gui;
+    }
+
+    public static void showHighscore(Player player, int page) {
+        instance.database.scheduleAsyncTask(() -> {
+                List<SQLProgress> list = instance.database.find(SQLProgress.class)
+                    .gt("score", 0)
+                    .orderByDescending("score")
+                    .findList();
+                Bukkit.getScheduler().runTask(instance, () -> showHighscore(player, list, page));
+            });
+    }
+
+    public static Gui showHighscore(Player player, List<SQLProgress> list, int pageNumber) {
+        if (!player.isValid()) return null;
+        if (list.isEmpty()) {
+            player.sendMessage(ChatColor.RED + "No highscores to show");
+            return null;
+        }
+        Gui gui = new Gui(instance);
+        int pageSize = 3 * 9;
+        int pageCount = (list.size() - 1) / pageSize + 1;
+        int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
+        int offset = pageIndex * pageSize;
+        gui.size(pageSize + 9);
+        gui.title(ChatColor.RED + "Valentine Highscore " + pageNumber + "/" + pageCount);
+        int score = -1;
+        int rank = 0;
+        for (int i = 0; i < pageSize; i += 1) {
+            int listIndex = offset + i;
+            if (listIndex >= list.size()) break;
+            SQLProgress row = list.get(listIndex);
+            ItemStack itemStack = makeSkull(row.getPlayer());
+            ItemMeta meta = itemStack.getItemMeta();
+            if (row.getScore() != score) {
+                score = row.getScore();
+                rank += 1;
+            }
+            List<BaseComponent[]> lore = new ArrayList<>();
+            lore.add(Text.builder("Rank #").color(Colors.BLUE).append("" + rank).color(Colors.WHITE).create());
+            lore.add(Text.builder("Score ").color(Colors.BLUE).append("" + score).color(Colors.WHITE).create());
+            meta.setLoreComponents(lore);
+            itemStack.setItemMeta(meta);
+            gui.setItem(i, itemStack);
+        }
+        if (pageIndex > 0) {
+            int to = pageNumber - 1;
+            gui.setItem(3 * 9, Items.button(Material.ARROW, ChatColor.GRAY + "Previous Page"), c -> {
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                    showHighscore(player, list, to);
+                });
+        }
+        if (pageIndex < pageCount - 1) {
+            int to = pageNumber + 1;
+            gui.setItem(3 * 9 + 8, Items.button(Material.ARROW, ChatColor.GRAY + "Next Page"), c -> {
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                    showHighscore(player, list, to);
+                });
         }
         gui.open(player);
         return gui;

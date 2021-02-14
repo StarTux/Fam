@@ -30,7 +30,9 @@ commands:
     aliases: []
     description: Valentine Rewards
     permission: fam.friends
-    usage: /valentine
+    usage: |-
+      §e/valentine§8 - §7Open rewards menu
+      §e/valentine hi§8 - §7View highscore
 
   friend:
     aliases: []
