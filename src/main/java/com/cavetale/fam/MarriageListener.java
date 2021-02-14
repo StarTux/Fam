@@ -41,12 +41,11 @@ public final class MarriageListener implements Listener {
         if (!target.hasPermission("fam.marriage")) return;
         if (!Database.isMarriageCached(player, target)) return;
         if (!player.getPassengers().isEmpty()) return;
-        if (player.getVehicle() != null) return;
-        if (target.getVehicle() != null) return;
-        if (!target.getPassengers().isEmpty()) return;
         Bukkit.getScheduler().runTask(plugin, () -> {
                 if (!player.isValid()) return;
                 if (!target.isValid()) return;
+                if (!player.getPassengers().isEmpty()) return;
+                if (target.getVehicle() != null) target.leaveVehicle();
                 player.addPassenger(target);
                 player.getWorld().spawnParticle(Particle.HEART, player.getEyeLocation(), 3, 0.5f, 0.5f, 0.5f, 0.0);
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_HORSE_SADDLE, SoundCategory.PLAYERS, 1.0f, 2.0f);
