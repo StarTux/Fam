@@ -107,6 +107,8 @@ public final class WeddingRingListener implements Listener {
         if (Objects.equals(request, player.getUniqueId())) {
             requests.remove(target.getUniqueId());
             Database.setRelation(row, player.getUniqueId(), Relation.MARRIED);
+            Database.friendLogAsync(player.getUniqueId(), target.getUniqueId(), Relation.MARRIED, "Married");
+            Database.friendLogAsync(target.getUniqueId(), player.getUniqueId(), Relation.MARRIED, "Married");
             player.getInventory().getItemInMainHand().subtract(1);
             target.getInventory().getItemInMainHand().subtract(1);
             player.sendTitle(new Title(Text.builder("Married").color(Colors.PINK).create(),
@@ -116,6 +118,7 @@ public final class WeddingRingListener implements Listener {
             weddingTask(player, target);
             Database.fillCacheAsync(player);
             Database.fillCacheAsync(target);
+            plugin.getLogger().info("Married: " + player.getName() + ", " + target.getName());
         } else {
             requests.put(player.getUniqueId(), target.getUniqueId());
             player.sendMessage(Text.builder("You ask " + target.getName() + " to get married."

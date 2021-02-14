@@ -5,6 +5,7 @@ import com.cavetale.fam.Relation;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public final class Database {
     }
 
     public static boolean init() {
-        db().registerTables(SQLFriends.class, SQLProfile.class, SQLProgress.class);
+        db().registerTables(SQLFriends.class, SQLProfile.class, SQLProgress.class, SQLFriendLog.class);
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();
@@ -188,5 +189,9 @@ public final class Database {
         UUID uuid = marriedCache.get(player.getUniqueId());
         if (uuid == null) return null;
         return Bukkit.getPlayer(uuid);
+    }
+
+    public static void friendLogAsync(UUID player, UUID target, Relation relation, String comment) {
+        db().insertAsync(new SQLFriendLog(player, target, relation, comment, new Date()), null);
     }
 }
