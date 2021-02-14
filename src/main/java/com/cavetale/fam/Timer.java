@@ -12,6 +12,7 @@ public final class Timer {
     @Getter private static int year;
     @Getter private static int month;
     @Getter private static int day;
+    @Getter private static int hour;
     @Getter private static int dayOfWeek;
 
     private Timer() { }
@@ -23,6 +24,7 @@ public final class Timer {
         year = localDate.getYear();
         month = localDate.getMonth().getValue();
         day = localDate.getDayOfMonth();
+        hour = localDateTime.getHour();
         dayOfWeek = localDate.getDayOfWeek().getValue() - 1; // 0-6
         dayId = year * 10000 + month * 100 + day;
     }
@@ -37,6 +39,7 @@ public final class Timer {
     }
 
     public static boolean isValentinesDay() {
-        return month == 2 && day == 14;
+        return month == 2
+            && (day == 14 || (day == 15 && hour <= 12));
     }
 }
