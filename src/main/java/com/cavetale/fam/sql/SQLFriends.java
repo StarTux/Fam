@@ -4,13 +4,17 @@ import com.cavetale.fam.Relation;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Data
 @Table(name = "friends",
-       uniqueConstraints = {@UniqueConstraint(columnNames = {"player_a", "player_b"})})
+       uniqueConstraints = {@UniqueConstraint(columnNames = {"player_a", "player_b"})},
+       indexes = {@Index(name = "relation", columnList = "relation"),
+                  @Index(name = "player_a", columnList = "player_a"),
+                  @Index(name = "player_b", columnList = "player_b")})
 public final class SQLFriends implements Comparable<SQLFriends> {
     @Id
     private Integer id;
