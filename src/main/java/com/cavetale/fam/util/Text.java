@@ -30,6 +30,10 @@ public final class Text {
         return new ComponentBuilder(txt);
     }
 
+    public static TextComponent extra(BaseComponent[] extra) {
+        return new TextComponent(extra);
+    }
+
     public static BaseComponent[] toHeartString(int hearts) {
         ComponentBuilder cb = new ComponentBuilder("").italic(false);
         for (int i = 0; i < hearts; i += 1) {

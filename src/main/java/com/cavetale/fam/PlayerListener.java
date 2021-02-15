@@ -8,6 +8,7 @@ import com.cavetale.fam.util.Text;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -82,11 +83,11 @@ public final class PlayerListener implements Listener {
                 }
                 Bukkit.getScheduler().runTask(plugin, () -> {
                         if (player.isOnline()) {
-                            player.sendMessage(Text.builder("Your friendship with " + thrower.getName() + " increased!").color(Colors.PINK)
-                                               .append(" ").append(hearts.create())
-                                               .event(Text.hover(Text.builder("/friends").color(Colors.PINK).create()))
-                                               .event(Text.click("/friends"))
-                                               .create());
+                            TextComponent text = Text.extra(Text.builder("Your friendship with " + thrower.getName() + " increased!").color(Colors.PINK)
+                                                            .append(" ").append(hearts.create()).create());
+                            text.setHoverEvent(Text.hover(Text.builder("/friends").color(Colors.PINK).create()));
+                            text.setClickEvent(Text.click("/friends"));
+                            player.sendMessage(text);
                             if (playerProgress != null && playerProgress.isRewardAvailable()) {
                                 player.sendMessage(Text.builder("A new valentine reward is available! See ").color(Colors.PINK)
                                                    .append("/valentine")
@@ -98,11 +99,11 @@ public final class PlayerListener implements Listener {
                             player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
                         }
                         if (thrower.isOnline()) {
-                            thrower.sendMessage(Text.builder("Your friendship with " + player.getName() + " increased!").color(Colors.PINK)
-                                                .append(" ").append(hearts.create())
-                                                .event(Text.hover(Text.builder("/friends").color(Colors.PINK).create()))
-                                                .event(Text.click("/friends"))
-                                                .create());
+                            TextComponent text = Text.extra(Text.builder("Your friendship with " + player.getName() + " increased!").color(Colors.PINK)
+                                                            .append(" ").append(hearts.create()).create());
+                            text.setHoverEvent(Text.hover(Text.builder("/friends").color(Colors.PINK).create()));
+                            text.setClickEvent(Text.click("/friends"));
+                            thrower.sendMessage(text);
                             thrower.playSound(thrower.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
                             thrower.getWorld().spawnParticle(Particle.HEART, thrower.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
                             if (throwerProgress != null && throwerProgress.isRewardAvailable()) {
