@@ -77,7 +77,7 @@ public final class WeddingRingListener implements Listener {
                 List<SQLFriends> married2 = Database.findFriendsList(uuid2, Relation.MARRIED);
                 if (!married2.isEmpty()) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                            player.sendMessage(ChatColor.RED + target.getName() + " is already marred! :(");
+                            player.sendMessage(ChatColor.RED + target.getName() + " is already married! :(");
                         });
                     return;
                 }
