@@ -103,7 +103,7 @@ public final class FamPlugin extends JavaPlugin {
         database.close();
     }
 
-    public static final Material[] FOODS = {
+    public static final Material[] GIFTS = {
         Material.MELON_SLICE, // Monday
         Material.APPLE, // Tuesday
         Material.COOKIE, // Wednesday
@@ -113,15 +113,18 @@ public final class FamPlugin extends JavaPlugin {
         Material.GOLDEN_APPLE // Sunday
     };
 
-    public static Material getTodaysFood() {
-        return FOODS[Timer.getDayOfWeek()];
+    public static Material getTodaysGift() {
+        return GIFTS[Timer.getDayOfWeek()];
     }
 
-    public static ItemStack makeTodaysFoodIcon() {
-        return Items.button(getTodaysFood(),
-                            Arrays.asList(Text.builder("Today's Friendship Gift").color(Colors.PINK).create(),
-                                          Text.builder("One Point per Player.").color(Colors.YELLOW).create(),
-                                          Text.builder("New Item every Day.").color(Colors.YELLOW).create()));
+    public static ItemStack makeTodaysGiftIcon() {
+        return Items.button(getTodaysGift(),
+                            Arrays.asList(Text.builder("Today's Friendship Gift").color(Colors.PINK).italic(false).create(),
+                                          Text.builder("One Point per Player.").color(Colors.YELLOW).italic(false).create(),
+                                          Text.builder("New Item every Day.").color(Colors.YELLOW).italic(false).create(),
+                                          Text.builder("").create(),
+                                          Text.builder("Click to view only people").color(Colors.SILVER).italic(false).create(),
+                                          Text.builder("missing a gift from you.").color(Colors.SILVER).italic(false).create()));
     }
 
     public static ItemStack makeSkull(SQLFriends row, UUID perspective) {
@@ -151,7 +154,7 @@ public final class FamPlugin extends JavaPlugin {
         if (relation != null) {
             lore.add(Text.builder(relation.humanName).color(Colors.PINK).italic(false).create());
         }
-        if (row.getDailyGift() == Timer.getDayId()) {
+        if (row.dailyGiftGiven()) {
             lore.add(Text.builder("\u2611 Daily Gift").color(Colors.PINK).italic(false).create());
         } else {
             lore.add(Text.builder("\u2610 Daily Gift").color(Colors.DARK_GRAY).italic(false).create());
@@ -181,6 +184,7 @@ public final class FamPlugin extends JavaPlugin {
                     String name = PlayerCache.nameForUuid(uuid);
                     row.setCachedName(name != null ? name : "");
                 }
+                friendsList.removeIf(SQLFriends::friendshipIsZero);
                 Collections.sort(friendsList);
                 Bukkit.getScheduler().runTask(instance, () -> openFriendsGui(player, friendsList, page));
             });
@@ -188,7 +192,10 @@ public final class FamPlugin extends JavaPlugin {
 
     public static Gui openFriendsGui(Player player, List<SQLFriends> friendsList, int pageNumber) {
         if (!player.isValid()) return null;
-        friendsList.removeIf(SQLFriends::friendshipIsZero);
+        if (friendsList.isEmpty()) {
+            player.sendMessage(ChatColor.RED + "No friends to show");
+            return null;
+        }
         Gui gui = new Gui(instance);
         int pageSize = 3 * 9;
         int pageCount = (friendsList.size() - 1) / pageSize + 1;
@@ -220,7 +227,13 @@ public final class FamPlugin extends JavaPlugin {
                     openFriendsGui(player, friendsList, to);
                 });
         }
-        gui.setItem(3 * 9 + 4, Items.button(getTodaysFood(), ChatColor.GREEN + "Today's Friendship Gift"));
+        gui.setItem(3 * 9 + 4, makeTodaysGiftIcon(), c -> {
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                List<SQLFriends> list = new ArrayList<>(friendsList);
+                list.removeIf(SQLFriends::dailyGiftGiven);
+                list.removeIf(r -> Bukkit.getPlayer(r.getOther(player.getUniqueId())) == null);
+                openFriendsGui(player, list, 1);
+            });
         gui.open(player);
         return gui;
     }
@@ -238,13 +251,17 @@ public final class FamPlugin extends JavaPlugin {
         PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
         String name = PlayerCache.nameForUuid(friendUuid);
         if (name == null) name = profile.getName();
+        final String finalName = name;
         Gui gui = new Gui(instance);
         gui.title(name);
         gui.size(3 * 9);
         gui.setItem(9 + 4, makeSkull(row, player.getUniqueId()));
-        if (row.getDailyGift() != Timer.getDayId()) {
-            gui.setItem(9 + 5, makeTodaysFoodIcon());
+        if (row.dailyGiftAvailable()) {
+            gui.setItem(9 + 5, makeTodaysGiftIcon());
         }
+        gui.setItem(18 + 4, Items.button(Material.ENDER_PEARL, ChatColor.LIGHT_PURPLE + "/tpa " + finalName), click -> {
+                Bukkit.dispatchCommand(player, "tpa " + finalName);
+            });
         gui.setItem(Gui.OUTSIDE, null, click -> openFriendsGui(player, page));
         gui.open(player);
         return gui;
@@ -305,7 +322,7 @@ public final class FamPlugin extends JavaPlugin {
                     }
                 });
         }
-        gui.setItem(guiSize - 5, makeTodaysFoodIcon());
+        gui.setItem(guiSize - 5, makeTodaysGiftIcon());
         gui.open(player);
         player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, SoundCategory.MASTER, 0.5f, 1.2f);
         return gui;

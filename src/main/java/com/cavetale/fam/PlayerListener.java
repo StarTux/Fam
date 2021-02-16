@@ -46,7 +46,7 @@ public final class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onEntityPickupItem(EntityPickupItemEvent event) {
-        if (event.getItem().getItemStack().getType() != plugin.getTodaysFood()) return;
+        if (event.getItem().getItemStack().getType() != plugin.getTodaysGift()) return;
         if (!(event.getEntity() instanceof Player)) return;
         if (event.getItem().getThrower() == null) return;
         Player thrower = Bukkit.getPlayer(event.getItem().getThrower());

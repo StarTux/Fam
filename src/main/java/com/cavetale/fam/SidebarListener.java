@@ -28,7 +28,7 @@ public final class SidebarListener implements Listener {
         ChatColor hl = ChatColor.GRAY;
         String text = bg + "Your " + hl + "/valentine" + bg + " score: " + hl
             + Database.getCachedScore(event.getPlayer().getUniqueId())
-            + bg + ". Today's gift item: " + hl + Items.getDisplayName(plugin.getTodaysFood());
+            + bg + ". Today's gift item: " + hl + Items.getDisplayName(plugin.getTodaysGift());
         List<String> lines = Text.wrapLine(text, 18);
         event.addLines(plugin, Priority.DEFAULT, lines);
     }

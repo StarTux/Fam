@@ -12,4 +12,5 @@ public final class Colors {
     public static final ChatColor ORANGE = ChatColor.of("#FFA500");
     public static final ChatColor BLUE = ChatColor.of("#4169E1");
     public static final ChatColor RED = ChatColor.of("#FF0000");
+    public static final ChatColor SILVER = ChatColor.of("#C0C0C0");
 }

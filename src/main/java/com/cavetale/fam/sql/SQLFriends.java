@@ -1,6 +1,7 @@
 package com.cavetale.fam.sql;
 
 import com.cavetale.fam.Relation;
+import com.cavetale.fam.Timer;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -89,5 +90,13 @@ public final class SQLFriends implements Comparable<SQLFriends> {
         if (friendship < 60) return 3;
         if (friendship < 80) return 4;
         return 5;
+    }
+
+    public boolean dailyGiftAvailable() {
+        return dailyGift != Timer.getDayId();
+    }
+
+    public boolean dailyGiftGiven() {
+        return dailyGift == Timer.getDayId();
     }
 }

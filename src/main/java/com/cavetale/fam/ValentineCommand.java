@@ -26,7 +26,11 @@ public final class ValentineCommand implements TabExecutor {
             return true;
         }
         if (args.length == 0) {
-            plugin.openRewardsGui((Player) sender);
+            if (Timer.isValentineSeason()) {
+                plugin.openRewardsGui((Player) sender);
+            } else {
+                plugin.showHighscore((Player) sender, 1);
+            }
             return true;
         }
         switch (args[0]) {
