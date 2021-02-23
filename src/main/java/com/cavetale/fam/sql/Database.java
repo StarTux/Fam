@@ -106,7 +106,7 @@ public final class Database {
         if (row != null) {
             if (!row.load(player.getPlayerProfile())) return false;
             row.pack();
-            db().updateAsync(row, null, "name", "json", "updated");
+            db().updateAsync(row, null, "name", "json", "texture_url", "updated");
             return true;
         }
         row = new SQLProfile(uuid, player.getName());
