@@ -82,14 +82,14 @@ public final class FamPlugin extends JavaPlugin {
         // 7
         rewards.add(new Reward()
                     .item(new ItemStack(Material.DIAMOND))
-                    .item(Mytems.KITTY_COIN.getMytem().getItem(), 4)
+                    .item(Mytems.KITTY_COIN.createItemStack(), 4)
                     .item(new ItemStack(Material.MELON_SLICE, 16), 6));
         // 8
         rewards.add(new Reward().item(new ItemStack(Material.GOLDEN_APPLE), 27));
         // 9
         rewards.add(new Reward().item(new ItemStack(Material.NETHERITE_INGOT), 5));
         // 10
-        rewards.add(new Reward().item(Mytems.WEDDING_RING.getMytem().getItem()));
+        rewards.add(new Reward().item(Mytems.WEDDING_RING.createItemStack()));
         for (int i = 0; i < 4; i += 1) {
             rewards.add(new Reward().item(new ItemStack(Material.DIAMOND), 3 * 9));
             rewards.add(new Reward().item(new ItemStack(Material.EMERALD), 3 * 9));
