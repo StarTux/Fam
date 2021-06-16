@@ -25,7 +25,11 @@ public final class Database {
     }
 
     public static boolean init() {
-        db().registerTables(SQLFriends.class, SQLProfile.class, SQLProgress.class, SQLFriendLog.class);
+        db().registerTables(SQLFriends.class,
+                            SQLProfile.class,
+                            SQLProgress.class,
+                            SQLFriendLog.class,
+                            SQLPlayerSkin.class);
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();
@@ -100,21 +104,21 @@ public final class Database {
         return result;
     }
 
-    public static boolean storePlayerProfileAsync(Player player) {
+    public static SQLProfile storePlayerProfileAsync(Player player) {
         UUID uuid = player.getUniqueId();
         SQLProfile row = profileCache.get(uuid);
         if (row != null) {
-            if (!row.load(player.getPlayerProfile())) return false;
+            if (!row.load(player.getPlayerProfile())) return row;
             row.pack();
             db().updateAsync(row, null, "name", "json", "texture_url", "updated");
-            return true;
+            return row;
         }
         row = new SQLProfile(uuid, player.getName());
         row.load(player.getPlayerProfile());
         profileCache.put(uuid, row);
         row.pack();
         db().insertIgnoreAsync(row, null);
-        return true;
+        return row;
     }
 
     public static void loadProfileCacheAsync() {
@@ -122,6 +126,19 @@ public final class Database {
                 for (SQLProfile row : list) {
                     profileCache.put(row.getUuid(), row);
                 }
+            });
+    }
+
+    public static void fetchPlayerSkinAsync(final String textureUrl) {
+        db().scheduleAsyncTask(() -> {
+                SQLPlayerSkin row = db().find(SQLPlayerSkin.class)
+                    .eq("texture_url", textureUrl)
+                    .findUnique();
+                if (row != null) return;
+                row = new SQLPlayerSkin(textureUrl);
+                row.loadTexture(); // may throw
+                if (row.getTextureBase64() == null) return;
+                db().insertIgnore(row);
             });
     }
 

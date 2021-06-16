@@ -16,8 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Record, one per player and world, meaning the fastest time the
- * player has achieved in the given world.
+ * This table is a mapping of player UUIDs to their profile.
  */
 @Data @Table(name = "profiles")
 public final class SQLProfile {
@@ -139,5 +138,10 @@ public final class SQLProfile {
         o = map.get("url");
         if (!(o instanceof String)) return null;
         return (String) o;
+    }
+
+    public void fetchPlayerSkinAsync() {
+        if (textureUrl == null) return;
+        Database.fetchPlayerSkinAsync(textureUrl);
     }
 }

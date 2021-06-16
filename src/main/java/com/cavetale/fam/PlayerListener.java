@@ -33,7 +33,7 @@ public final class PlayerListener implements Listener {
     void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Database.fillCacheAsync(player);
-        Database.storePlayerProfileAsync(player);
+        Database.storePlayerProfileAsync(player).fetchPlayerSkinAsync();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

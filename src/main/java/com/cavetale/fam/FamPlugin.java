@@ -59,7 +59,7 @@ public final class FamPlugin extends JavaPlugin {
         Timer.enable();
         for (Player player : Bukkit.getOnlinePlayers()) {
             Database.fillCacheAsync(player);
-            Database.storePlayerProfileAsync(player);
+            Database.storePlayerProfileAsync(player).fetchPlayerSkinAsync();
         }
         Gui.enable(this);
         rewards = new ArrayList<>(10);
