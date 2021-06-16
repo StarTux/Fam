@@ -27,7 +27,7 @@ public final class SQLPlayerSkin {
     private String textureUrl;
     @Column(length = 4096)
     private String textureBase64;
-    @Column(length = 255)
+    @Column(length = 1024)
     private String faceImageBase64;
     private transient BufferedImage image;
     private transient BufferedImage faceImage;
