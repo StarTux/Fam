@@ -1,5 +1,6 @@
 package com.cavetale.fam.sql;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,7 +27,10 @@ public final class SQLPlayerSkin {
     private String textureUrl;
     @Column(length = 4096)
     private String textureBase64;
+    @Column(length = 255)
+    private String faceImageBase64;
     private transient BufferedImage image;
+    private transient BufferedImage faceImage;
 
     public SQLPlayerSkin() { }
 
@@ -53,13 +57,18 @@ public final class SQLPlayerSkin {
         } catch (IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
+        textureBase64 = imageToBase64(image);
+        getFaceImage();
+    }
+
+    public static String imageToBase64(BufferedImage theImage) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ImageIO.write(image, "png", baos);
+            ImageIO.write(theImage, "png", baos);
         } catch (IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
-        textureBase64 = Base64.getEncoder().encodeToString(baos.toByteArray());
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
     public String getFilename() {
@@ -91,5 +100,24 @@ public final class SQLPlayerSkin {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    public BufferedImage getFaceImage() {
+        if (faceImage == null) {
+            getImage();
+            faceImage = new BufferedImage(8, 8, image.getType());
+            Graphics2D gfx = (Graphics2D) faceImage.getGraphics();
+            gfx.drawImage(image, // Face
+                          0, 0, 8, 8, // dest
+                          8, 8, 16, 16, // src
+                          null);
+            gfx.drawImage(image, // Helmet
+                          0, 0, 8, 8, // dest
+                          40, 8, 48, 16, // src
+                          null);
+            gfx.dispose();
+            faceImageBase64 = imageToBase64(faceImage);
+        }
+        return faceImage;
     }
 }
