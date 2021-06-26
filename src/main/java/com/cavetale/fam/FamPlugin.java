@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.font.DefaultFont;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.sql.SQLProgress;
@@ -17,6 +18,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -37,6 +41,7 @@ public final class FamPlugin extends JavaPlugin {
     private ValentineCommand valentineCommand = new ValentineCommand(this);
     private FriendCommand friendCommand = new FriendCommand(this);
     private LoveCommand loveCommand = new LoveCommand(this);
+    private DivorceCommand divorceCommand = new DivorceCommand(this);
     private PlayerListener eventListener = new PlayerListener(this);
     private WeddingRingListener weddingRingListener = new WeddingRingListener(this);
     private MarriageListener marriageListener = new MarriageListener(this);
@@ -51,6 +56,7 @@ public final class FamPlugin extends JavaPlugin {
         valentineCommand.enable();
         friendCommand.enable();
         loveCommand.enable();
+        divorceCommand.enable();
         eventListener.enable();
         weddingRingListener.enable();
         marriageListener.enable();
@@ -202,7 +208,13 @@ public final class FamPlugin extends JavaPlugin {
         int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
-        gui.title(pageCount > 1 ? ChatColor.RED + "Friends " + pageNumber + "/" + pageCount : ChatColor.RED + "Friends");
+        Component title = Component.text()
+            .append(DefaultFont.guiBlankOverlay(pageSize + 9, TextColor.color(0x8080FF)))
+            .append(Component.text(pageCount > 1
+                                   ? ChatColor.RED + "Friends " + pageNumber + "/" + pageCount
+                                   : ChatColor.RED + "Friends"))
+            .build();
+        gui.title(title);
         for (int i = 0; i < pageSize; i += 1) {
             int friendsIndex = offset + i;
             if (friendsIndex >= friendsList.size()) break;
@@ -215,14 +227,14 @@ public final class FamPlugin extends JavaPlugin {
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
-            gui.setItem(3 * 9, Items.button(Material.ARROW, ChatColor.GRAY + "Previous Page"), c -> {
+            gui.setItem(3 * 9, Items.button(Mytems.ARROW_LEFT, ChatColor.GRAY + "Previous Page"), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     openFriendsGui(player, friendsList, to);
                 });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
-            gui.setItem(3 * 9 + 8, Items.button(Material.ARROW, ChatColor.GRAY + "Next Page"), c -> {
+            gui.setItem(3 * 9 + 8, Items.button(Mytems.ARROW_RIGHT, ChatColor.GRAY + "Next Page"), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     openFriendsGui(player, friendsList, to);
                 });
@@ -253,9 +265,30 @@ public final class FamPlugin extends JavaPlugin {
         if (name == null) name = profile.getName();
         final String finalName = name;
         Gui gui = new Gui(instance);
-        gui.title(name);
-        gui.size(3 * 9);
+        int size = 3 * 9;
+        TextColor color;
+        switch (row.getHearts()) {
+        case 0: color = NamedTextColor.DARK_GRAY; break;
+        case 1: color = NamedTextColor.GRAY; break;
+        case 2: color = NamedTextColor.WHITE; break;
+        case 3: color = NamedTextColor.BLUE; break;
+        case 4: color = NamedTextColor.RED; break;
+        case 5: color = NamedTextColor.GOLD; break;
+        default: color = NamedTextColor.WHITE;
+        }
+        Component title = Component.text()
+            .append(DefaultFont.guiBlankOverlay(size, color))
+            .append(Component.text(name, NamedTextColor.WHITE))
+            .build();
+        gui.title(title);
+        gui.size(size);
         gui.setItem(9 + 4, makeSkull(row, player.getUniqueId()));
+        for (int i = 0; i < row.getHearts(); i += 1) {
+            gui.setItem(2 + i, Mytems.HEART.createItemStack());
+        }
+        for (int i = row.getHearts(); i < 5; i += 1) {
+            gui.setItem(2 + i, Mytems.EMPTY_HEART.createItemStack());
+        }
         if (row.dailyGiftAvailable()) {
             gui.setItem(9 + 5, makeTodaysGiftIcon());
         }
@@ -423,14 +456,14 @@ public final class FamPlugin extends JavaPlugin {
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
-            gui.setItem(3 * 9, Items.button(Material.ARROW, ChatColor.GRAY + "Previous Page"), c -> {
+            gui.setItem(3 * 9, Items.button(Mytems.ARROW_LEFT, ChatColor.GRAY + "Previous Page"), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     showHighscore(player, list, to);
                 });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
-            gui.setItem(3 * 9 + 8, Items.button(Material.ARROW, ChatColor.GRAY + "Next Page"), c -> {
+            gui.setItem(3 * 9 + 8, Items.button(Mytems.ARROW_RIGHT, ChatColor.GRAY + "Next Page"), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     showHighscore(player, list, to);
                 });

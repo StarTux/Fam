@@ -1,5 +1,6 @@
 package com.cavetale.fam.util;
 
+import com.cavetale.mytems.Mytems;
 import java.util.List;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Material;
@@ -12,6 +13,15 @@ public final class Items {
 
     public static ItemStack button(Material material, String text) {
         ItemStack itemStack = new ItemStack(material);
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.setDisplayName(text);
+        meta.addItemFlags(ItemFlag.values());
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+    public static ItemStack button(Mytems mytems, String text) {
+        ItemStack itemStack = mytems.createItemStack();
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(text);
         meta.addItemFlags(ItemFlag.values());

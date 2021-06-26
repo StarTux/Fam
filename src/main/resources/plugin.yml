@@ -42,9 +42,15 @@ commands:
 
   love:
     aliases: []
-    description: Send love to your spouse
+    description: Send love to your partner
     permission: fam.marriage
     usage: /love
+
+  divorce:
+    aliases: []
+    description: Divorce your partner
+    permission: fam.marriage
+    usage: /divorce
 
 permissions:
 
