@@ -111,6 +111,7 @@ public final class ProfileDialogue {
                              .decoration(TextDecoration.ITALIC, false)
                              .build());
                 }
+                meta.lore(lore);
             });
         gui.setItem(friendsIndex, friendsIcon, click -> {
                 if (!click.isLeftClick()) return;
