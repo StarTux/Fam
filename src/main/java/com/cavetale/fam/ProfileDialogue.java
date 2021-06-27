@@ -178,7 +178,8 @@ public final class ProfileDialogue {
             });
         // Birthdays
         for (int i = 0; i < birthdays.size() && i < 9; i += 1) {
-            PlayerProfile birthdayProfile = Database.getCachedPlayerProfile(birthday.getPlayer());
+            SQLBirthday theBirthday = birthdays.get(0);
+            PlayerProfile birthdayProfile = Database.getCachedPlayerProfile(theBirthday.getPlayer());
             if (birthdayProfile == null) continue;
             ItemStack icon = Items.makeSkull(birthdayProfile);
             icon.editMeta(meta -> {
