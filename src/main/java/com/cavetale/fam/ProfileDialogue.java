@@ -127,7 +127,7 @@ public final class ProfileDialogue {
         marriedIcon.editMeta(meta -> {
                 meta.lore(Collections.emptyList());
                 if (married != null) {
-                    String marriedName = PlayerCache.nameForUuid(bestFriend.getOther(uuid));
+                    String marriedName = PlayerCache.nameForUuid(married.getOther(uuid));
                     meta.displayName(Component.text().content("Married to " + marriedName)
                                      .color(TOOLTIP)
                                      .decoration(TextDecoration.ITALIC, false)
