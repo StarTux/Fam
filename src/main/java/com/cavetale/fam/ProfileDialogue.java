@@ -51,7 +51,7 @@ public final class ProfileDialogue {
                 friends = Database.findFriendsList(uuid);
                 Collections.sort(friends);
                 for (SQLFriends it : friends) {
-                    switch (it.getRelation()) {
+                    switch (it.getRelationEnum()) {
                     case FRIEND:
                         friendsCount += 1;
                         if (bestFriend == null) bestFriend = it;

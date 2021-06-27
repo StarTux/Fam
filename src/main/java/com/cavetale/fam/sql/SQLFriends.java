@@ -50,7 +50,7 @@ public final class SQLFriends implements Comparable<SQLFriends> {
         return you.equals(playerA) ? playerB : playerA;
     }
 
-    public Relation getRelation() {
+    public Relation getRelationEnum() {
         if (relation == null) return null;
         try {
             return Relation.valueOf(relation.toUpperCase());
@@ -60,7 +60,7 @@ public final class SQLFriends implements Comparable<SQLFriends> {
     }
 
     public Relation getRelationFor(UUID you) {
-        Relation result = getRelation();
+        Relation result = getRelationEnum();
         if (result == null) return null;
         return you.equals(playerA)
             ? result
