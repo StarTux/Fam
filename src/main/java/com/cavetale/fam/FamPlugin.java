@@ -2,6 +2,7 @@ package com.cavetale.fam;
 
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.fam.sql.Database;
+import com.cavetale.fam.sql.SQLDaybreak;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.sql.SQLProgress;
 import com.cavetale.fam.util.Colors;
@@ -47,6 +48,7 @@ public final class FamPlugin extends JavaPlugin {
     private MarriageListener marriageListener = new MarriageListener(this);
     private SQLDatabase database = new SQLDatabase(this);
     private List<Reward> rewards;
+    private boolean doDaybreak;
 
     @Override
     public void onEnable() {
@@ -63,6 +65,11 @@ public final class FamPlugin extends JavaPlugin {
         new SidebarListener(this).enable();
         Database.init();
         Timer.enable();
+        doDaybreak = getConfig().getBoolean("DoDaybreak");
+        if (doDaybreak) {
+            getLogger().info("Daybreak computation enabled!");
+            computePossibleDaybreak();
+        }
         for (Player player : Bukkit.getOnlinePlayers()) {
             Database.fillCacheAsync(player);
             Database.storePlayerProfileAsync(player).fetchPlayerSkinAsync();
@@ -470,5 +477,52 @@ public final class FamPlugin extends JavaPlugin {
         }
         gui.open(player);
         return gui;
+    }
+
+    /**
+     * This is called once when the plugin is first enabled, and once
+     * more on every daybreak, by Timer.
+     */
+    public void computePossibleDaybreak() {
+        if (!doDaybreak) return;
+        getLogger().info("Computing possible daybreak");
+        database.scheduleAsyncTask(() -> {
+                SQLDaybreak row = database.find(SQLDaybreak.class).findUnique();
+                if (row == null) {
+                    row = new SQLDaybreak();
+                    database.insert(row);
+                }
+                int dayId = Timer.getDayId();
+                if (row.getDayId() == dayId) return; // no daybreak!
+                row.setDayId(dayId);
+                database.update(row);
+                onDaybreak();
+            });
+    }
+
+    /**
+     * Called from an async thread, except for testing!
+     */
+    public void onDaybreak() {
+        getLogger().info("Daybreak!");
+        // Friendship decay for non-friends, down to 0.
+        int nones = database.update(SQLFriends.class)
+            .subtract("friendship", 1)
+            .where(c -> c.isNull("relation").gt("friendship", 0))
+            .sync();
+        // Friendship decay for friends, down to 40.
+        int friends = database.update(SQLFriends.class)
+            .subtract("friendship", 1)
+            .where(c -> c.eq("relation", "friend").gt("friendship", 40))
+            .sync();
+        // Delete empty rows
+        int deleted = database.find(SQLFriends.class)
+            .isNull("relation")
+            .lte("friendship", 0)
+            .delete();
+        getLogger().info("Friendship decay:"
+                         + " nones=" + nones
+                         + " friends=" + friends
+                         + " deleted=" + deleted);
     }
 }

@@ -29,7 +29,8 @@ public final class Database {
                             SQLProfile.class,
                             SQLProgress.class,
                             SQLFriendLog.class,
-                            SQLPlayerSkin.class);
+                            SQLPlayerSkin.class,
+                            SQLDaybreak.class);
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();

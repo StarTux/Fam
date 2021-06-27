@@ -31,7 +31,7 @@ public final class Timer {
 
     public static void enable() {
         update();
-        Bukkit.getScheduler().runTaskTimer(FamPlugin.getInstance(), Timer::update, 200L, 200L);
+        Bukkit.getScheduler().runTaskTimer(FamPlugin.getInstance(), Timer::tick, 20L, 20L);
     }
 
     public static boolean isValentineSeason() {
@@ -41,5 +41,13 @@ public final class Timer {
     public static boolean isValentinesDay() {
         return month == 2
             && (day == 14 || (day == 15 && hour <= 12));
+    }
+
+    private static void tick() {
+        int oldDayId = dayId;
+        update();
+        if (oldDayId != dayId) {
+            FamPlugin.getInstance().computePossibleDaybreak();
+        }
     }
 }

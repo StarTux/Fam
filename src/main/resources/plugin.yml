@@ -16,9 +16,12 @@ commands:
   fam:
     aliases: []
     description: Admin command
-    permission: fam.fam
+    permission: fam.admin
     usage: |-
-      /fam info
+      /fam info - Dump debug info
+      /fam compute - Compute possible daybreak
+      /fam daybreak - Simulate daybreak
+      /fam config - Save default config
 
   friends:
     aliases: []
@@ -54,7 +57,7 @@ commands:
 
 permissions:
 
-  fam.fam:
+  fam.admin:
     description: Use /fam
     default: op
 

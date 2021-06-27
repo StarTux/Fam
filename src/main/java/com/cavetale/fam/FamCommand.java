@@ -26,6 +26,18 @@ public final class FamCommand implements TabExecutor {
                                + "\nValentineSeason=" + Timer.isValentineSeason()
                                + "\nValentinesDay=" + Timer.isValentinesDay());
             return true;
+        case "daybreak":
+            sender.sendMessage("Simulating daybreak (see console)...");
+            plugin.onDaybreak();
+            return true;
+        case "compute":
+            sender.sendMessage("Computing possible daybreak (see console)...");
+            plugin.computePossibleDaybreak();
+            return true;
+        case "config":
+            plugin.saveDefaultConfig();
+            sender.sendMessage("Saved default config to disk unless it already existed.");
+            return true;
         default: return false;
         }
     }

@@ -82,7 +82,7 @@ public final class DivorceCommand implements TabExecutor {
                     .atomic("relation", null)
                     .async(success -> {
                             // sync
-                            if (!success) {
+                            if (success <= 0) {
                                 player.sendMessage(ChatColor.RED + "Something went wrong.");
                                 return;
                             }
