@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 
 @RequiredArgsConstructor
 public final class FamCommand implements TabExecutor {
@@ -37,6 +38,12 @@ public final class FamCommand implements TabExecutor {
         case "config":
             plugin.saveDefaultConfig();
             sender.sendMessage("Saved default config to disk unless it already existed.");
+            return true;
+        case "bday":
+            new BirthdayDialogue(plugin).open((Player) sender);
+            return true;
+        case "profile":
+            new ProfileDialogue(plugin).open((Player) sender);
             return true;
         default: return false;
         }

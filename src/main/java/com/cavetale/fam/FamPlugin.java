@@ -43,6 +43,7 @@ public final class FamPlugin extends JavaPlugin {
     private FriendCommand friendCommand = new FriendCommand(this);
     private LoveCommand loveCommand = new LoveCommand(this);
     private DivorceCommand divorceCommand = new DivorceCommand(this);
+    private ProfileCommand profileCommand = new ProfileCommand(this);
     private PlayerListener eventListener = new PlayerListener(this);
     private WeddingRingListener weddingRingListener = new WeddingRingListener(this);
     private MarriageListener marriageListener = new MarriageListener(this);
@@ -59,6 +60,7 @@ public final class FamPlugin extends JavaPlugin {
         friendCommand.enable();
         loveCommand.enable();
         divorceCommand.enable();
+        profileCommand.enable();
         eventListener.enable();
         weddingRingListener.enable();
         marriageListener.enable();

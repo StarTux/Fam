@@ -23,6 +23,12 @@ commands:
       /fam daybreak - Simulate daybreak
       /fam config - Save default config
 
+  profile:
+    aliases: []
+    description: View profile page
+    permission: fam.friends
+    usage: /profile
+
   friends:
     aliases: []
     description: Friend list

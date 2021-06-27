@@ -30,7 +30,8 @@ public final class Database {
                             SQLProgress.class,
                             SQLFriendLog.class,
                             SQLPlayerSkin.class,
-                            SQLDaybreak.class);
+                            SQLDaybreak.class,
+                            SQLBirthday.class);
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();
@@ -211,5 +212,9 @@ public final class Database {
 
     public static void friendLogAsync(UUID player, UUID target, Relation relation, String comment) {
         db().insertAsync(new SQLFriendLog(player, target, relation, comment, new Date()), null);
+    }
+
+    public static SQLBirthday findBirthday(Player player) {
+        return db().find(SQLBirthday.class).eq("player", player.getUniqueId()).findUnique();
     }
 }

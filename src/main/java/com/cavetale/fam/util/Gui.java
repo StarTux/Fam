@@ -35,6 +35,7 @@ public final class Gui implements InventoryHolder {
     @Getter private int size = 3 * 9;
     @Getter private Component title = Component.empty();
     boolean locked = false;
+    @Getter boolean closedByPlugin = false;
 
     @RequiredArgsConstructor @AllArgsConstructor
     private static final class Slot {
@@ -115,6 +116,14 @@ public final class Gui implements InventoryHolder {
 
     public Gui open(Player player) {
         player.openInventory(getInventory());
+        return this;
+    }
+
+    public Gui close(Player player) {
+        closedByPlugin = true;
+        if (Gui.of(player) == this) {
+            player.closeInventory();
+        }
         return this;
     }
 
