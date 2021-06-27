@@ -214,7 +214,7 @@ public final class Database {
         db().insertAsync(new SQLFriendLog(player, target, relation, comment, new Date()), null);
     }
 
-    public static SQLBirthday findBirthday(Player player) {
-        return db().find(SQLBirthday.class).eq("player", player.getUniqueId()).findUnique();
+    public static SQLBirthday findBirthday(UUID uuid) {
+        return db().find(SQLBirthday.class).eq("player", uuid).findUnique();
     }
 }

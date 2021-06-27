@@ -1,5 +1,8 @@
 package com.cavetale.fam.sql;
 
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -23,5 +26,10 @@ public final class SQLBirthday {
         this.player = player;
         this.month = month;
         this.day = day;
+    }
+
+    public String getBirthdayName() {
+        Month theMonth = Month.of(month);
+        return theMonth.getDisplayName(TextStyle.FULL, Locale.US) + " " + day;
     }
 }

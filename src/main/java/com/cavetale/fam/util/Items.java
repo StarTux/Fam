@@ -35,6 +35,15 @@ public final class Items {
         return itemStack;
     }
 
+    public static ItemStack button(Mytems mytems, Component text) {
+        ItemStack itemStack = mytems.createItemStack();
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.displayName(text);
+        meta.addItemFlags(ItemFlag.values());
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
     public static ItemStack button(Material material, List<BaseComponent[]> text) {
         ItemStack itemStack = new ItemStack(material);
         ItemMeta meta = itemStack.getItemMeta();

@@ -2,6 +2,7 @@ package com.cavetale.fam;
 
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.fam.sql.Database;
+import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLDaybreak;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.sql.SQLProgress;
@@ -22,6 +23,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -231,7 +233,7 @@ public final class FamPlugin extends JavaPlugin {
             ItemStack itemStack = makeSkull(row, player.getUniqueId());
             gui.setItem(i, itemStack, click -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                    openFriendGui(player, row, pageNumber);
+                    openFriendGui(player, row.getOther(player.getUniqueId()), pageNumber);
                 });
         }
         if (pageIndex > 0) {
@@ -263,11 +265,12 @@ public final class FamPlugin extends JavaPlugin {
         instance.database.scheduleAsyncTask(() -> {
                 SQLFriends row = Database.findFriends(player.getUniqueId(), friendUuid);
                 final SQLFriends row2 = row != null ? row : new SQLFriends(Database.sorted(player.getUniqueId(), friendUuid));
-                Bukkit.getScheduler().runTask(instance, () -> openFriendGui(player, row2, page));
+                final SQLBirthday birthday = Database.findBirthday(friendUuid);
+                Bukkit.getScheduler().runTask(instance, () -> openFriendGui(player, row2, birthday, page));
             });
     }
 
-    public static Gui openFriendGui(Player player, SQLFriends row, int page) {
+    public static Gui openFriendGui(Player player, SQLFriends row, SQLBirthday birthday, int page) {
         UUID friendUuid = row.getOther(player.getUniqueId());
         PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
         String name = PlayerCache.nameForUuid(friendUuid);
@@ -297,6 +300,10 @@ public final class FamPlugin extends JavaPlugin {
         }
         for (int i = row.getHearts(); i < 5; i += 1) {
             gui.setItem(2 + i, Mytems.EMPTY_HEART.createItemStack());
+        }
+        if (birthday != null) {
+            gui.setItem(9 + 3, Items.button(Mytems.STAR, Component.text("Birthday: " + birthday.getBirthdayName())
+                                            .color(Colors.HOTPINK).decoration(TextDecoration.ITALIC, false)));
         }
         if (row.dailyGiftAvailable()) {
             gui.setItem(9 + 5, makeTodaysGiftIcon());

@@ -37,6 +37,7 @@ public final class ProfileDialogue {
     private List<SQLFriends> friends;
     private SQLFriends married;
     private SQLFriends bestFriend;
+    private List<SQLBirthday> birthdays;
     private int friendsCount = 0;
 
     public static final TextColor BG = TextColor.color(0xFF69B4);
@@ -47,7 +48,7 @@ public final class ProfileDialogue {
     public void open(Player player) {
         uuid = player.getUniqueId();
         plugin.getDatabase().scheduleAsyncTask(() -> {
-                birthday = Database.findBirthday(player);
+                birthday = Database.findBirthday(uuid);
                 friends = Database.findFriendsList(uuid);
                 Collections.sort(friends);
                 for (SQLFriends it : friends) {
@@ -64,6 +65,10 @@ public final class ProfileDialogue {
                     default: break;
                     }
                 }
+                birthdays = Database.db().find(SQLBirthday.class)
+                    .eq("month", Timer.getMonth())
+                    .eq("day", Timer.getDay())
+                    .findList();
                 Bukkit.getScheduler().runTask(plugin, () -> openLoaded(player));
             });
     }
@@ -146,7 +151,7 @@ public final class ProfileDialogue {
             Month month = Month.of(birthday.getMonth());
             int day = birthday.getDay();
             String birthdayName = month.getDisplayName(TextStyle.FULL, LOCALE) + " " + day;
-            birthdayIcon = Mytems.CHECKED_CHECKBOX.createItemStack();
+            birthdayIcon = Mytems.STAR.createItemStack();
             birthdayIcon.editMeta(meta -> {
                     meta.lore(Collections.emptyList());
                     meta.displayName(Component.text().content("Your birthday is on " + birthdayName)
@@ -170,6 +175,19 @@ public final class ProfileDialogue {
                 gui.close(player);
                 new BirthdayDialogue(plugin).open(player);
             });
+        // Birthdays
+        for (int i = 0; i < birthdays.size() && i < 9; i += 1) {
+            PlayerProfile birthdayProfile = Database.getCachedPlayerProfile(birthday.getPlayer());
+            if (birthdayProfile == null) continue;
+            ItemStack icon = Items.makeSkull(birthdayProfile);
+            icon.editMeta(meta -> {
+                    meta.displayName(Component.text().content("It's " + birthdayProfile.getName() + "'s birthday today!")
+                                     .color(TOOLTIP)
+                                     .decoration(TextDecoration.ITALIC, false)
+                                     .build());
+                });
+            gui.setItem(18 + i, icon);
+        }
         gui.open(player);
         return gui;
     }

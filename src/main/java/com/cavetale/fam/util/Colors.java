@@ -1,5 +1,6 @@
 package com.cavetale.fam.util;
 
+import net.kyori.adventure.text.format.TextColor;
 import net.md_5.bungee.api.ChatColor;
 
 public final class Colors {
@@ -13,4 +14,6 @@ public final class Colors {
     public static final ChatColor BLUE = ChatColor.of("#4169E1");
     public static final ChatColor RED = ChatColor.of("#FF0000");
     public static final ChatColor SILVER = ChatColor.of("#C0C0C0");
+
+    public static final TextColor HOTPINK = TextColor.color(0xFF69B3);
 }
