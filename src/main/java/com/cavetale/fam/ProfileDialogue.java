@@ -117,7 +117,7 @@ public final class ProfileDialogue {
                 if (!click.isLeftClick()) return;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                 gui.close(player);
-                plugin.openFriendsGui(player, friends, 0);
+                plugin.openFriendsGui(player, friends, 1);
             });
         // Married
         ItemStack marriedIcon = null;
@@ -155,7 +155,7 @@ public final class ProfileDialogue {
             birthdayIcon = Mytems.STAR.createItemStack();
             birthdayIcon.editMeta(meta -> {
                     meta.lore(Collections.emptyList());
-                    meta.displayName(Component.text().content("Your birthday is on " + birthdayName)
+                    meta.displayName(Component.text().content("Your birthday: " + birthdayName)
                                      .color(TOOLTIP)
                                      .decoration(TextDecoration.ITALIC, false)
                                      .build());
@@ -188,7 +188,12 @@ public final class ProfileDialogue {
                                      .decoration(TextDecoration.ITALIC, false)
                                      .build());
                 });
-            gui.setItem(18 + i, icon);
+            gui.setItem(18 + i, icon, click -> {
+                    if (!click.isLeftClick()) return;
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                    gui.close(player);
+                    plugin.openFriendGui(player, theBirthday.getPlayer(), 1);
+                });
         }
         gui.open(player);
         return gui;
