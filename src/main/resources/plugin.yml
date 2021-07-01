@@ -74,3 +74,7 @@ permissions:
   fam.marriage:
     description: Get married
     default: false
+
+  fam.debug:
+    description: View debug information
+    default: op

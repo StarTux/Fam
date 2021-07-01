@@ -144,13 +144,13 @@ public final class FamPlugin extends JavaPlugin {
                                           Text.builder("missing a gift from you.").color(Colors.SILVER).italic(false).create()));
     }
 
-    public static ItemStack makeSkull(SQLFriends row, UUID perspective) {
+    public static ItemStack makeSkull(Player player, SQLFriends row) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
-        UUID friendUuid = row.getOther(perspective);
+        UUID friendUuid = row.getOther(player.getUniqueId());
         PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
         meta.setPlayerProfile(profile);
-        Relation relation = row.getRelationFor(perspective);
+        Relation relation = row.getRelationFor(player.getUniqueId());
         String name = row.getCachedName();
         if (name == null) name = PlayerCache.nameForUuid(friendUuid);
         if (name == null) name = profile.getName();
@@ -168,6 +168,9 @@ public final class FamPlugin extends JavaPlugin {
         meta.setDisplayNameComponent(Text.builder(name).color(color).italic(false).create());
         List<BaseComponent[]> lore = new ArrayList<>();
         lore.add(Text.toHeartString(row.getHearts()));
+        if (player.hasPermission("fam.debug")) {
+            lore.add(Text.builder("Debug Friendship: " + row.getFriendship()).color(Colors.DARK_GRAY).create());
+        }
         if (relation != null) {
             lore.add(Text.builder(relation.humanName).color(Colors.PINK).italic(false).create());
         }
@@ -230,7 +233,7 @@ public final class FamPlugin extends JavaPlugin {
             int friendsIndex = offset + i;
             if (friendsIndex >= friendsList.size()) break;
             SQLFriends row = friendsList.get(friendsIndex);
-            ItemStack itemStack = makeSkull(row, player.getUniqueId());
+            ItemStack itemStack = makeSkull(player, row);
             gui.setItem(i, itemStack, click -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     openFriendGui(player, row.getOther(player.getUniqueId()), pageNumber);
@@ -294,7 +297,7 @@ public final class FamPlugin extends JavaPlugin {
             .build();
         gui.title(title);
         gui.size(size);
-        gui.setItem(9 + 4, makeSkull(row, player.getUniqueId()));
+        gui.setItem(9 + 4, makeSkull(player, row));
         for (int i = 0; i < row.getHearts(); i += 1) {
             gui.setItem(2 + i, Mytems.HEART.createItemStack());
         }

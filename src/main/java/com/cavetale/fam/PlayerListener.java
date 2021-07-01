@@ -85,6 +85,9 @@ public final class PlayerListener implements Listener {
                         if (player.isOnline()) {
                             TextComponent text = Text.extra(Text.builder("Your friendship with " + thrower.getName() + " increased!").color(Colors.PINK)
                                                             .append(" ").append(hearts.create()).create());
+                            if (player.hasPermission("fam.debug")) {
+                                player.sendMessage(Text.builder("Debug Friendship: " + row.getFriendship()).color(Colors.DARK_GRAY).create());
+                            }
                             text.setHoverEvent(Text.hover(Text.builder("/friends").color(Colors.PINK).create()));
                             text.setClickEvent(Text.click("/friends"));
                             player.sendMessage(text);
