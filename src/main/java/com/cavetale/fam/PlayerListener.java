@@ -85,12 +85,12 @@ public final class PlayerListener implements Listener {
                         if (player.isOnline()) {
                             TextComponent text = Text.extra(Text.builder("Your friendship with " + thrower.getName() + " increased!").color(Colors.PINK)
                                                             .append(" ").append(hearts.create()).create());
-                            if (player.hasPermission("fam.debug")) {
-                                player.sendMessage(Text.builder("Debug Friendship: " + row.getFriendship()).color(Colors.DARK_GRAY).create());
-                            }
                             text.setHoverEvent(Text.hover(Text.builder("/friends").color(Colors.PINK).create()));
                             text.setClickEvent(Text.click("/friends"));
                             player.sendMessage(text);
+                            if (player.hasPermission("fam.debug")) {
+                                player.sendMessage(Text.builder("Debug Friendship: " + row.getFriendship()).color(Colors.DARK_GRAY).create());
+                            }
                             if (playerProgress != null && playerProgress.isRewardAvailable()) {
                                 player.sendMessage(Text.builder("A new valentine reward is available! See ").color(Colors.PINK)
                                                    .append("/valentine")
@@ -107,6 +107,9 @@ public final class PlayerListener implements Listener {
                             text.setHoverEvent(Text.hover(Text.builder("/friends").color(Colors.PINK).create()));
                             text.setClickEvent(Text.click("/friends"));
                             thrower.sendMessage(text);
+                            if (thrower.hasPermission("fam.debug")) {
+                                thrower.sendMessage(Text.builder("Debug Friendship: " + row.getFriendship()).color(Colors.DARK_GRAY).create());
+                            }
                             thrower.playSound(thrower.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
                             thrower.getWorld().spawnParticle(Particle.HEART, thrower.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
                             if (throwerProgress != null && throwerProgress.isRewardAvailable()) {
