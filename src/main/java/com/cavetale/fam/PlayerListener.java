@@ -60,11 +60,13 @@ public final class PlayerListener implements Listener {
         Database.db().scheduleAsyncTask(() -> {
                 boolean res = Database.dailyGift(a, b, Timer.getDayId());
                 if (!res) return;
-                final int amount = 4;
+                final int amount = 5;
                 SQLFriends row = Database.findFriends(a, b);
                 Database.increaseFriendship(a, b, amount);
                 ComponentBuilder hearts = new ComponentBuilder();
-                int heartCount = row.getHearts(row.getFriendship() + 4);
+                int oldFriendship = row.getFriendship();
+                int newFriendship = oldFriendship + amount;
+                int heartCount = row.getHearts(newFriendship);
                 boolean won = row == null || row.getHearts() != heartCount;
                 for (int i = 0; i < heartCount - 1; i += 1) {
                     hearts.append(Text.HEART_ICON).color(Colors.PINK);
@@ -89,7 +91,8 @@ public final class PlayerListener implements Listener {
                             text.setClickEvent(Text.click("/friends"));
                             player.sendMessage(text);
                             if (player.hasPermission("fam.debug")) {
-                                player.sendMessage(Text.builder("Debug Friendship: " + row.getFriendship()).color(Colors.DARK_GRAY).create());
+                                player.sendMessage(Text.builder("Debug Friendship: " + oldFriendship + " => " + newFriendship)
+                                                   .color(Colors.DARK_GRAY).create());
                             }
                             if (playerProgress != null && playerProgress.isRewardAvailable()) {
                                 player.sendMessage(Text.builder("A new valentine reward is available! See ").color(Colors.PINK)
@@ -108,7 +111,8 @@ public final class PlayerListener implements Listener {
                             text.setClickEvent(Text.click("/friends"));
                             thrower.sendMessage(text);
                             if (thrower.hasPermission("fam.debug")) {
-                                thrower.sendMessage(Text.builder("Debug Friendship: " + row.getFriendship()).color(Colors.DARK_GRAY).create());
+                                thrower.sendMessage(Text.builder("Debug Friendship: " + oldFriendship + " => " + newFriendship)
+                                                    .color(Colors.DARK_GRAY).create());
                             }
                             thrower.playSound(thrower.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
                             thrower.getWorld().spawnParticle(Particle.HEART, thrower.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
