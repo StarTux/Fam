@@ -178,7 +178,7 @@ public final class ProfileDialogue {
             });
         // Birthdays
         for (int i = 0; i < birthdays.size() && i < 9; i += 1) {
-            SQLBirthday theBirthday = birthdays.get(0);
+            SQLBirthday theBirthday = birthdays.get(i);
             PlayerProfile birthdayProfile = Database.getCachedPlayerProfile(theBirthday.getPlayer());
             if (birthdayProfile == null) continue;
             ItemStack icon = Items.makeSkull(birthdayProfile);
