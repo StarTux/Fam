@@ -50,7 +50,7 @@ public final class FamPlugin extends JavaPlugin {
     private WeddingRingListener weddingRingListener = new WeddingRingListener(this);
     private MarriageListener marriageListener = new MarriageListener(this);
     private SQLDatabase database = new SQLDatabase(this);
-    private List<Reward> rewards;
+    private List<Reward> rewardList;
     private boolean doDaybreak;
 
     @Override
@@ -79,38 +79,44 @@ public final class FamPlugin extends JavaPlugin {
             Database.storePlayerProfileAsync(player).fetchPlayerSkinAsync();
         }
         Gui.enable(this);
-        rewards = new ArrayList<>(10);
-        // 1
-        rewards.add(new Reward().item(new ItemStack(Material.DIAMOND, 4), 5));
-        // 2
-        rewards.add(new Reward()
-                    .item(new ItemStack(Material.MELON_SLICE, 16), 5)
-                    .item(new ItemStack(Material.APPLE, 16), 6));
-        // 3
-        rewards.add(new Reward().item(new ItemStack(Material.COOKIE, 16), 5));
-        // 4
-        rewards.add(new Reward().item(new ItemStack(Material.PUMPKIN_PIE, 16), 5));
-        // 5
-        rewards.add(new Reward()
-                    .item(new ItemStack(Material.NETHER_STAR))
-                    .item(new ItemStack(Material.OBSIDIAN), 4));
-        // 6
-        rewards.add(new Reward().item(new ItemStack(Material.CAKE), 11));
-        // 7
-        rewards.add(new Reward()
-                    .item(new ItemStack(Material.DIAMOND))
-                    .item(Mytems.KITTY_COIN.createItemStack(), 4)
-                    .item(new ItemStack(Material.MELON_SLICE, 16), 6));
-        // 8
-        rewards.add(new Reward().item(new ItemStack(Material.GOLDEN_APPLE), 27));
-        // 9
-        rewards.add(new Reward().item(new ItemStack(Material.NETHERITE_INGOT), 5));
-        // 10
-        rewards.add(new Reward().item(Mytems.WEDDING_RING.createItemStack()));
-        for (int i = 0; i < 4; i += 1) {
-            rewards.add(new Reward().item(new ItemStack(Material.DIAMOND), 3 * 9));
-            rewards.add(new Reward().item(new ItemStack(Material.EMERALD), 3 * 9));
+    }
+
+    public List<Reward> getRewardList() {
+        if (rewardList == null) {
+            rewardList = new ArrayList<>(10);
+            // 1
+            rewardList.add(new Reward().item(new ItemStack(Material.DIAMOND, 4), 5));
+            // 2
+            rewardList.add(new Reward()
+                        .item(new ItemStack(Material.MELON_SLICE, 16), 5)
+                        .item(new ItemStack(Material.APPLE, 16), 6));
+            // 3
+            rewardList.add(new Reward().item(new ItemStack(Material.COOKIE, 16), 5));
+            // 4
+            rewardList.add(new Reward().item(new ItemStack(Material.PUMPKIN_PIE, 16), 5));
+            // 5
+            rewardList.add(new Reward()
+                        .item(new ItemStack(Material.NETHER_STAR))
+                        .item(new ItemStack(Material.OBSIDIAN), 4));
+            // 6
+            rewardList.add(new Reward().item(new ItemStack(Material.CAKE), 11));
+            // 7
+            rewardList.add(new Reward()
+                        .item(new ItemStack(Material.DIAMOND))
+                        .item(Mytems.KITTY_COIN.createItemStack(), 4)
+                        .item(new ItemStack(Material.MELON_SLICE, 16), 6));
+            // 8
+            rewardList.add(new Reward().item(new ItemStack(Material.GOLDEN_APPLE), 27));
+            // 9
+            rewardList.add(new Reward().item(new ItemStack(Material.NETHERITE_INGOT), 5));
+            // 10
+            rewardList.add(new Reward().item(Mytems.WEDDING_RING.createItemStack()));
+            for (int i = 0; i < 4; i += 1) {
+                rewardList.add(new Reward().item(new ItemStack(Material.DIAMOND), 3 * 9));
+                rewardList.add(new Reward().item(new ItemStack(Material.EMERALD), 3 * 9));
+            }
         }
+        return rewardList;
     }
 
     @Override
@@ -332,7 +338,7 @@ public final class FamPlugin extends JavaPlugin {
         int score = row != null ? row.getScore() : 0;
         int available = row != null ? row.getAvailable() : 0;
         Gui gui = new Gui(instance);
-        int size = instance.rewards.size();
+        int size = instance.getRewardList().size();
         int guiSize = ((size - 1) / 9) * 9 + 18;
         gui.size(guiSize);
         gui.title(ChatColor.RED + "Valentine Score " + score);
@@ -390,7 +396,7 @@ public final class FamPlugin extends JavaPlugin {
      * Must be called AFTER the progress was claimed in the database.
      */
     public static Gui giveReward(Player player, int index, boolean isForReal) {
-        Reward reward = instance.rewards.get(index);
+        Reward reward = instance.getRewardList().get(index);
         Gui gui = new Gui(instance);
         gui.size(3 * 9);
         gui.title(isForReal
