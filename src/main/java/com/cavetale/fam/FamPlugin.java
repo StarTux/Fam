@@ -220,7 +220,6 @@ public final class FamPlugin extends JavaPlugin {
         if (!player.isValid()) return null;
         if (friendsList.isEmpty()) {
             player.sendMessage(ChatColor.RED + "No friends to show");
-            return null;
         }
         Gui gui = new Gui(instance);
         int pageSize = 3 * 9;
