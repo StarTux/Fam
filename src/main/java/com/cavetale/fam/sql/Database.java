@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -38,13 +40,33 @@ public final class Database {
         return res;
     }
 
-    public static boolean increaseFriendship(UUID a, UUID b, int amount) {
+    public static boolean increaseFriendship(@NonNull UUID a, @NonNull UUID b, int amount) {
+        if (Objects.equals(a, b)) throw new IllegalArgumentException("Duplicate UUID: " + a);
         UUID[] arr = sorted(a, b);
         String sql = "INSERT INTO `" + db().getTable(SQLFriends.class).getTableName() + "`"
             + " (player_a, player_b, friendship)"
             + " VALUES ('" + arr[0] + "', '" + arr[1] + "', " + Math.min(100, amount) + ")"
             + " ON DUPLICATE KEY UPDATE `friendship` = LEAST(100, `friendship` + " + amount + ")";
         return 0 != db().executeUpdate(sql);
+    }
+
+    /**
+     * Increase mutual friendship in a group, exactly once unique pair
+     * of players.
+     */
+    public static int increaseFriendship(final Set<UUID> set, final int amount) {
+        int count = 0;
+        UUID[] array = set.toArray(new UUID[0]);
+        for (int i = 0; i < array.length - 1; i += 1) {
+            for (int j = i + 1; j < array.length; j += 1) {
+                UUID a = array[i];
+                UUID b = array[j];
+                if (increaseFriendship(a, b, amount)) {
+                    count += 1;
+                }
+            }
+        }
+        return count;
     }
 
     public static void setRelation(SQLFriends row, UUID you, Relation relation) {
