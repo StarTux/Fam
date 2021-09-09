@@ -37,6 +37,8 @@ public final class PlayerListener implements Listener {
     void onPluginPlayer(PluginPlayerQuery query) {
         if (query.getName() == PluginPlayerQuery.Name.FRIEND_COUNT) {
             PluginPlayerQuery.Name.FRIEND_COUNT.respond(query, plugin, Database.countFriendsCached(query.getPlayer()));
+        } else if (query.getName() == PluginPlayerQuery.Name.DID_ENTER_BIRTHDAY) {
+            PluginPlayerQuery.Name.DID_ENTER_BIRTHDAY.respond(query, plugin, Database.isBirthdayCached(query.getPlayer()));
         }
     }
 }

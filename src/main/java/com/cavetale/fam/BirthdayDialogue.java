@@ -1,6 +1,8 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.DefaultFont;
+import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.util.Gui;
 import com.cavetale.fam.util.Items;
@@ -121,6 +123,8 @@ public final class BirthdayDialogue {
                 String birthdayName = Objects.requireNonNull(month).getDisplayName(TextStyle.FULL, LOCALE) + " " + day;
                 player.sendMessage(Component.text("Your birthday was set to " + birthdayName + "!", COLOR));
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.25f, 2.0f);
+                Database.fillCacheAsync(player);
+                PluginPlayerEvent.Name.ENTER_BIRTHDAY.call(plugin, player);
             });
     }
 }

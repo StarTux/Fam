@@ -19,13 +19,19 @@ import org.bukkit.entity.Player;
 
 public final class Database {
     private Database() { }
-    private static Map<UUID, SQLProfile> profileCache = new HashMap<>(); // never flushed
-    private static Map<UUID, Integer> scoreCache = new HashMap<>();
-    private static Map<UUID, UUID> marriedCache = new HashMap<>();
-    private static Map<UUID, Set<UUID>> friendsCache = new HashMap<>();
+    private static final Map<UUID, SQLProfile> PROFILE_CACHE = new HashMap<>(); // never flushed
+    private static final Map<UUID, Cache> PLAYER_CACHE = new HashMap<>();
 
     public static SQLDatabase db() {
         return FamPlugin.getInstance().getDatabase();
+    }
+
+    private static final class Cache {
+        protected int score;
+        protected UUID married;
+        protected final Set<UUID> friends = new HashSet<>();
+        protected int birthdayMonth;
+        protected int birthdayDay;
     }
 
     public static boolean init() {
@@ -132,7 +138,7 @@ public final class Database {
 
     public static SQLProfile storePlayerProfileAsync(Player player) {
         UUID uuid = player.getUniqueId();
-        SQLProfile row = profileCache.get(uuid);
+        SQLProfile row = PROFILE_CACHE.get(uuid);
         if (row != null) {
             if (!row.load(player.getPlayerProfile())) return row;
             row.pack();
@@ -141,7 +147,7 @@ public final class Database {
         }
         row = new SQLProfile(uuid, player.getName());
         row.load(player.getPlayerProfile());
-        profileCache.put(uuid, row);
+        PROFILE_CACHE.put(uuid, row);
         row.pack();
         db().insertIgnoreAsync(row, null);
         return row;
@@ -150,7 +156,7 @@ public final class Database {
     public static void loadProfileCacheAsync() {
         db().find(SQLProfile.class).findListAsync(list -> {
                 for (SQLProfile row : list) {
-                    profileCache.put(row.getUuid(), row);
+                    PROFILE_CACHE.put(row.getUuid(), row);
                 }
             });
     }
@@ -170,7 +176,7 @@ public final class Database {
 
     public static PlayerProfile getCachedPlayerProfile(UUID uuid) {
         PlayerProfile profile = Bukkit.createProfile(uuid);
-        SQLProfile row = profileCache.get(uuid);
+        SQLProfile row = PROFILE_CACHE.get(uuid);
         if (row == null) return profile;
         row.fill(profile);
         return profile;
@@ -182,7 +188,8 @@ public final class Database {
             .findUnique();
         if (row != null) {
             Bukkit.getScheduler().runTask(FamPlugin.getInstance(), () -> {
-                    scoreCache.put(uuid, row.getScore());
+                    Cache cache = PLAYER_CACHE.get(uuid);
+                    if (cache != null) cache.score = row.getScore();
                 });
         }
         return row;
@@ -204,62 +211,74 @@ public final class Database {
         return 0 != db().executeUpdate(sql);
     }
 
-    public static int getCachedScore(UUID uuid) {
-        return scoreCache.computeIfAbsent(uuid, u -> 0);
-    }
-
     public static void fillCacheAsync(Player player) {
         final UUID uuid = player.getUniqueId();
         db().scheduleAsyncTask(() -> {
-                clearCache(uuid);
+                final Cache cache = new Cache();
                 List<SQLFriends> friends = findFriendsList(uuid, Relation.FRIEND);
-                Set<UUID> set = new HashSet<>();
                 for (SQLFriends row : friends) {
-                    set.add(row.getOther(uuid));
+                    cache.friends.add(row.getOther(uuid));
                 }
-                friendsCache.put(uuid, set);
                 List<SQLFriends> married = findFriendsList(uuid, Relation.MARRIED);
-                if (!married.isEmpty()) marriedCache.put(uuid, married.get(0).getOther(uuid));
+                if (!married.isEmpty()) {
+                    cache.married = married.get(0).getOther(uuid);
+                }
+                SQLBirthday birthday = findBirthday(uuid);
+                if (birthday != null) {
+                    cache.birthdayMonth = birthday.getMonth();
+                    cache.birthdayDay = birthday.getDay();
+                }
                 SQLProgress progress = findProgress(uuid);
-                scoreCache.put(uuid, progress != null ? progress.getScore() : 0);
+                cache.score = progress != null ? progress.getScore() : 0;
+                Bukkit.getScheduler().runTask(FamPlugin.getInstance(), () -> {
+                        if (!player.isOnline()) return;
+                        PLAYER_CACHE.put(uuid, cache);
+                    });
             });
     }
 
     public static void clearCache(UUID uuid) {
-        friendsCache.remove(uuid);
-        marriedCache.remove(uuid);
-        scoreCache.remove(uuid);
+        PLAYER_CACHE.remove(uuid);
+    }
+
+    private static Cache getCache(Player player) {
+        return PLAYER_CACHE.computeIfAbsent(player.getUniqueId(), u -> new Cache());
+    }
+
+    public static int getCachedScore(UUID uuid) {
+        Cache cache = PLAYER_CACHE.get(uuid);
+        return cache != null ? cache.score : 0;
     }
 
     public static boolean isMarriageCached(Player a, Player b) {
-        return Objects.equals(marriedCache.get(a.getUniqueId()), b.getUniqueId());
+        return Objects.equals(getCache(a).married, b.getUniqueId());
     }
 
     public static UUID getMarriageCached(Player a) {
-        return marriedCache.get(a.getUniqueId());
+        return getCache(a).married;
     }
 
     public static boolean isFriendsCached(Player a, Player b) {
-        Set<UUID> cached = friendsCache.get(a);
-        if (cached == null) return false;
-        return cached.contains(b);
+        return getCache(a).friends.contains(b.getUniqueId());
     }
 
     public static Set<UUID> getFriendsCached(Player player) {
-        return friendsCache.computeIfAbsent(player.getUniqueId(), u -> new HashSet<>());
+        return getCache(player).friends;
     }
 
     public static int countFriendsCached(Player player) {
-        final UUID uuid = player.getUniqueId();
-        Set<UUID> friends = friendsCache.get(uuid);
-        return (marriedCache.containsKey(uuid) ? 1 : 0)
-            + (friends != null ? friends.size() : 0);
+        return getFriendsCached(player).size();
     }
 
     public static Player getCachedMarriage(Player player) {
-        UUID uuid = marriedCache.get(player.getUniqueId());
-        if (uuid == null) return null;
-        return Bukkit.getPlayer(uuid);
+        UUID uuid = getMarriageCached(player);
+        return uuid != null
+            ? Bukkit.getPlayer(uuid)
+            : null;
+    }
+
+    public static boolean isBirthdayCached(Player player) {
+        return getCache(player).birthdayMonth > 0;
     }
 
     public static void friendLogAsync(UUID player, UUID target, Relation relation, String comment) {
