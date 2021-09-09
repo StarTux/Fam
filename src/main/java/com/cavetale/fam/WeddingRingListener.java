@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -159,5 +160,10 @@ public final class WeddingRingListener implements Listener {
     void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getDamager().getPersistentDataContainer().has(fireworkKey, PersistentDataType.BYTE))) return;
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    void onPlayerQuit(PlayerQuitEvent event) {
+        clearRequest(event.getPlayer());
     }
 }

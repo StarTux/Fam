@@ -7,8 +7,15 @@ import com.cavetale.fam.sql.Database;
 import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public final class FamCommand extends AbstractCommand<FamPlugin> {
     protected FamCommand(final FamPlugin plugin) {
@@ -26,9 +33,9 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         rootNode.addChild("compute").denyTabCompletion()
             .description("Compute possible daybreak")
             .senderCaller(this::daybreak);
-        rootNode.addChild("config").denyTabCompletion()
-            .description("Save default config")
-            .senderCaller(this::config);
+        rootNode.addChild("cache").arguments("<player>")
+            .description("Dump the cache")
+            .senderCaller(this::cache);
         rootNode.addChild("friendship").arguments("<amount> <playerA> <playerB...>")
             .description("Increase friendship between 2 or more players")
             .completers(CommandArgCompleter.integer(i -> i > 0),
@@ -61,10 +68,29 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         return true;
     }
 
-    boolean config(CommandSender sender, String[] args) {
-        if (args.length != 0) return false;
-        plugin.saveDefaultConfig();
-        sender.sendMessage("Saved default config to disk unless it already existed.");
+    boolean cache(CommandSender sender, String[] args) {
+        if (args.length != 1) return false;
+        Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) throw new CommandWarn("Player not online: " + args[0]);
+        Set<UUID> friends = Database.getFriendsCached(target);
+        UUID married = Database.getMarriageCached(target);
+        sender.sendMessage(TextComponent.ofChildren(new Component[] {
+                    Component.text("Cache of " + target.getName(), NamedTextColor.YELLOW),
+                    Component.newline(),
+                    Component.text("Friends ", NamedTextColor.GRAY),
+                    Component.text("" + Database.countFriendsCached(target) + " ",
+                                   NamedTextColor.YELLOW),
+                    Component.text(friends.stream()
+                                   .map(uuid -> PlayerCache.nameForUuid(uuid))
+                                   .collect(Collectors.joining(" ")),
+                                   NamedTextColor.WHITE),
+                    Component.newline(),
+                    Component.text("Married ", NamedTextColor.GRAY),
+                    Component.text(married != null
+                                   ? PlayerCache.nameForUuid(married)
+                                   : "No",
+                                   NamedTextColor.GRAY),
+                }));
         return true;
     }
 

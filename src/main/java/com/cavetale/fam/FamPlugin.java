@@ -12,6 +12,7 @@ import com.cavetale.fam.util.Items;
 import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
 import com.destroystokyo.paper.profile.PlayerProfile;
+import com.winthier.connect.Connect;
 import com.winthier.playercache.PlayerCache;
 import com.winthier.sql.SQLDatabase;
 import java.util.ArrayList;
@@ -47,7 +48,6 @@ public final class FamPlugin extends JavaPlugin {
     private DivorceCommand divorceCommand = new DivorceCommand(this);
     private ProfileCommand profileCommand = new ProfileCommand(this);
     private PlayerListener eventListener = new PlayerListener(this);
-    private WeddingRingListener weddingRingListener = new WeddingRingListener(this);
     private MarriageListener marriageListener = new MarriageListener(this);
     private SQLDatabase database = new SQLDatabase(this);
     private List<Reward> rewardList;
@@ -64,15 +64,20 @@ public final class FamPlugin extends JavaPlugin {
         divorceCommand.enable();
         profileCommand.enable();
         eventListener.enable();
-        weddingRingListener.enable();
         marriageListener.enable();
         new SidebarListener(this).enable();
         Database.init();
         Timer.enable();
-        doDaybreak = getConfig().getBoolean("DoDaybreak");
-        if (doDaybreak) {
-            getLogger().info("Daybreak computation enabled!");
+        final String serverName = Connect.getInstance().getServerName();
+        if (List.of("cavetale", "raid").contains(serverName)) {
+            new GiftListener(this).enable();
+            new WeddingRingListener(this).enable();
+            getLogger().info("Survival features enabled: Gifts, Wedding Ring");
+        }
+        if (serverName.equals("cavetale")) {
             computePossibleDaybreak();
+            doDaybreak = true;
+            getLogger().info("Daybreak enabled");
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
             Database.fillCacheAsync(player);

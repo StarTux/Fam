@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Colors;
@@ -84,6 +85,9 @@ public final class FriendCommand implements TabExecutor {
                                .event(Text.click("/friends"))
                                .create());
             target.playSound(target.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
+            PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, player);
+            PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, target);
+            Database.fillCacheAsync(player);
         } else {
             requests.put(player.getUniqueId(), target.getUniqueId());
             target.sendMessage(Text.builder(player.getName() + " sent you a friend request! Click here to accept").color(Colors.PINK)

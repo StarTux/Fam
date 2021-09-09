@@ -123,6 +123,7 @@ public final class SQLProfile {
         profile.setProperty(tag.textures.toProfileProperty("textures"));
     }
 
+    @SuppressWarnings("unchecked")
     public static String getTextureUrl(String textureBase) {
         if (textureBase == null) return null;
         byte[] bs = Base64.getDecoder().decode(textureBase);

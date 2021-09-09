@@ -7,6 +7,7 @@ import com.winthier.sql.SQLDatabase;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +22,7 @@ public final class Database {
     private static Map<UUID, SQLProfile> profileCache = new HashMap<>(); // never flushed
     private static Map<UUID, Integer> scoreCache = new HashMap<>();
     private static Map<UUID, UUID> marriedCache = new HashMap<>();
+    private static Map<UUID, Set<UUID>> friendsCache = new HashMap<>();
 
     public static SQLDatabase db() {
         return FamPlugin.getInstance().getDatabase();
@@ -207,8 +209,15 @@ public final class Database {
     }
 
     public static void fillCacheAsync(Player player) {
-        UUID uuid = player.getUniqueId();
+        final UUID uuid = player.getUniqueId();
         db().scheduleAsyncTask(() -> {
+                clearCache(uuid);
+                List<SQLFriends> friends = findFriendsList(uuid, Relation.FRIEND);
+                Set<UUID> set = new HashSet<>();
+                for (SQLFriends row : friends) {
+                    set.add(row.getOther(uuid));
+                }
+                friendsCache.put(uuid, set);
                 List<SQLFriends> married = findFriendsList(uuid, Relation.MARRIED);
                 if (!married.isEmpty()) marriedCache.put(uuid, married.get(0).getOther(uuid));
                 SQLProgress progress = findProgress(uuid);
@@ -216,14 +225,35 @@ public final class Database {
             });
     }
 
-    public static void clearCacheAsync(Player player) {
-        UUID uuid = player.getUniqueId();
+    public static void clearCache(UUID uuid) {
+        friendsCache.remove(uuid);
         marriedCache.remove(uuid);
         scoreCache.remove(uuid);
     }
 
     public static boolean isMarriageCached(Player a, Player b) {
         return Objects.equals(marriedCache.get(a.getUniqueId()), b.getUniqueId());
+    }
+
+    public static UUID getMarriageCached(Player a) {
+        return marriedCache.get(a.getUniqueId());
+    }
+
+    public static boolean isFriendsCached(Player a, Player b) {
+        Set<UUID> cached = friendsCache.get(a);
+        if (cached == null) return false;
+        return cached.contains(b);
+    }
+
+    public static Set<UUID> getFriendsCached(Player player) {
+        return friendsCache.computeIfAbsent(player.getUniqueId(), u -> new HashSet<>());
+    }
+
+    public static int countFriendsCached(Player player) {
+        final UUID uuid = player.getUniqueId();
+        Set<UUID> friends = friendsCache.get(uuid);
+        return (marriedCache.containsKey(uuid) ? 1 : 0)
+            + (friends != null ? friends.size() : 0);
     }
 
     public static Player getCachedMarriage(Player player) {
