@@ -1,5 +1,6 @@
 package com.cavetale.fam.sql;
 
+import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.FamPlugin;
 import com.cavetale.fam.Relation;
 import com.destroystokyo.paper.profile.PlayerProfile;
@@ -233,6 +234,7 @@ public final class Database {
                 Bukkit.getScheduler().runTask(FamPlugin.getInstance(), () -> {
                         if (!player.isOnline()) return;
                         PLAYER_CACHE.put(uuid, cache);
+                        PluginPlayerEvent.Name.PLAYER_SESSION_LOADED.call(FamPlugin.getInstance(), player);
                     });
             });
     }
