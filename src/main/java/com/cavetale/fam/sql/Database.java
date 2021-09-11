@@ -63,7 +63,7 @@ public final class Database {
      * Increase mutual friendship in a group, exactly once unique pair
      * of players.
      */
-    public static int increaseFriendship(final Set<UUID> set, final int amount) {
+    public static int increaseMutualFriendship(final Set<UUID> set, final int amount) {
         int count = 0;
         UUID[] array = set.toArray(new UUID[0]);
         for (int i = 0; i < array.length - 1; i += 1) {
@@ -73,6 +73,20 @@ public final class Database {
                 if (increaseFriendship(a, b, amount)) {
                     count += 1;
                 }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Increase friendship between a main player and a group of friends.
+     */
+    public static int increaseSingleFriendship(final UUID main, final Set<UUID> friends, final int amount) {
+        if (friends.contains(main)) throw new IllegalArgumentException("Duplicate UUID: " + main);
+        int count = 0;
+        for (UUID friend : friends) {
+            if (increaseFriendship(main, friend, amount)) {
+                count += 1;
             }
         }
         return count;
