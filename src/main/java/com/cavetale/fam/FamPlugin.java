@@ -39,7 +39,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
 public final class FamPlugin extends JavaPlugin {
-    @Getter private static FamPlugin instance;
+    @Getter protected static FamPlugin instance;
     private FamCommand famCommand = new FamCommand(this);
     private FriendsCommand friendsCommand = new FriendsCommand(this);
     private ValentineCommand valentineCommand = new ValentineCommand(this);
