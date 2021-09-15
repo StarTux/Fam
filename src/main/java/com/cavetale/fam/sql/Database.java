@@ -227,16 +227,19 @@ public final class Database {
     }
 
     public static void fillCacheAsync(Player player) {
-        final UUID uuid = player.getUniqueId();
+        fillCacheAsync(player.getUniqueId());
+    }
+
+    public static void fillCacheAsync(UUID uuid) {
         db().scheduleAsyncTask(() -> {
                 final Cache cache = new Cache();
-                List<SQLFriends> friends = findFriendsList(uuid, Relation.FRIEND);
-                for (SQLFriends row : friends) {
-                    cache.friends.add(row.getOther(uuid));
-                }
-                List<SQLFriends> married = findFriendsList(uuid, Relation.MARRIED);
-                if (!married.isEmpty()) {
-                    cache.married = married.get(0).getOther(uuid);
+                for (SQLFriends row : findFriendsList(uuid)) {
+                    Relation relation = row.getRelationEnum();
+                    if (relation == Relation.FRIEND) {
+                        cache.friends.add(row.getOther(uuid));
+                    } else if (relation == Relation.MARRIED) {
+                        cache.married = row.getOther(uuid);
+                    }
                 }
                 SQLBirthday birthday = findBirthday(uuid);
                 if (birthday != null) {
@@ -246,7 +249,8 @@ public final class Database {
                 SQLProgress progress = findProgress(uuid);
                 cache.score = progress != null ? progress.getScore() : 0;
                 Bukkit.getScheduler().runTask(FamPlugin.getInstance(), () -> {
-                        if (!player.isOnline()) return;
+                        Player player = Bukkit.getPlayer(uuid);
+                        if (player == null) return;
                         PLAYER_CACHE.put(uuid, cache);
                         PluginPlayerEvent.Name.PLAYER_SESSION_LOADED.call(FamPlugin.getInstance(), player);
                     });
