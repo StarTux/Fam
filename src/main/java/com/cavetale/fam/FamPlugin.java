@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.DefaultFont;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
@@ -264,6 +265,7 @@ public final class FamPlugin extends JavaPlugin {
                 openFriendsGui(player, list, 1);
             });
         gui.open(player);
+        PluginPlayerEvent.Name.VIEW_FRIENDS_LIST.call(instance, player);
         return gui;
     }
 
