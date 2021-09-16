@@ -2,47 +2,32 @@ package com.cavetale.fam.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import org.bukkit.ChatColor;
 
 public final class Text {
     public static final String HEART_ICON = "\u2764";
+    public static final String HEARTS;
+
     private Text() { }
 
-    public static HoverEvent hover(String msg) {
-        BaseComponent[] lore = TextComponent.fromLegacyText(msg);
-        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, lore);
-    }
-
-    public static HoverEvent hover(BaseComponent[] lore) {
-        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, lore);
-    }
-
-    public static ClickEvent click(String cmd) {
-        return new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmd);
-    }
-
-    public static ComponentBuilder builder(String txt) {
-        return new ComponentBuilder(txt);
-    }
-
-    public static TextComponent extra(BaseComponent[] extra) {
-        return new TextComponent(extra);
-    }
-
-    public static BaseComponent[] toHeartString(int hearts) {
-        ComponentBuilder cb = new ComponentBuilder("").italic(false);
-        for (int i = 0; i < hearts; i += 1) {
-            cb.append(HEART_ICON).color(Colors.PINK);
+    static {
+        String h = "";
+        for (int i = 0; i < 10; i += 1) {
+            h += HEART_ICON;
         }
-        for (int i = hearts; i < 5; i += 1) {
-            cb.append(HEART_ICON).color(Colors.DARK_GRAY);
-        }
-        return cb.create();
+        HEARTS = h;
+    }
+
+    public static Component toHeartString(int hearts) {
+        if (hearts < 0 || hearts > 5) throw new IllegalArgumentException("hearts=" + hearts);
+        String full = HEARTS.substring(0, hearts);
+        String empty = HEARTS.substring(0, 5 - hearts);
+        return TextComponent.ofChildren(new Component[] {
+                Component.text(full, Colors.HOTPINK),
+                Component.text(empty, Colors.DARK_GRAY),
+            });
     }
 
     public static List<String> wrapLine(String what, int maxLineLength) {
@@ -58,7 +43,7 @@ public final class Text {
             if (lineLength + wordLength + 1 > maxLineLength) {
                 String lineStr = lastColors + line.toString();
                 lines.add(lineStr);
-                lastColors = org.bukkit.ChatColor.getLastColors(lineStr);
+                lastColors = ChatColor.getLastColors(lineStr);
                 line = new StringBuilder(word);
                 lineLength = wordLength;
             } else {

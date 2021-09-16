@@ -2,8 +2,8 @@ package com.cavetale.fam;
 
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.util.Colors;
-import com.cavetale.fam.util.Text;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -49,7 +49,7 @@ public final class MarriageListener implements Listener {
                 player.addPassenger(target);
                 player.getWorld().spawnParticle(Particle.HEART, player.getEyeLocation(), 3, 0.5f, 0.5f, 0.5f, 0.0);
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_HORSE_SADDLE, SoundCategory.PLAYERS, 1.0f, 2.0f);
-                player.sendActionBar(Text.builder("You lift " + target.getName() + ". Sneak to drop them!").color(Colors.PINK).create());
+                player.sendActionBar(Component.text("You lift " + target.getName() + ". Sneak to drop them!", Colors.HOTPINK));
             });
         event.setCancelled(true);
     }
@@ -91,8 +91,8 @@ public final class MarriageListener implements Listener {
                 }
                 target.getWorld().spawnParticle(Particle.HEART, target.getEyeLocation(), 3, 0.5f, 0.5f, 0.5f, 0.0);
                 player.getWorld().spawnParticle(Particle.HEART, player.getEyeLocation(), 3, 0.5f, 0.5f, 0.5f, 0.0);
-                player.sendActionBar(Text.builder("You feed " + target.getName()).color(Colors.PINK).create());
-                target.sendActionBar(Text.builder(player.getName() + " feeds you").color(Colors.PINK).create());
+                player.sendActionBar(Component.text("You feed " + target.getName(), Colors.HOTPINK));
+                target.sendActionBar(Component.text(player.getName() + " feeds you", Colors.HOTPINK));
                 player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 0.5f);
                 target.playSound(target.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 0.5f);
             });

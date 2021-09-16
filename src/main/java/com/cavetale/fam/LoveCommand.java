@@ -6,7 +6,8 @@ import com.cavetale.fam.util.Text;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Particle;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,13 +32,13 @@ public final class LoveCommand implements TabExecutor {
         Player player = (Player) sender;
         Player target = Database.getCachedMarriage(player);
         if (target == null) {
-            player.sendMessage(ChatColor.RED + "No spouse in sight");
+            player.sendMessage(Component.text("No spouse in sight", NamedTextColor.RED));
             return true;
         }
         player.getWorld().spawnParticle(Particle.HEART, player.getEyeLocation(), 4, 0.5f, 0.5f, 0.5f, 0.0);
         target.getWorld().spawnParticle(Particle.HEART, target.getEyeLocation(), 4, 0.5f, 0.5f, 0.5f, 0.0);
-        player.sendMessage(Text.builder("You send " + target.getName() + " your love " + Text.HEART_ICON).color(Colors.PINK).create());
-        target.sendActionBar(Text.builder(player.getName() + " sends you their love " + Text.HEART_ICON).color(Colors.PINK).create());
+        player.sendMessage(Component.text("You send " + target.getName() + " your love " + Text.HEART_ICON, Colors.HOTPINK));
+        target.sendActionBar(Component.text(player.getName() + " sends you their love " + Text.HEART_ICON, Colors.HOTPINK));
         return true;
     }
 

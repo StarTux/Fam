@@ -16,7 +16,6 @@ import com.winthier.connect.Connect;
 import com.winthier.playercache.PlayerCache;
 import com.winthier.sql.SQLDatabase;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -24,9 +23,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -147,12 +143,12 @@ public final class FamPlugin extends JavaPlugin {
 
     public static ItemStack makeTodaysGiftIcon() {
         return Items.button(getTodaysGift(),
-                            Arrays.asList(Text.builder("Today's Friendship Gift").color(Colors.PINK).italic(false).create(),
-                                          Text.builder("One Point per Player.").color(Colors.YELLOW).italic(false).create(),
-                                          Text.builder("New Item every Day.").color(Colors.YELLOW).italic(false).create(),
-                                          Text.builder("").create(),
-                                          Text.builder("Click to view only people").color(Colors.SILVER).italic(false).create(),
-                                          Text.builder("missing a gift from you.").color(Colors.SILVER).italic(false).create()));
+                            List.of(Component.text("Today's Friendship Gift", Colors.HOTPINK),
+                                    Component.text("One Point per Player.", Colors.YELLOW),
+                                    Component.text("New Item every Day.", Colors.YELLOW),
+                                    Component.empty(),
+                                    Component.text("Click to view only people", Colors.SILVER),
+                                    Component.text("missing a gift from you.", Colors.SILVER)));
     }
 
     public static ItemStack makeSkull(Player player, SQLFriends row) {
@@ -165,32 +161,32 @@ public final class FamPlugin extends JavaPlugin {
         String name = row.getCachedName();
         if (name == null) name = PlayerCache.nameForUuid(friendUuid);
         if (name == null) name = profile.getName();
-        ChatColor color;
+        TextColor color;
         if (relation == null) {
-            color = Colors.WHITE;
+            color = NamedTextColor.WHITE;
         } else {
             switch (relation) {
-            case FRIEND: color = Colors.PINK; break;
-            case MARRIED: color = Colors.ORANGE; break;
+            case FRIEND: color = Colors.HOTPINK; break;
+            case MARRIED: color = Colors.GOLD; break;
             case CHILD: case PARENT: color = Colors.BLUE; break;
-            default: color = Colors.WHITE;
+            default: color = NamedTextColor.WHITE;
             }
         }
-        meta.setDisplayNameComponent(Text.builder(name).color(color).italic(false).create());
-        List<BaseComponent[]> lore = new ArrayList<>();
-        lore.add(Text.toHeartString(row.getHearts()));
+        List<Component> text = new ArrayList<>();
+        text.add(Component.text(name, color));
+        text.add(Text.toHeartString(row.getHearts()));
         if (player.hasPermission("fam.debug")) {
-            lore.add(Text.builder("Debug Friendship: " + row.getFriendship()).color(Colors.DARK_GRAY).create());
+            text.add(Component.text("Debug Friendship: " + row.getFriendship(), Colors.DARK_GRAY));
         }
         if (relation != null) {
-            lore.add(Text.builder(relation.humanName).color(Colors.PINK).italic(false).create());
+            text.add(Component.text(relation.humanName, Colors.HOTPINK));
         }
         if (row.dailyGiftGiven()) {
-            lore.add(Text.builder("\u2611 Daily Gift").color(Colors.PINK).italic(false).create());
+            text.add(Component.text("\u2611 Daily Gift", Colors.HOTPINK));
         } else {
-            lore.add(Text.builder("\u2610 Daily Gift").color(Colors.DARK_GRAY).italic(false).create());
+            text.add(Component.text("\u2610 Daily Gift", Colors.DARK_GRAY));
         }
-        meta.setLoreComponents(lore);
+        Items.text(meta, text);
         item.setItemMeta(meta);
         return item;
     }
@@ -202,7 +198,7 @@ public final class FamPlugin extends JavaPlugin {
         meta.setPlayerProfile(profile);
         String name = PlayerCache.nameForUuid(uuid);
         if (name == null) name = profile.getName();
-        meta.setDisplayNameComponent(Text.builder(name).color(Colors.WHITE).italic(false).create());
+        Items.text(meta, List.of(Component.text(name, NamedTextColor.WHITE)));
         item.setItemMeta(meta);
         return item;
     }
@@ -224,7 +220,7 @@ public final class FamPlugin extends JavaPlugin {
     public static Gui openFriendsGui(Player player, List<SQLFriends> friendsList, int pageNumber) {
         if (!player.isValid()) return null;
         if (friendsList.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "No friends to show");
+            player.sendMessage(Component.text("No friends to show", NamedTextColor.RED));
         }
         Gui gui = new Gui(instance);
         int pageSize = 3 * 9;
@@ -232,13 +228,10 @@ public final class FamPlugin extends JavaPlugin {
         int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
-        Component title = Component.text()
-            .append(DefaultFont.guiBlankOverlay(pageSize + 9, TextColor.color(0x8080FF)))
-            .append(Component.text(pageCount > 1
-                                   ? ChatColor.RED + "Friends " + pageNumber + "/" + pageCount
-                                   : ChatColor.RED + "Friends"))
-            .build();
-        gui.title(title);
+        gui.title(DefaultFont.guiBlankOverlay(pageSize + 9, Colors.LIGHT_BLUE,
+                                              (pageCount > 1
+                                               ? Component.text("Friends " + pageNumber + "/" + pageCount, NamedTextColor.WHITE)
+                                               : Component.text("Friends", NamedTextColor.WHITE))));
         for (int i = 0; i < pageSize; i += 1) {
             int friendsIndex = offset + i;
             if (friendsIndex >= friendsList.size()) break;
@@ -251,14 +244,14 @@ public final class FamPlugin extends JavaPlugin {
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
-            gui.setItem(3 * 9, Items.button(Mytems.ARROW_LEFT, ChatColor.GRAY + "Previous Page"), c -> {
+            gui.setItem(3 * 9, Items.button(Mytems.ARROW_LEFT, Component.text("Previous Page", NamedTextColor.GRAY)), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     openFriendsGui(player, friendsList, to);
                 });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
-            gui.setItem(3 * 9 + 8, Items.button(Mytems.ARROW_RIGHT, ChatColor.GRAY + "Next Page"), c -> {
+            gui.setItem(3 * 9 + 8, Items.button(Mytems.ARROW_RIGHT, Component.text("Next Page", NamedTextColor.GRAY)), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     openFriendsGui(player, friendsList, to);
                 });
@@ -315,13 +308,12 @@ public final class FamPlugin extends JavaPlugin {
             gui.setItem(2 + i, Mytems.EMPTY_HEART.createItemStack());
         }
         if (birthday != null) {
-            gui.setItem(9 + 3, Items.button(Mytems.STAR, Component.text("Birthday: " + birthday.getBirthdayName())
-                                            .color(Colors.HOTPINK).decoration(TextDecoration.ITALIC, false)));
+            gui.setItem(9 + 3, Items.button(Mytems.STAR, Component.text("Birthday: " + birthday.getBirthdayName(), Colors.HOTPINK)));
         }
         if (row.dailyGiftAvailable()) {
             gui.setItem(9 + 5, makeTodaysGiftIcon());
         }
-        gui.setItem(18 + 4, Items.button(Material.ENDER_PEARL, ChatColor.LIGHT_PURPLE + "/tpa " + finalName), click -> {
+        gui.setItem(18 + 4, Items.button(Material.ENDER_PEARL, Component.text("/tpa " + finalName, NamedTextColor.LIGHT_PURPLE)), click -> {
                 Bukkit.dispatchCommand(player, "tpa " + finalName);
             });
         gui.setItem(Gui.OUTSIDE, null, click -> openFriendsGui(player, page));
@@ -345,28 +337,28 @@ public final class FamPlugin extends JavaPlugin {
         int size = instance.getRewardList().size();
         int guiSize = ((size - 1) / 9) * 9 + 18;
         gui.size(guiSize);
-        gui.title(ChatColor.RED + "Valentine Score " + score);
+        gui.title(Component.text("Valentine Score " + score, Colors.HOTPINK));
         for (int i = 0; i < size; i += 1) {
             final int index = i;
-            List<BaseComponent[]> text = new ArrayList<>();
-            text.add(Text.builder("Reward #" + (i + 1)).color(Colors.PINK).italic(false).create());
+            List<Component> text = new ArrayList<>();
+            text.add(Component.text("Reward #" + (i + 1), Colors.HOTPINK));
             Material material;
             boolean canClaim;
             if (claimed > i) {
-                text.add(Text.builder("Claimed").color(Colors.PINK).italic(false).create());
+                text.add(Component.text("Claimed", Colors.HOTPINK));
                 material = Material.PINK_SHULKER_BOX;
                 canClaim = false;
             } else if (available > i) {
-                text.add(Text.builder("Available").color(Colors.PINK).italic(false).create());
+                text.add(Component.text("Available", Colors.HOTPINK));
                 if (claimed != i) {
-                    text.add(Text.builder("Claim previous rewards first").color(ChatColor.YELLOW).italic(false).create());
+                    text.add(Component.text("Claim previous rewards first", NamedTextColor.YELLOW));
                     canClaim = false;
                 } else {
                     canClaim = true;
                 }
                 material = Material.CHEST;
             } else {
-                text.add(Text.builder("Required: " + (i * 10 + 10)).color(ChatColor.RED).italic(false).create());
+                text.add(Component.text("Required: " + (i * 10 + 10), NamedTextColor.RED));
                 material = Material.ENDER_CHEST;
                 canClaim = false;
             }
@@ -404,8 +396,8 @@ public final class FamPlugin extends JavaPlugin {
         Gui gui = new Gui(instance);
         gui.size(3 * 9);
         gui.title(isForReal
-                  ? ChatColor.RED + "Valentine Reward #" + (index + 1)
-                  : ChatColor.RED + "Valentine Reward Preview #" + (index + 1));
+                  ? Component.text("Valentine Reward #" + (index + 1), Colors.HOTPINK)
+                  : Component.text("Valentine Reward Preview #" + (index + 1), Colors.HOTPINK));
         if (reward.getItems().size() == 1) {
             gui.getInventory().setItem(9 + 4, reward.getItems().get(0).clone());
         } else {
@@ -429,7 +421,7 @@ public final class FamPlugin extends JavaPlugin {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "titles unlockset " + player.getName() + " Cupid");
                     }
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 2.0f);
-                    player.sendMessage(Text.builder("Reward #" + (index + 1) + " claimed").color(Colors.PINK).create());
+                    player.sendMessage(Component.text("Reward #" + (index + 1) + " claimed", Colors.HOTPINK));
                 });
         } else {
             gui.setItem(Gui.OUTSIDE, null, evt -> openRewardsGui(player));
@@ -451,7 +443,7 @@ public final class FamPlugin extends JavaPlugin {
     public static Gui showHighscore(Player player, List<SQLProgress> list, int pageNumber) {
         if (!player.isValid()) return null;
         if (list.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "No highscores to show");
+            player.sendMessage(Component.text("No highscores to show", NamedTextColor.RED));
             return null;
         }
         Gui gui = new Gui(instance);
@@ -460,7 +452,7 @@ public final class FamPlugin extends JavaPlugin {
         int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
-        gui.title(ChatColor.RED + "Valentine Highscore " + pageNumber + "/" + pageCount);
+        gui.title(Component.text("Valentine Highscore " + pageNumber + "/" + pageCount, Colors.HOTPINK));
         int score = -1;
         int rank = 0;
         for (int i = 0; i < list.size(); i += 1) {
@@ -476,23 +468,24 @@ public final class FamPlugin extends JavaPlugin {
             if (menuIndex < 0) continue;
             ItemStack itemStack = makeSkull(row.getPlayer());
             ItemMeta meta = itemStack.getItemMeta();
-            List<BaseComponent[]> lore = new ArrayList<>();
-            lore.add(Text.builder("Rank #").color(Colors.BLUE).append("" + rank).color(Colors.WHITE).create());
-            lore.add(Text.builder("Score ").color(Colors.BLUE).append("" + score).color(Colors.WHITE).create());
-            meta.setLoreComponents(lore);
+            List<Component> text = new ArrayList<>();
+            text.add(Component.text(PlayerCache.nameForUuid(row.getPlayer())));
+            text.add(Component.text("Rank #", Colors.BLUE).append(Component.text("" + rank, NamedTextColor.WHITE)));
+            text.add(Component.text("Score ", Colors.BLUE).append(Component.text("" + score, NamedTextColor.WHITE)));
+            Items.text(meta, text);
             itemStack.setItemMeta(meta);
             gui.setItem(menuIndex, itemStack);
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
-            gui.setItem(3 * 9, Items.button(Mytems.ARROW_LEFT, ChatColor.GRAY + "Previous Page"), c -> {
+            gui.setItem(3 * 9, Items.button(Mytems.ARROW_LEFT, Component.text("Previous Page", NamedTextColor.GRAY)), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     showHighscore(player, list, to);
                 });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
-            gui.setItem(3 * 9 + 8, Items.button(Mytems.ARROW_RIGHT, ChatColor.GRAY + "Next Page"), c -> {
+            gui.setItem(3 * 9 + 8, Items.button(Mytems.ARROW_RIGHT, Component.text("Next Page", NamedTextColor.GRAY)), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     showHighscore(player, list, to);
                 });

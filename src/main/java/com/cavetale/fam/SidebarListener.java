@@ -5,10 +5,12 @@ import com.cavetale.fam.util.Items;
 import com.cavetale.fam.util.Text;
 import com.cavetale.sidebar.PlayerSidebarEvent;
 import com.cavetale.sidebar.Priority;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -26,10 +28,14 @@ public final class SidebarListener implements Listener {
         if (!event.getPlayer().hasPermission("fam.friends")) return;
         ChatColor bg = ChatColor.LIGHT_PURPLE;
         ChatColor hl = ChatColor.GRAY;
-        String text = bg + "Your " + hl + "/valentine" + bg + " score: " + hl
+        String message = bg + "Your " + hl + "/valentine" + bg + " score: " + hl
             + Database.getCachedScore(event.getPlayer().getUniqueId())
             + bg + ". Today's gift item: " + hl + Items.getDisplayName(plugin.getTodaysGift());
-        List<String> lines = Text.wrapLine(text, 18);
-        event.addLines(plugin, Priority.DEFAULT, lines);
+        List<String> text = Text.wrapLine(message, 18);
+        List<Component> lines = new ArrayList<>(text.size());
+        for (String line : text) {
+            lines.add(Component.text(line));
+        }
+        event.add(plugin, Priority.DEFAULT, lines);
     }
 }

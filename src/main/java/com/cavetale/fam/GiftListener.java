@@ -8,8 +8,9 @@ import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Text;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -48,15 +49,17 @@ public final class GiftListener implements Listener {
                 final int amount = birthday ? 20 : 5;
                 SQLFriends row = Database.findFriends(a, b);
                 Database.increaseFriendship(a, b, amount);
-                ComponentBuilder hearts = new ComponentBuilder();
-                int oldFriendship = row.getFriendship();
-                int newFriendship = oldFriendship + amount;
-                int heartCount = row.getHearts(newFriendship);
+                final int oldFriendship = row.getFriendship();
+                final int newFriendship = oldFriendship + amount;
+                final int heartCount = row.getHearts(newFriendship);
                 boolean won = row == null || row.getHearts() != heartCount;
-                for (int i = 0; i < heartCount - 1; i += 1) {
-                    hearts.append(Text.HEART_ICON).color(Colors.PINK);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < heartCount - (won ? 1 : 0); i += 1) {
+                    sb.append(Text.HEART_ICON);
                 }
-                hearts.append(Text.HEART_ICON).color(won ? Colors.ORANGE : Colors.PINK);
+                Component hearts = won
+                    ? Component.text().content(sb.toString()).color(Colors.HOTPINK).append(Component.text(Text.HEART_ICON, Colors.GOLD)).build()
+                    : Component.text(sb.toString(), Colors.HOTPINK);
                 final SQLProgress playerProgress;
                 final SQLProgress throwerProgress;
                 if (Timer.isValentineSeason()) {
@@ -68,49 +71,53 @@ public final class GiftListener implements Listener {
                     playerProgress = null;
                     throwerProgress = null;
                 }
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (player.isOnline()) {
-                            TextComponent text = Text.extra(Text.builder("Your friendship with " + thrower.getName() + " increased!").color(Colors.PINK)
-                                                            .append(" ").append(hearts.create()).create());
-                            text.setHoverEvent(Text.hover(Text.builder("/friends").color(Colors.PINK).create()));
-                            text.setClickEvent(Text.click("/friends"));
-                            player.sendMessage(text);
-                            if (player.hasPermission("fam.debug")) {
-                                player.sendMessage(Text.builder("Debug Friendship: " + oldFriendship + " => " + newFriendship)
-                                                   .color(Colors.DARK_GRAY).create());
-                            }
-                            if (playerProgress != null && playerProgress.isRewardAvailable()) {
-                                player.sendMessage(Text.builder("A new valentine reward is available! See ").color(Colors.PINK)
-                                                   .append("/valentine")
-                                                   .event(Text.hover(Text.builder("/valentine").color(Colors.PINK).create()))
-                                                   .event(Text.click("/valentine"))
-                                                   .create());
-                            }
-                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
-                            player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
-                        }
-                        if (thrower.isOnline()) {
-                            TextComponent text = Text.extra(Text.builder("Your friendship with " + player.getName() + " increased!").color(Colors.PINK)
-                                                            .append(" ").append(hearts.create()).create());
-                            text.setHoverEvent(Text.hover(Text.builder("/friends").color(Colors.PINK).create()));
-                            text.setClickEvent(Text.click("/friends"));
-                            thrower.sendMessage(text);
-                            if (thrower.hasPermission("fam.debug")) {
-                                thrower.sendMessage(Text.builder("Debug Friendship: " + oldFriendship + " => " + newFriendship)
-                                                    .color(Colors.DARK_GRAY).create());
-                            }
-                            thrower.playSound(thrower.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
-                            thrower.getWorld().spawnParticle(Particle.HEART, thrower.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
-                            if (throwerProgress != null && throwerProgress.isRewardAvailable()) {
-                                thrower.sendMessage(Text.builder("A new valentine reward is available! See").color(Colors.PINK)
-                                                    .append("/valentine")
-                                                    .event(Text.hover(Text.builder("/valentine").color(Colors.PINK).create()))
-                                                    .event(Text.click("/valentine"))
-                                                    .create());
-                            }
-                            PluginPlayerEvent.Name.SHARE_FRIENDSHIP_ITEM.call(plugin, thrower);
-                        }
-                    });
+                Bukkit.getScheduler().runTask(plugin, () -> callback(player, playerProgress,
+                                                                     thrower, throwerProgress,
+                                                                     hearts, oldFriendship, newFriendship));
             });
+    }
+
+    private void callback(Player player, SQLProgress playerProgress, Player thrower, SQLProgress throwerProgress,
+                          Component hearts, int oldFriendship, int newFriendship) {
+        if (player.isOnline()) {
+            player.sendMessage(Component.text().color(Colors.HOTPINK)
+                               .content("Your friendship with " + thrower.getName() + " increased! ")
+                               .append(hearts)
+                               .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
+                               .clickEvent(ClickEvent.runCommand("/friends")));
+            if (player.hasPermission("fam.debug")) {
+                player.sendMessage(Component.text("Debug Friendship: " + oldFriendship + " => " + newFriendship,
+                                                  Colors.DARK_GRAY));
+            }
+            if (playerProgress != null && playerProgress.isRewardAvailable()) {
+                valentineRewardReminder(player);
+            }
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
+            player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
+        }
+        if (thrower.isOnline()) {
+            thrower.sendMessage(Component.text().color(Colors.HOTPINK)
+                                .content("Your friendship with " + player.getName() + " increased! ")
+                                .append(hearts)
+                                .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
+                                .clickEvent(ClickEvent.runCommand("/friends")));
+            if (thrower.hasPermission("fam.debug")) {
+                thrower.sendMessage(Component.text("Debug Friendship: " + oldFriendship + " => " + newFriendship,
+                                                   Colors.DARK_GRAY));
+            }
+            thrower.playSound(thrower.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
+            thrower.getWorld().spawnParticle(Particle.HEART, thrower.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
+            if (throwerProgress != null && throwerProgress.isRewardAvailable()) {
+                valentineRewardReminder(thrower);
+            }
+            PluginPlayerEvent.Name.SHARE_FRIENDSHIP_ITEM.call(plugin, thrower);
+        }
+    }
+
+    private void valentineRewardReminder(Player player) {
+        player.sendMessage(Component.text()
+                           .append(Component.text("A new valentine reward is available! See /valentine", Colors.HOTPINK))
+                           .hoverEvent(HoverEvent.showText(Component.text("/valentine", Colors.HOTPINK)))
+                           .clickEvent(ClickEvent.runCommand("/valentine")));
     }
 }

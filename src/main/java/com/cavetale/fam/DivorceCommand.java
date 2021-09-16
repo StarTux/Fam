@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -44,7 +43,7 @@ public final class DivorceCommand implements TabExecutor {
                 List<SQLFriends> rows = Database.findFriendsList(uuid, Relation.MARRIED);
                 if (rows.isEmpty()) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                            player.sendMessage(ChatColor.RED + "You're not married!");
+                            player.sendMessage(Component.text("You're not married!", NamedTextColor.RED));
                         });
                     return;
                 }
@@ -74,7 +73,7 @@ public final class DivorceCommand implements TabExecutor {
             .build();
         gui.title(title);
         gui.size(size);
-        gui.setItem(size - 8, Items.button(Mytems.OK, ChatColor.GREEN + "Yes, Divorce " + name), click -> {
+        gui.setItem(size - 8, Items.button(Mytems.OK, Component.text("Yes, Divorce " + name, NamedTextColor.GREEN)), click -> {
                 if (!click.isLeftClick()) return;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
                 Database.db().update(SQLFriends.class)
@@ -83,19 +82,20 @@ public final class DivorceCommand implements TabExecutor {
                     .async(success -> {
                             // sync
                             if (success <= 0) {
-                                player.sendMessage(ChatColor.RED + "Something went wrong.");
+                                player.sendMessage(Component.text("Something went wrong.", NamedTextColor.RED));
                                 return;
                             }
                             Database.friendLogAsync(uuid, other, Relation.MARRIED, "Divorced");
-                            player.sendMessage(ChatColor.AQUA + "You and " + name + " are now divorced!");
+                            player.sendMessage(Component.text("You and " + name + " are now divorced!", NamedTextColor.AQUA));
                             Player otherPlayer = Bukkit.getPlayer(other);
                             if (otherPlayer != null) {
-                                otherPlayer.sendMessage(ChatColor.AQUA + "You and " + player.getName() + " are now divorced!");
+                                otherPlayer.sendMessage(Component.text("You and " + player.getName() + " are now divorced!",
+                                                                       NamedTextColor.AQUA));
                             }
                         });
                 player.closeInventory();
             });
-        gui.setItem(size - 2, Items.button(Mytems.NO, ChatColor.RED + "No, stay married to " + name), click -> {
+        gui.setItem(size - 2, Items.button(Mytems.NO, Component.text("No, stay married to " + name, NamedTextColor.RED)), click -> {
                 if (!click.isLeftClick()) return;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
                 player.closeInventory();

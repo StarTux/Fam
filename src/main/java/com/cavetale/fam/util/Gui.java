@@ -48,11 +48,6 @@ public final class Gui implements InventoryHolder {
         this.plugin = Objects.requireNonNull(plugin, "plugin=null");
     }
 
-    public Gui title(String newTitle) {
-        title = Component.text(newTitle);
-        return this;
-    }
-
     public Gui title(Component newTitle) {
         title = newTitle;
         return this;

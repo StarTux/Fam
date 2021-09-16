@@ -11,7 +11,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -43,11 +46,11 @@ public final class FriendCommand implements TabExecutor {
         Player player = (Player) sender;
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
-            player.sendMessage(ChatColor.RED + "Player not found: " + args[0]);
+            player.sendMessage(Component.text("Player not found: " + args[0], NamedTextColor.RED));
             return true;
         }
         if (player.equals(target)) {
-            player.sendMessage(ChatColor.RED + "You cannot friend yourself");
+            player.sendMessage(Component.text("You cannot friend yourself", NamedTextColor.RED));
             return true;
         }
         UUID a = player.getUniqueId();
@@ -62,12 +65,14 @@ public final class FriendCommand implements TabExecutor {
     private void callback(Player player, Player target, SQLFriends row) {
         if (!player.isOnline() || !target.isOnline()) return;
         if (row == null || row.getHearts() < 3) {
-            player.sendMessage(ChatColor.RED + "You need at least 3" + Text.HEART_ICON + " with " + target.getName());
+            player.sendMessage(Component.text("You need at least 3" + Text.HEART_ICON + " with " + target.getName(),
+                                              NamedTextColor.RED));
             return;
         }
         Relation relation = row.getRelationFor(player.getUniqueId());
         if (relation != null) {
-            player.sendMessage(ChatColor.RED + target.getName() + " is already your " + relation.getYour() + "!");
+            player.sendMessage(Component.text(target.getName() + " is already your " + relation.getYour() + "!",
+                                              NamedTextColor.RED));
             return;
         }
         UUID request = requests.get(target.getUniqueId());
@@ -75,26 +80,24 @@ public final class FriendCommand implements TabExecutor {
             // Accept request
             requests.remove(target.getUniqueId());
             Database.setRelation(row, player.getUniqueId(), Relation.FRIEND);
-            player.sendMessage(Text.builder("You and " + target.getName() + " are now friends!").color(Colors.PINK)
-                               .event(Text.hover(Text.builder("/friends").color(Colors.PINK).create()))
-                               .event(Text.click("/friends"))
-                               .create());
+            player.sendMessage(Component.text("You and " + target.getName() + " are now friends!", Colors.HOTPINK)
+                               .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
+                               .clickEvent(ClickEvent.runCommand("/friends")));
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
-            target.sendMessage(Text.builder("You and " + player.getName() + " are now friends!").color(Colors.PINK)
-                               .event(Text.hover(Text.builder("/friends").color(Colors.PINK).create()))
-                               .event(Text.click("/friends"))
-                               .create());
+            target.sendMessage(Component.text("You and " + player.getName() + " are now friends!", Colors.HOTPINK)
+                               .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
+                               .clickEvent(ClickEvent.runCommand("/friends")));
             target.playSound(target.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
             PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, player);
             PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, target);
             Database.fillCacheAsync(player);
+            Database.fillCacheAsync(target);
         } else {
             requests.put(player.getUniqueId(), target.getUniqueId());
-            target.sendMessage(Text.builder(player.getName() + " sent you a friend request! Click here to accept").color(Colors.PINK)
-                               .event(Text.hover(Text.builder("/friend " + player.getName()).color(Colors.PINK).create()))
-                               .event(Text.click("/friend " + player.getName()))
-                               .create());
-            player.sendMessage(Text.builder("Friend request sent to " + target.getName()).color(Colors.PINK).create());
+            target.sendMessage(Component.text(player.getName() + " sent you a friend request! Click here to accept", Colors.HOTPINK)
+                               .hoverEvent(HoverEvent.showText(Component.text("/friend " + player.getName(), Colors.HOTPINK)))
+                               .clickEvent(ClickEvent.runCommand("/friend " + player.getName())));
+            player.sendMessage(Component.text("Friend request sent to " + target.getName(), Colors.HOTPINK));
         }
     }
 

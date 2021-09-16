@@ -6,7 +6,6 @@ import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Fireworks;
 import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
-import com.destroystokyo.paper.Title;
 import com.winthier.playercache.PlayerCache;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +15,9 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -66,19 +67,19 @@ public final class WeddingRingListener implements Listener {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                             UUID other = married.get(0).getOther(uuid);
                             if (other.equals(uuid2)) {
-                                player.sendMessage(ChatColor.RED + "You two are already married. :)");
+                                player.sendMessage(Component.text("You two are already married. :)", NamedTextColor.RED));
                                 return;
                             }
                             String name = PlayerCache.nameForUuid(married.get(0).getOther(uuid));
                             if (name == null) name = "somebody";
-                            player.sendMessage(ChatColor.RED + "You're already married to " + name + "!");
+                            player.sendMessage(Component.text("You're already married to " + name + "!", NamedTextColor.RED));
                         });
                     return;
                 }
                 List<SQLFriends> married2 = Database.findFriendsList(uuid2, Relation.MARRIED);
                 if (!married2.isEmpty()) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                            player.sendMessage(ChatColor.RED + target.getName() + " is already married! :(");
+                            player.sendMessage(Component.text(target.getName() + " is already married! :(", NamedTextColor.RED));
                         });
                     return;
                 }
@@ -90,18 +91,20 @@ public final class WeddingRingListener implements Listener {
     void callback(Player player, Player target, SQLFriends row) {
         if (!player.isOnline() || !target.isOnline()) return;
         if (!Timer.isValentinesDay() && (row == null || row.getHearts() < 5)) {
-            player.sendMessage(ChatColor.RED + "You need at least 5" + Text.HEART_ICON + " with " + target.getName());
+            player.sendMessage(Component.text("You need at least 5" + Text.HEART_ICON + " with " + target.getName(),
+                                              NamedTextColor.RED));
             return;
         }
         Relation relation = row.getRelationFor(player.getUniqueId());
         if (relation != null && relation != Relation.FRIEND) {
-            player.sendMessage(ChatColor.RED + target.getName() + " is already your " + relation.getYour() + "!");
+            player.sendMessage(Component.text(target.getName() + " is already your " + relation.getYour() + "!",
+                                              NamedTextColor.RED));
             return;
         }
         Mytems mytems1 = Mytems.forItem(player.getInventory().getItemInMainHand());
         Mytems mytems2 = Mytems.forItem(target.getInventory().getItemInMainHand());
         if (mytems1 != Mytems.WEDDING_RING || mytems2 != Mytems.WEDDING_RING) {
-            player.sendMessage(ChatColor.RED + "Both of you must hold the wedding ring!");
+            player.sendMessage(Component.text("Both of you must hold the wedding ring!", NamedTextColor.RED));
             return;
         }
         UUID request = requests.get(target.getUniqueId());
@@ -112,20 +115,22 @@ public final class WeddingRingListener implements Listener {
             Database.friendLogAsync(target.getUniqueId(), player.getUniqueId(), Relation.MARRIED, "Married");
             player.getInventory().getItemInMainHand().subtract(1);
             target.getInventory().getItemInMainHand().subtract(1);
-            player.sendTitle(new Title(Text.builder("Married").color(Colors.PINK).create(),
-                                       Text.builder("You married " + target.getName()).color(Colors.PINK).create()));
-            target.sendTitle(new Title(Text.builder("Married").color(Colors.PINK).create(),
-                                       Text.builder("You married " + player.getName()).color(Colors.PINK).create()));
+            player.showTitle(Title.title(Component.text("Married", Colors.HOTPINK),
+                                         Component.text("You married " + target.getName(), Colors.HOTPINK)));
+            target.showTitle(Title.title(Component.text("Married", Colors.HOTPINK),
+                                         Component.text("You married " + player.getName(), Colors.HOTPINK)));
             weddingTask(player, target);
             Database.fillCacheAsync(player);
             Database.fillCacheAsync(target);
             plugin.getLogger().info("Married: " + player.getName() + ", " + target.getName());
         } else {
             requests.put(player.getUniqueId(), target.getUniqueId());
-            player.sendMessage(Text.builder("You ask " + target.getName() + " to get married."
-                                            + " If they use their ring on you, the ceremony is complete!").color(Colors.PINK).create());
-            target.sendMessage(Text.builder(player.getName() + " asks you to get married."
-                                            + " If you use your ring on them, the ceremony is complete!").color(Colors.PINK).create());
+            player.sendMessage(Component.text("You ask " + target.getName() + " to get married."
+                                              + " If they use their ring on you, the ceremony is complete!",
+                                              Colors.HOTPINK));
+            target.sendMessage(Component.text(player.getName() + " asks you to get married."
+                                              + " If you use your ring on them, the ceremony is complete!",
+                                              Colors.HOTPINK));
         }
     }
 
