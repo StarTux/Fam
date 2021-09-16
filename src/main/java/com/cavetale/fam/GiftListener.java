@@ -41,10 +41,11 @@ public final class GiftListener implements Listener {
         if (!thrower.hasPermission("fam.friends")) return;
         UUID a = thrower.getUniqueId();
         UUID b = player.getUniqueId();
+        final boolean birthday = Database.getCache(player).isBirthday() || Database.getCache(thrower).isBirthday();
         Database.db().scheduleAsyncTask(() -> {
                 boolean res = Database.dailyGift(a, b, Timer.getDayId());
                 if (!res) return;
-                final int amount = 5;
+                final int amount = birthday ? 20 : 5;
                 SQLFriends row = Database.findFriends(a, b);
                 Database.increaseFriendship(a, b, amount);
                 ComponentBuilder hearts = new ComponentBuilder();

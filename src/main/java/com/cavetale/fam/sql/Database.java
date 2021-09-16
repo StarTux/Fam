@@ -3,6 +3,7 @@ package com.cavetale.fam.sql;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.FamPlugin;
 import com.cavetale.fam.Relation;
+import com.cavetale.fam.Timer;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
 import java.util.Arrays;
@@ -27,12 +28,18 @@ public final class Database {
         return FamPlugin.getInstance().getDatabase();
     }
 
-    private static final class Cache {
+    public static final class Cache {
         protected int score;
         protected UUID married;
         protected final Set<UUID> friends = new HashSet<>();
         protected int birthdayMonth;
         protected int birthdayDay;
+
+        public boolean isBirthday() {
+            return birthdayMonth > 0 && birthdayDay > 0
+                && Timer.getMonth() == birthdayMonth
+                && Timer.getDay() == birthdayDay;
+        }
     }
 
     public static boolean init() {
@@ -261,7 +268,7 @@ public final class Database {
         PLAYER_CACHE.remove(uuid);
     }
 
-    private static Cache getCache(Player player) {
+    public static Cache getCache(Player player) {
         return PLAYER_CACHE.computeIfAbsent(player.getUniqueId(), u -> new Cache());
     }
 
