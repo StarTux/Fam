@@ -48,8 +48,7 @@ public final class Items {
         return itemStack;
     }
 
-    public static ItemStack button(Material material, List<Component> text) {
-        ItemStack itemStack = new ItemStack(material);
+    public static ItemStack button(ItemStack itemStack, List<Component> text) {
         itemStack.editMeta(meta -> {
                 if (!text.isEmpty()) {
                     Component displayName = text.get(0);
@@ -62,6 +61,10 @@ public final class Items {
                 meta.addItemFlags(ItemFlag.values());
             });
         return itemStack;
+    }
+
+    public static ItemStack button(Material material, List<Component> text) {
+        return button(new ItemStack(material), text);
     }
 
     public static ItemStack button(Material material, Component text) {

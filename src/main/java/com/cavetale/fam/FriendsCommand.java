@@ -29,7 +29,7 @@ public final class FriendsCommand implements TabExecutor {
         }
         Player player = (Player) sender;
         if (args.length == 0) {
-            plugin.openFriendsGui(player, 1);
+            plugin.openFriendshipsGui(player, 1);
             return true;
         }
         String name = args[0];

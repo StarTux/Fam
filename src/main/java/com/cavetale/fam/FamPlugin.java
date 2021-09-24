@@ -18,7 +18,9 @@ import com.winthier.playercache.PlayerCache;
 import com.winthier.sql.SQLDatabase;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -142,24 +144,24 @@ public final class FamPlugin extends JavaPlugin {
         return GIFTS[Timer.getDayOfWeek()];
     }
 
-    public static ItemStack makeTodaysGiftIcon() {
-        return Items.button(getTodaysGift(),
-                            List.of(Component.text("Today's Friendship Gift", Colors.HOTPINK),
-                                    Component.text("One Point per Player.", Colors.YELLOW),
-                                    Component.text("New Item every Day.", Colors.YELLOW),
-                                    Component.empty(),
-                                    Component.text("Click to view only people", Colors.SILVER),
-                                    Component.text("missing a gift from you.", Colors.SILVER)));
+    public static ItemStack makeTodaysGiftIcon(boolean withClick) {
+        final List<Component> lines = List.of(Component.text("Today's Friendship Gift", Colors.HOTPINK),
+                                              Component.text("One Point per Player.", Colors.YELLOW),
+                                              Component.text("New Item every Day.", Colors.YELLOW),
+                                              Component.empty(),
+                                              Component.text("Click to view only people", Colors.SILVER),
+                                              Component.text("missing a gift from you.", Colors.SILVER));
+        return Items.button(getTodaysGift(), withClick ? lines : lines.subList(0, 3));
     }
 
-    public static ItemStack makeSkull(Player player, SQLFriends row) {
+    public static ItemStack makeSkull(Player perspective, SQLFriends row) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
-        UUID friendUuid = row.getOther(player.getUniqueId());
+        UUID friendUuid = row.getOther(perspective.getUniqueId());
         PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
         meta.setPlayerProfile(profile);
-        Relation relation = row.getRelationFor(player.getUniqueId());
-        String name = row.getCachedName();
+        Relation relation = row.getRelationFor(perspective.getUniqueId());
+        String name = row.getCachedName(perspective.getUniqueId());
         if (name == null) name = PlayerCache.nameForUuid(friendUuid);
         if (name == null) name = profile.getName();
         TextColor color;
@@ -176,7 +178,7 @@ public final class FamPlugin extends JavaPlugin {
         List<Component> text = new ArrayList<>();
         text.add(Component.text(name, color));
         text.add(Text.toHeartString(row.getHearts()));
-        if (player.hasPermission("fam.debug")) {
+        if (perspective.hasPermission("fam.debug")) {
             text.add(Component.text("Debug Friendship: " + row.getFriendship(), Colors.DARK_GRAY));
         }
         if (relation != null) {
@@ -204,24 +206,57 @@ public final class FamPlugin extends JavaPlugin {
         return item;
     }
 
-    public static void openFriendsGui(Player player, int page) {
+    public static void openFriendshipsGui(Player player, int page) {
         instance.database.scheduleAsyncTask(() -> {
                 List<SQLFriends> friendsList = Database.findFriendsList(player.getUniqueId());
-                for (SQLFriends row : friendsList) {
-                    UUID uuid = row.getOther(player.getUniqueId());
-                    String name = PlayerCache.nameForUuid(uuid);
-                    row.setCachedName(name != null ? name : "");
-                }
                 friendsList.removeIf(SQLFriends::friendshipIsZero);
                 Collections.sort(friendsList);
-                Bukkit.getScheduler().runTask(instance, () -> openFriendsGui(player, friendsList, page));
+                Bukkit.getScheduler().runTask(instance, () -> {
+                        if (!player.isOnline()) return;
+                        openFriendsGui(player, friendsList, FriendsListView.FRIENDSHIPS, page);
+                    });
             });
     }
 
-    public static Gui openFriendsGui(Player player, List<SQLFriends> friendsList, int pageNumber) {
+    public static void openOnlineNotGiftedGui(Player player, int page) {
+        UUID uuid = player.getUniqueId();
+        instance.database.scheduleAsyncTask(() -> {
+                List<SQLFriends> friendsList = Database.findFriendsList(player.getUniqueId());
+                Map<UUID, SQLFriends> friendsMap = new HashMap<>();
+                for (SQLFriends row : friendsList) {
+                    friendsMap.put(row.getOther(uuid), row);
+                }
+                for (var online : Connect.getInstance().getOnlinePlayers()) {
+                    if (uuid.equals(online.getUuid())) continue;
+                    friendsMap.computeIfAbsent(online.getUuid(), uuid2 -> new SQLFriends(Database.sorted(uuid, uuid2)));
+                }
+                List<SQLFriends> newFriendsList = new ArrayList<>(friendsMap.values());
+                newFriendsList.removeIf(SQLFriends::dailyGiftGiven);
+                Collections.sort(newFriendsList);
+                Bukkit.getScheduler().runTask(instance, () -> {
+                        if (!player.isOnline()) return;
+                        openFriendsGui(player, newFriendsList, FriendsListView.ONLINE_NOT_GIFTED, 1);
+                    });
+            });
+    }
+
+    public static void openFriendsOnlyGui(Player player, int page) {
+        instance.database.scheduleAsyncTask(() -> {
+                List<SQLFriends> friendsList = Database.findFriendsList(player.getUniqueId());
+                friendsList.removeIf(SQLFriends::noRelation);
+                Collections.sort(friendsList);
+                Bukkit.getScheduler().runTask(instance, () -> {
+                        if (!player.isOnline()) return;
+                        openFriendsGui(player, friendsList, FriendsListView.FRIENDS, page);
+                    });
+            });
+    }
+
+    public static Gui openFriendsGui(Player player, List<SQLFriends> friendsList, FriendsListView type, int pageNumber) {
         if (!player.isValid()) return null;
+        final UUID uuid = player.getUniqueId();
         if (friendsList.isEmpty()) {
-            player.sendMessage(Component.text("No friends to show", NamedTextColor.RED));
+            player.sendMessage(Component.text("No friendships to show", NamedTextColor.RED));
         }
         Gui gui = new Gui(instance);
         int pageSize = 3 * 9;
@@ -229,41 +264,62 @@ public final class FamPlugin extends JavaPlugin {
         int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
-        gui.title(DefaultFont.guiBlankOverlay(pageSize + 9, Colors.LIGHT_BLUE,
+        gui.title(DefaultFont.guiBlankOverlay(pageSize + 9, type.menuColor,
                                               (pageCount > 1
-                                               ? Component.text("Friends " + pageNumber + "/" + pageCount, NamedTextColor.WHITE)
-                                               : Component.text("Friends", NamedTextColor.WHITE))));
+                                               ? Component.text(type.menuTitle + " " + pageNumber + "/" + pageCount, NamedTextColor.WHITE)
+                                               : Component.text(type.menuTitle, NamedTextColor.WHITE))));
         for (int i = 0; i < pageSize; i += 1) {
             int friendsIndex = offset + i;
             if (friendsIndex >= friendsList.size()) break;
             SQLFriends row = friendsList.get(friendsIndex);
             ItemStack itemStack = makeSkull(player, row);
-            gui.setItem(i, itemStack, click -> {
+            gui.setItem(i + 9, itemStack, click -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                    openFriendGui(player, row.getOther(player.getUniqueId()), pageNumber);
+                    openFriendGui(player, row.getOther(uuid), pageNumber);
                 });
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
-            gui.setItem(3 * 9, Items.button(Mytems.ARROW_LEFT, Component.text("Previous Page", NamedTextColor.GRAY)), c -> {
+            gui.setItem(0, Items.button(Mytems.ARROW_LEFT, Component.text("Previous Page", NamedTextColor.GRAY)), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                    openFriendsGui(player, friendsList, to);
+                    openFriendsGui(player, friendsList, type, to);
                 });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
-            gui.setItem(3 * 9 + 8, Items.button(Mytems.ARROW_RIGHT, Component.text("Next Page", NamedTextColor.GRAY)), c -> {
+            gui.setItem(8, Items.button(Mytems.ARROW_RIGHT, Component.text("Next Page", NamedTextColor.GRAY)), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                    openFriendsGui(player, friendsList, to);
+                    openFriendsGui(player, friendsList, type, to);
                 });
         }
-        gui.setItem(3 * 9 + 4, makeTodaysGiftIcon(), c -> {
+        gui.setItem(4, makeTodaysGiftIcon(type != FriendsListView.ONLINE_NOT_GIFTED), c -> {
+                if (!c.isLeftClick()) return;
+                if (type == FriendsListView.ONLINE_NOT_GIFTED) {
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 0.5f);
+                    return;
+                }
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                List<SQLFriends> list = new ArrayList<>(friendsList);
-                list.removeIf(SQLFriends::dailyGiftGiven);
-                list.removeIf(r -> Bukkit.getPlayer(r.getOther(player.getUniqueId())) == null);
-                openFriendsGui(player, list, 1);
+                openOnlineNotGiftedGui(player, 1);
             });
+        gui.setItem(3,
+                    Items.button(Mytems.HEART.createItemStack(),
+                                 List.of(Component.text("View all Friends", Colors.HOTPINK))),
+                    click -> {
+                        if (!click.isLeftClick()) return;
+                        if (type == FriendsListView.FRIENDS) {
+                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 0.5f);
+                            return;
+                        }
+                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                        openFriendsOnlyGui(player, 1);
+                    });
+        if (type != FriendsListView.FRIENDSHIPS) {
+            gui.setItem(Gui.OUTSIDE, null, click -> {
+                    if (!click.isLeftClick()) return;
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                    openFriendshipsGui(player, 1);
+                });
+        }
         gui.open(player);
         PluginPlayerEvent.Name.VIEW_FRIENDS_LIST.call(instance, player);
         return gui;
@@ -313,12 +369,12 @@ public final class FamPlugin extends JavaPlugin {
             gui.setItem(9 + 3, Items.button(Mytems.STAR, Component.text("Birthday: " + birthday.getBirthdayName(), Colors.HOTPINK)));
         }
         if (row.dailyGiftAvailable()) {
-            gui.setItem(9 + 5, makeTodaysGiftIcon());
+            gui.setItem(9 + 5, makeTodaysGiftIcon(true));
         }
         gui.setItem(18 + 4, Items.button(Material.ENDER_PEARL, Component.text("/tpa " + finalName, NamedTextColor.LIGHT_PURPLE)), click -> {
                 Bukkit.dispatchCommand(player, "tpa " + finalName);
             });
-        gui.setItem(Gui.OUTSIDE, null, click -> openFriendsGui(player, page));
+        gui.setItem(Gui.OUTSIDE, null, click -> openFriendshipsGui(player, page));
         gui.open(player);
         return gui;
     }
@@ -378,7 +434,7 @@ public final class FamPlugin extends JavaPlugin {
                     }
                 });
         }
-        gui.setItem(guiSize - 5, makeTodaysGiftIcon());
+        gui.setItem(guiSize - 5, makeTodaysGiftIcon(true));
         gui.open(player);
         player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, SoundCategory.MASTER, 0.5f, 1.2f);
         return gui;

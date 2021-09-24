@@ -117,7 +117,7 @@ public final class ProfileDialogue {
                 if (!click.isLeftClick()) return;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                 gui.close(player);
-                plugin.openFriendsGui(player, friends, 1);
+                plugin.openFriendsGui(player, friends, FriendsListView.FRIENDSHIPS, 1);
             });
         // Married
         ItemStack marriedIcon = null;

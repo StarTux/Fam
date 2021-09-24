@@ -13,4 +13,5 @@ public final class Colors {
     public static final TextColor RED = TextColor.color(0xFF0000);
     public static final TextColor SILVER = TextColor.color(0xC0C0C0);
     public static final TextColor LIGHT_BLUE = TextColor.color(0x8080FF);
+    public static final TextColor PALE_VIOLET_RED = TextColor.color(0xDB7093);
 }

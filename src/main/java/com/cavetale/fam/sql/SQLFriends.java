@@ -2,6 +2,7 @@ package com.cavetale.fam.sql;
 
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
+import com.winthier.playercache.PlayerCache;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -71,6 +72,10 @@ public final class SQLFriends implements Comparable<SQLFriends> {
         return friendship <= 0;
     }
 
+    public boolean noRelation() {
+        return relation == null;
+    }
+
     public void setRelationFor(UUID you, Relation newRelation) {
         if (you.equals(playerA)) {
             relation = newRelation.name().toLowerCase();
@@ -98,5 +103,12 @@ public final class SQLFriends implements Comparable<SQLFriends> {
 
     public boolean dailyGiftGiven() {
         return dailyGift == Timer.getDayId();
+    }
+
+    public String getCachedName(UUID perspective) {
+        if (cachedName == null) {
+            cachedName = PlayerCache.nameForUuid(getOther(perspective));
+        }
+        return cachedName;
     }
 }

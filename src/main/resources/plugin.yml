@@ -31,7 +31,7 @@ commands:
 
   friends:
     aliases: []
-    description: Friend list
+    description: Friendship list
     permission: fam.friends
     usage: /friends [name]
 
