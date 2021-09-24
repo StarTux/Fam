@@ -37,7 +37,6 @@ public final class ProfileDialogue {
     private List<SQLFriends> friends;
     private SQLFriends married;
     private SQLFriends bestFriend;
-    private List<SQLBirthday> birthdays;
     private int friendsCount = 0;
 
     public static final TextColor BG = TextColor.color(0xFF69B4);
@@ -65,10 +64,6 @@ public final class ProfileDialogue {
                     default: break;
                     }
                 }
-                birthdays = Database.db().find(SQLBirthday.class)
-                    .eq("month", Timer.getMonth())
-                    .eq("day", Timer.getDay())
-                    .findList();
                 Bukkit.getScheduler().runTask(plugin, () -> openLoaded(player));
             });
     }
@@ -117,7 +112,7 @@ public final class ProfileDialogue {
                 if (!click.isLeftClick()) return;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                 gui.close(player);
-                plugin.openFriendsGui(player, friends, FriendsListView.FRIENDSHIPS, 1);
+                plugin.openFriendsOnlyGui(player, 1);
             });
         // Married
         ItemStack marriedIcon = null;
@@ -176,25 +171,6 @@ public final class ProfileDialogue {
                 gui.close(player);
                 new BirthdayDialogue(plugin).open(player);
             });
-        // Birthdays
-        for (int i = 0; i < birthdays.size() && i < 9; i += 1) {
-            SQLBirthday theBirthday = birthdays.get(i);
-            PlayerProfile birthdayProfile = Database.getCachedPlayerProfile(theBirthday.getPlayer());
-            if (birthdayProfile == null) continue;
-            ItemStack icon = Items.makeSkull(birthdayProfile);
-            icon.editMeta(meta -> {
-                    meta.displayName(Component.text().content("It's " + birthdayProfile.getName() + "'s birthday today!")
-                                     .color(TOOLTIP)
-                                     .decoration(TextDecoration.ITALIC, false)
-                                     .build());
-                });
-            gui.setItem(18 + i, icon, click -> {
-                    if (!click.isLeftClick()) return;
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                    gui.close(player);
-                    plugin.openFriendGui(player, theBirthday.getPlayer(), 1);
-                });
-        }
         gui.open(player);
         return gui;
     }

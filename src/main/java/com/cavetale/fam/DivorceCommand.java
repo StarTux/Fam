@@ -100,7 +100,7 @@ public final class DivorceCommand implements TabExecutor {
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
                 player.closeInventory();
             });
-        gui.setItem(4, plugin.makeSkull(player, row));
+        gui.setItem(4, plugin.makeSkull(player, row, null));
         gui.open(player);
     }
 }

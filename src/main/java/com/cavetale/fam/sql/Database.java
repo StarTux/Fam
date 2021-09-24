@@ -315,4 +315,23 @@ public final class Database {
     public static SQLBirthday findBirthday(UUID uuid) {
         return db().find(SQLBirthday.class).eq("player", uuid).findUnique();
     }
+
+    public static Map<UUID, SQLBirthday> findTodaysBirthdayMap() {
+        Map<UUID, SQLBirthday> result = new HashMap<>();
+        for (SQLBirthday row :db().find(SQLBirthday.class)
+                 .eq("month", Timer.getMonth())
+                 .eq("day", Timer.getDay())
+                 .findList()) {
+            result.put(row.getPlayer(), row);
+        }
+        return result;
+    }
+
+    public static Map<UUID, SQLBirthday> findBirthdayMap() {
+        Map<UUID, SQLBirthday> result = new HashMap<>();
+        for (SQLBirthday row : db().find(SQLBirthday.class).findList()) {
+            result.put(row.getPlayer(), row);
+        }
+        return result;
+    }
 }

@@ -1,5 +1,6 @@
 package com.cavetale.fam.sql;
 
+import com.cavetale.fam.Timer;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -31,5 +32,9 @@ public final class SQLBirthday {
     public String getBirthdayName() {
         Month theMonth = Month.of(month);
         return theMonth.getDisplayName(TextStyle.FULL, Locale.US) + " " + day;
+    }
+
+    public boolean isToday() {
+        return Timer.getMonth() == month && Timer.getDay() == day;
     }
 }

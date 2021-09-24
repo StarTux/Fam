@@ -2,6 +2,7 @@ package com.cavetale.fam;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.DefaultFont;
+import com.cavetale.core.font.Unicode;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLDaybreak;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -154,7 +156,7 @@ public final class FamPlugin extends JavaPlugin {
         return Items.button(getTodaysGift(), withClick ? lines : lines.subList(0, 3));
     }
 
-    public static ItemStack makeSkull(Player perspective, SQLFriends row) {
+    public static ItemStack makeSkull(Player perspective, SQLFriends row, SQLBirthday birthday) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         UUID friendUuid = row.getOther(perspective.getUniqueId());
@@ -189,6 +191,10 @@ public final class FamPlugin extends JavaPlugin {
         } else {
             text.add(Component.text("\u2610 Daily Gift", Colors.DARK_GRAY));
         }
+        if (birthday != null) {
+            text.add(Component.text("Birthday ", NamedTextColor.DARK_GRAY)
+                     .append(Component.text(birthday.getBirthdayName(), Colors.GOLD)));
+        }
         Items.text(meta, text);
         item.setItemMeta(meta);
         return item;
@@ -211,9 +217,10 @@ public final class FamPlugin extends JavaPlugin {
                 List<SQLFriends> friendsList = Database.findFriendsList(player.getUniqueId());
                 friendsList.removeIf(SQLFriends::friendshipIsZero);
                 Collections.sort(friendsList);
+                Map<UUID, SQLBirthday> birthdays = Database.findBirthdayMap();
                 Bukkit.getScheduler().runTask(instance, () -> {
                         if (!player.isOnline()) return;
-                        openFriendsGui(player, friendsList, FriendsListView.FRIENDSHIPS, page);
+                        openFriendsGui(player, friendsList, birthdays, FriendsListView.FRIENDSHIPS, page);
                     });
             });
     }
@@ -233,9 +240,10 @@ public final class FamPlugin extends JavaPlugin {
                 List<SQLFriends> newFriendsList = new ArrayList<>(friendsMap.values());
                 newFriendsList.removeIf(SQLFriends::dailyGiftGiven);
                 Collections.sort(newFriendsList);
+                Map<UUID, SQLBirthday> birthdays = Database.findBirthdayMap();
                 Bukkit.getScheduler().runTask(instance, () -> {
                         if (!player.isOnline()) return;
-                        openFriendsGui(player, newFriendsList, FriendsListView.ONLINE_NOT_GIFTED, 1);
+                        openFriendsGui(player, newFriendsList, birthdays, FriendsListView.ONLINE_NOT_GIFTED, 1);
                     });
             });
     }
@@ -245,19 +253,44 @@ public final class FamPlugin extends JavaPlugin {
                 List<SQLFriends> friendsList = Database.findFriendsList(player.getUniqueId());
                 friendsList.removeIf(SQLFriends::noRelation);
                 Collections.sort(friendsList);
+                Map<UUID, SQLBirthday> birthdays = Database.findBirthdayMap();
                 Bukkit.getScheduler().runTask(instance, () -> {
                         if (!player.isOnline()) return;
-                        openFriendsGui(player, friendsList, FriendsListView.FRIENDS, page);
+                        openFriendsGui(player, friendsList, birthdays, FriendsListView.FRIENDS, page);
                     });
             });
     }
 
-    public static Gui openFriendsGui(Player player, List<SQLFriends> friendsList, FriendsListView type, int pageNumber) {
+    public static void openBirthdaysGui(Player player, int page) {
+        final UUID uuid = player.getUniqueId();
+        instance.database.scheduleAsyncTask(() -> {
+                Map<UUID, SQLBirthday> birthdays = Database.findTodaysBirthdayMap();
+                List<SQLFriends> friendsList;
+                if (birthdays.isEmpty()) {
+                    friendsList = List.of();
+                } else {
+                    friendsList = Database.findFriendsList(player.getUniqueId());
+                    Map<UUID, SQLFriends> friendsMap = new HashMap<>();
+                    for (SQLFriends row : friendsList) {
+                        friendsMap.put(row.getOther(uuid), row);
+                    }
+                    for (UUID uuid2 : birthdays.keySet()) {
+                        friendsMap.computeIfAbsent(uuid2, u -> new SQLFriends(Database.sorted(uuid, u)));
+                    }
+                    friendsMap.keySet().retainAll(birthdays.keySet());
+                    List<SQLFriends> newFriendsList = new ArrayList<>(friendsMap.values());
+                    Collections.sort(friendsList);
+                    Bukkit.getScheduler().runTask(instance, () -> {
+                            if (!player.isOnline()) return;
+                            openFriendsGui(player, newFriendsList, birthdays, FriendsListView.BIRTHDAYS, page);
+                        });
+                }
+            });
+    }
+
+    public static Gui openFriendsGui(Player player, List<SQLFriends> friendsList, Map<UUID, SQLBirthday> birthdays, FriendsListView type, int pageNumber) {
         if (!player.isValid()) return null;
         final UUID uuid = player.getUniqueId();
-        if (friendsList.isEmpty()) {
-            player.sendMessage(Component.text("No friendships to show", NamedTextColor.RED));
-        }
         Gui gui = new Gui(instance);
         int pageSize = 3 * 9;
         int pageCount = (friendsList.size() - 1) / pageSize + 1;
@@ -272,7 +305,7 @@ public final class FamPlugin extends JavaPlugin {
             int friendsIndex = offset + i;
             if (friendsIndex >= friendsList.size()) break;
             SQLFriends row = friendsList.get(friendsIndex);
-            ItemStack itemStack = makeSkull(player, row);
+            ItemStack itemStack = makeSkull(player, row, birthdays.get(row.getOther(uuid)));
             gui.setItem(i + 9, itemStack, click -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     openFriendGui(player, row.getOther(uuid), pageNumber);
@@ -282,14 +315,14 @@ public final class FamPlugin extends JavaPlugin {
             int to = pageNumber - 1;
             gui.setItem(0, Items.button(Mytems.ARROW_LEFT, Component.text("Previous Page", NamedTextColor.GRAY)), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                    openFriendsGui(player, friendsList, type, to);
+                    openFriendsGui(player, friendsList, birthdays, type, to);
                 });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
             gui.setItem(8, Items.button(Mytems.ARROW_RIGHT, Component.text("Next Page", NamedTextColor.GRAY)), c -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                    openFriendsGui(player, friendsList, type, to);
+                    openFriendsGui(player, friendsList, birthdays, type, to);
                 });
         }
         gui.setItem(4, makeTodaysGiftIcon(type != FriendsListView.ONLINE_NOT_GIFTED), c -> {
@@ -303,7 +336,7 @@ public final class FamPlugin extends JavaPlugin {
             });
         gui.setItem(3,
                     Items.button(Mytems.HEART.createItemStack(),
-                                 List.of(Component.text("View all Friends", Colors.HOTPINK))),
+                                 List.of(Component.text("Friends", Colors.HOTPINK))),
                     click -> {
                         if (!click.isLeftClick()) return;
                         if (type == FriendsListView.FRIENDS) {
@@ -312,6 +345,29 @@ public final class FamPlugin extends JavaPlugin {
                         }
                         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                         openFriendsOnlyGui(player, 1);
+                    });
+        List<String> birthdayNameList = birthdays.values().stream()
+            .filter(SQLBirthday::isToday)
+            .map(SQLBirthday::getPlayer)
+            .map(PlayerCache::nameForUuid)
+            .collect(Collectors.toList());
+        List<Component> birthdayTooltip = new ArrayList<>();
+        Collections.sort(birthdayNameList);
+        birthdayTooltip.add(Component.text("Birthdays " + Timer.getTodaysName(), Colors.GOLD));
+        for (String name : birthdayNameList) {
+            birthdayTooltip.add(Component.text(Unicode.BULLET_POINT.character + " ", NamedTextColor.GRAY)
+                                .append(Component.text(name, NamedTextColor.WHITE)));
+        }
+        gui.setItem(5,
+                    Items.button(Mytems.STAR.createItemStack(), birthdayTooltip),
+                    click -> {
+                        if (!click.isLeftClick()) return;
+                        if (type == FriendsListView.BIRTHDAYS) {
+                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 0.5f);
+                            return;
+                        }
+                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                        openBirthdaysGui(player, 1);
                     });
         if (type != FriendsListView.FRIENDSHIPS) {
             gui.setItem(Gui.OUTSIDE, null, click -> {
@@ -358,7 +414,7 @@ public final class FamPlugin extends JavaPlugin {
             .build();
         gui.title(title);
         gui.size(size);
-        gui.setItem(9 + 4, makeSkull(player, row));
+        gui.setItem(9 + 4, makeSkull(player, row, birthday));
         for (int i = 0; i < row.getHearts(); i += 1) {
             gui.setItem(2 + i, Mytems.HEART.createItemStack());
         }

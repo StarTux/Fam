@@ -3,9 +3,12 @@ package com.cavetale.fam;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
-import org.bukkit.Bukkit;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 
 public final class Timer {
     @Getter private static int dayId;
@@ -49,5 +52,10 @@ public final class Timer {
         if (oldDayId != dayId) {
             FamPlugin.getInstance().computePossibleDaybreak();
         }
+    }
+
+    public static String getTodaysName() {
+        Month theMonth = Month.of(month);
+        return theMonth.getDisplayName(TextStyle.FULL, Locale.US) + " " + day;
     }
 }
