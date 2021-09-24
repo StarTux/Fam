@@ -20,8 +20,10 @@ import com.winthier.sql.SQLDatabase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -233,10 +235,13 @@ public final class FamPlugin extends JavaPlugin {
                 for (SQLFriends row : friendsList) {
                     friendsMap.put(row.getOther(uuid), row);
                 }
+                Set<UUID> onlineSet = new HashSet<>();
                 for (var online : Connect.getInstance().getOnlinePlayers()) {
                     if (uuid.equals(online.getUuid())) continue;
                     friendsMap.computeIfAbsent(online.getUuid(), uuid2 -> new SQLFriends(Database.sorted(uuid, uuid2)));
+                    onlineSet.add(online.getUuid());
                 }
+                friendsMap.keySet().retainAll(onlineSet);
                 List<SQLFriends> newFriendsList = new ArrayList<>(friendsMap.values());
                 newFriendsList.removeIf(SQLFriends::dailyGiftGiven);
                 Collections.sort(newFriendsList);
