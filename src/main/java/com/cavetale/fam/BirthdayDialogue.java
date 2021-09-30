@@ -32,6 +32,10 @@ public final class BirthdayDialogue {
     public static final Locale LOCALE = Locale.US;
 
     public void open(Player player) {
+        plugin.getDatabase().find(SQLBirthday.class)
+            .eq("player", player.getUniqueId())
+            .deleteAsync(null);
+        Database.fillCacheAsync(player);
         openMonthGui(player);
     }
 
@@ -98,7 +102,13 @@ public final class BirthdayDialogue {
                 if (!click.isLeftClick()) return;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                 gui.close(player);
-                confirm(player);
+                confirm(player, false);
+            });
+        gui.setItem(size - 6, Items.button(Mytems.QUESTION_MARK, ChatColor.AQUA + "Yes, but keep it a secret"), click -> {
+                if (!click.isLeftClick()) return;
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                gui.close(player);
+                confirm(player, true);
             });
         gui.setItem(size - 2, Items.button(Mytems.NO, ChatColor.RED + "No, go back!"), click -> {
                 if (!click.isLeftClick()) return;
@@ -113,7 +123,11 @@ public final class BirthdayDialogue {
         return gui;
     }
 
-    private void confirm(Player player) {
+    private void confirm(Player player, boolean secret) {
+        if (secret) {
+            PluginPlayerEvent.Name.ENTER_BIRTHDAY.call(plugin, player);
+            return;
+        }
         SQLBirthday row = new SQLBirthday(player.getUniqueId(), month.getValue(), day);
         plugin.getDatabase().saveAsync(row, count -> {
                 if (count <= 0) {
