@@ -168,6 +168,7 @@ public final class FamPlugin extends JavaPlugin {
         String name = row.getCachedName(perspective.getUniqueId());
         if (name == null) name = PlayerCache.nameForUuid(friendUuid);
         if (name == null) name = profile.getName();
+        if (name == null) name = "?";
         TextColor color;
         if (relation == null) {
             color = NamedTextColor.WHITE;
