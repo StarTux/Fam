@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -84,7 +84,7 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         if (target == null) throw new CommandWarn("Player not online: " + args[0]);
         Set<UUID> friends = Database.getFriendsCached(target);
         UUID married = Database.getMarriageCached(target);
-        sender.sendMessage(TextComponent.ofChildren(new Component[] {
+        sender.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
                     Component.text("Cache of " + target.getName(), NamedTextColor.YELLOW),
                     Component.newline(),
                     Component.text("Friends ", NamedTextColor.GRAY),

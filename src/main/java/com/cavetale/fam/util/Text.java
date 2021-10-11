@@ -3,7 +3,7 @@ package com.cavetale.fam.util;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.ChatColor;
 
 public final class Text {
@@ -24,7 +24,7 @@ public final class Text {
         if (hearts < 0 || hearts > 5) throw new IllegalArgumentException("hearts=" + hearts);
         String full = HEARTS.substring(0, hearts);
         String empty = HEARTS.substring(0, 5 - hearts);
-        return TextComponent.ofChildren(new Component[] {
+        return Component.join(JoinConfiguration.noSeparators(), new Component[] {
                 Component.text(full, Colors.HOTPINK),
                 Component.text(empty, Colors.DARK_GRAY),
             });
