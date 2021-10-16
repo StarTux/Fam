@@ -5,6 +5,7 @@ import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Text;
+import com.cavetale.mytems.Mytems;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -80,13 +82,19 @@ public final class FriendCommand implements TabExecutor {
             // Accept request
             requests.remove(target.getUniqueId());
             Database.setRelation(row, player.getUniqueId(), Relation.FRIEND);
-            player.sendMessage(Component.text("You and " + target.getName() + " are now friends!", Colors.HOTPINK)
-                               .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
-                               .clickEvent(ClickEvent.runCommand("/friends")));
+            player.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
+                        Mytems.HEART.component,
+                        Component.text("You and " + target.getName() + " are now friends!", Colors.HOTPINK),
+                    })
+                .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
+                .clickEvent(ClickEvent.runCommand("/friends")));
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
-            target.sendMessage(Component.text("You and " + player.getName() + " are now friends!", Colors.HOTPINK)
-                               .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
-                               .clickEvent(ClickEvent.runCommand("/friends")));
+            target.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
+                        Mytems.HEART.component,
+                        Component.text("You and " + player.getName() + " are now friends!", Colors.HOTPINK),
+                    })
+                .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
+                .clickEvent(ClickEvent.runCommand("/friends")));
             target.playSound(target.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
             PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, player);
             PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, target);
@@ -94,9 +102,12 @@ public final class FriendCommand implements TabExecutor {
             Database.fillCacheAsync(target);
         } else {
             requests.put(player.getUniqueId(), target.getUniqueId());
-            target.sendMessage(Component.text(player.getName() + " sent you a friend request! Click here to accept", Colors.HOTPINK)
-                               .hoverEvent(HoverEvent.showText(Component.text("/friend " + player.getName(), Colors.HOTPINK)))
-                               .clickEvent(ClickEvent.runCommand("/friend " + player.getName())));
+            target.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
+                        Mytems.HALF_HEART.component,
+                        Component.text(player.getName() + " sent you a friend request! Click here to accept", Colors.HOTPINK),
+                    })
+                .hoverEvent(HoverEvent.showText(Component.text("/friend " + player.getName(), Colors.HOTPINK)))
+                .clickEvent(ClickEvent.runCommand("/friend " + player.getName())));
             player.sendMessage(Component.text("Friend request sent to " + target.getName(), Colors.HOTPINK));
         }
     }
