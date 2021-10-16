@@ -108,7 +108,10 @@ public final class FriendCommand implements TabExecutor {
                     })
                 .hoverEvent(HoverEvent.showText(Component.text("/friend " + player.getName(), Colors.HOTPINK)))
                 .clickEvent(ClickEvent.runCommand("/friend " + player.getName())));
-            player.sendMessage(Component.text("Friend request sent to " + target.getName(), Colors.HOTPINK));
+            player.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
+                        Mytems.HALF_HEART.component,
+                        Component.text("Friend request sent to " + target.getName(), Colors.HOTPINK),
+                    }));
         }
     }
 
