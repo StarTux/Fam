@@ -303,10 +303,13 @@ public final class FamPlugin extends JavaPlugin {
         int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
-        gui.title(GuiOverlay.TOP_BAR.make(pageSize + 9, type.menuColor,
-                                          (pageCount > 1
-                                           ? Component.text(type.menuTitle + " " + pageNumber + "/" + pageCount, NamedTextColor.WHITE)
-                                           : Component.text(type.menuTitle, NamedTextColor.WHITE))));
+        gui.title(GuiOverlay.builder(pageSize)
+                  .layer(GuiOverlay.BLANK, type.menuColor)
+                  .layer(GuiOverlay.TOP_BAR, TextColor.lerp(0.5f, type.menuColor, NamedTextColor.BLACK))
+                  .title(pageCount > 1
+                         ? Component.text(type.menuTitle + " " + pageNumber + "/" + pageCount, NamedTextColor.WHITE)
+                         : Component.text(type.menuTitle, NamedTextColor.WHITE))
+                  .build());
         for (int i = 0; i < pageSize; i += 1) {
             int friendsIndex = offset + i;
             if (friendsIndex >= friendsList.size()) break;
@@ -414,8 +417,7 @@ public final class FamPlugin extends JavaPlugin {
         case 5: color = NamedTextColor.GOLD; break;
         default: color = NamedTextColor.WHITE;
         }
-        gui.title(GuiOverlay.TOP_BAR.make(size, color,
-                                          Component.text(name, NamedTextColor.WHITE)));
+        gui.title(GuiOverlay.BLANK.make(size, color, Component.text(name, NamedTextColor.WHITE)));
         gui.size(size);
         gui.setItem(9 + 4, makeSkull(player, row, birthday));
         for (int i = 0; i < row.getHearts(); i += 1) {
