@@ -303,7 +303,7 @@ public final class FamPlugin extends JavaPlugin {
         int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
-        gui.title(GuiOverlay.builder(pageSize)
+        gui.title(GuiOverlay.builder(pageSize + 9)
                   .layer(GuiOverlay.BLANK, type.menuColor)
                   .layer(GuiOverlay.TOP_BAR, TextColor.lerp(0.5f, type.menuColor, NamedTextColor.BLACK))
                   .title(pageCount > 1
