@@ -2,10 +2,8 @@ package com.cavetale.fam;
 
 import com.cavetale.fam.sql.Database;
 import java.util.UUID;
-import org.junit.Test;
 
 public final class FamTest {
-    @Test
     public void test() {
         UUID a = UUID.randomUUID();
         UUID b = UUID.randomUUID();
