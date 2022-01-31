@@ -25,7 +25,7 @@ public final class SidebarListener implements Listener {
     @EventHandler
     void onPlayerSidebar(PlayerSidebarEvent event) {
         if (!Timer.isValentineSeason()) return;
-        if (!event.getPlayer().hasPermission("fam.friends")) return;
+        if (!event.getPlayer().hasPermission("fam.valentine")) return;
         ChatColor bg = ChatColor.LIGHT_PURPLE;
         ChatColor hl = ChatColor.GRAY;
         String message = bg + "Your " + hl + "/valentine" + bg + " score: " + hl
