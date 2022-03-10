@@ -38,7 +38,7 @@ public final class Timer {
     }
 
     public static boolean isValentineSeason() {
-        return false;// isValentinesDay() || (month == 2 && day <= 14);
+        return false; // isValentinesDay() || (month == 2 && day <= 14);
     }
 
     public static boolean isValentinesDay() {

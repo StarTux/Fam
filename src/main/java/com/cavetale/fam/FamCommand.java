@@ -4,6 +4,8 @@ import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandArgCompleter;
 import com.cavetale.core.command.CommandWarn;
 import com.cavetale.fam.sql.Database;
+import com.cavetale.fam.sql.SQLBirthday;
+import com.cavetale.fam.sql.SQLFriends;
 import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +13,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class FamCommand extends AbstractCommand<FamPlugin> {
     protected FamCommand(final FamPlugin plugin) {
@@ -36,6 +41,10 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         rootNode.addChild("cache").arguments("<player>")
             .description("Dump the cache")
             .senderCaller(this::cache);
+        rootNode.addChild("transfer").arguments("<from> <to>")
+            .description("Account transfer")
+            .completers(PlayerCache.NAME_COMPLETER, PlayerCache.NAME_COMPLETER)
+            .senderCaller(this::transfer);
         var friendshipNode = rootNode.addChild("friendship")
             .description("Friendship increase options");
         friendshipNode.addChild("mutual")
@@ -84,23 +93,56 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         if (target == null) throw new CommandWarn("Player not online: " + args[0]);
         Set<UUID> friends = Database.getFriendsCached(target);
         UUID married = Database.getMarriageCached(target);
-        sender.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                    Component.text("Cache of " + target.getName(), NamedTextColor.YELLOW),
-                    Component.newline(),
-                    Component.text("Friends ", NamedTextColor.GRAY),
-                    Component.text("" + Database.countFriendsCached(target) + " ",
-                                   NamedTextColor.YELLOW),
-                    Component.text(friends.stream()
-                                   .map(uuid -> PlayerCache.nameForUuid(uuid))
-                                   .collect(Collectors.joining(" ")),
-                                   NamedTextColor.WHITE),
-                    Component.newline(),
-                    Component.text("Married ", NamedTextColor.GRAY),
-                    Component.text(married != null
-                                   ? PlayerCache.nameForUuid(married)
-                                   : "No",
-                                   NamedTextColor.GRAY),
+        sender.sendMessage(join(noSeparators(), new Component[] {
+                    text("Cache of " + target.getName(), YELLOW),
+                    newline(),
+                    text("Friends ", GRAY),
+                    text("" + Database.countFriendsCached(target) + " ",
+                         YELLOW),
+                    text(friends.stream()
+                         .map(uuid -> PlayerCache.nameForUuid(uuid))
+                         .collect(Collectors.joining(" ")),
+                         WHITE),
+                    newline(),
+                    text("Married ", GRAY),
+                    text(married != null
+                         ? PlayerCache.nameForUuid(married)
+                         : "No",
+                         GRAY),
                 }));
+        return true;
+    }
+
+    private boolean transfer(CommandSender sender, String[] args) {
+        if (args.length != 2) return false;
+        PlayerCache from = PlayerCache.forArg(args[0]);
+        if (from == null) throw new CommandWarn("Player not found: " + args[0]);
+        PlayerCache to = PlayerCache.forArg(args[1]);
+        if (to == null) throw new CommandWarn("Player not found: " + args[1]);
+        if (from.equals(to)) throw new CommandWarn("Players are identical: " + from.getName());
+        List<SQLFriends> friendsList = Database.findFriendsList(from.uuid);
+        SQLBirthday birthday = Database.findBirthday(from.uuid);
+        if (friendsList.isEmpty() && birthday == null) {
+            throw new CommandWarn(from.name + " does not have any friendship data");
+        }
+        for (SQLFriends row : friendsList) {
+            plugin.getDatabase().delete(row);
+            UUID other = row.getOther(from.uuid);
+            if (other.equals(to.uuid)) continue;
+            row.setId(null);
+            row.setUuids(Database.sorted(other, to.uuid));
+            plugin.getDatabase().save(row);
+        }
+        if (birthday != null) {
+            plugin.getDatabase().delete(birthday);
+            birthday.setId(null);
+            birthday.setPlayer(to.uuid);
+            plugin.getDatabase().save(birthday);
+        }
+        sender.sendMessage(text("Transferred friendship data from " + from.name + " to " + to.name + ":"
+                                + " friends=" + friendsList.size()
+                                + " birthday=" + (birthday != null ? 1 : 0),
+                                YELLOW));
         return true;
     }
 

@@ -40,6 +40,15 @@ public final class SQLFriends implements Comparable<SQLFriends> {
         this.playerB = uuids[1];
     }
 
+    /**
+     * Helper for transfer.
+     */
+    public void setUuids(final UUID[] uuids) {
+        if (uuids.length != 2) throw new IllegalStateException("length=" + uuids.length);
+        this.playerA = uuids[0];
+        this.playerB = uuids[1];
+    }
+
     @Override
     public int compareTo(SQLFriends other) {
         int fr = Integer.compare(other.friendship, friendship); // highest first

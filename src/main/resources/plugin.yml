@@ -3,7 +3,7 @@ main: com.cavetale.fam.FamPlugin
 name: Fam
 version: 0.1
 description: Fam Plugin
-api-version: 1.17
+api-version: 1.18
 
 author: StarTux
 website: https://github.com/StarTux/Fam
@@ -40,8 +40,8 @@ commands:
     description: Valentine Rewards
     permission: fam.valentine
     usage: |-
-      §e/valentine§8 - §fOpen rewards menu
-      §e/valentine hi§8 - §fView highscore
+      /valentine - Open rewards menu
+      /valentine hi - View highscore
 
   friend:
     aliases: []

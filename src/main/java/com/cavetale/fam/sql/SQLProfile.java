@@ -118,7 +118,6 @@ public final class SQLProfile {
     }
 
     public void fill(PlayerProfile profile) {
-        profile.setName(name);
         if (tag == null) unpack();
         profile.setProperty(tag.textures.toProfileProperty("textures"));
     }

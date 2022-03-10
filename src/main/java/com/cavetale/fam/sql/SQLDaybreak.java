@@ -8,7 +8,7 @@ import lombok.Data;
 /**
  * This is a single-row table storing the last dayId for which a
  * daybreak (with friendship decay) was computed. Right afterward,
- * said row will be dupated with the new dayId.
+ * said row will be updated with the new dayId.
  */
 @Data @Table(name = "daybreak")
 public final class SQLDaybreak {
