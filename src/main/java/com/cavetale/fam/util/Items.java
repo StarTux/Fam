@@ -2,6 +2,7 @@ package com.cavetale.fam.util;
 
 import com.cavetale.mytems.Mytems;
 import com.destroystokyo.paper.profile.PlayerProfile;
+import com.winthier.playercache.PlayerCache;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
@@ -104,7 +105,10 @@ public final class Items {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setPlayerProfile(profile);
-        meta.displayName(Component.text().content(profile.getName())
+        String name = profile.getName();
+        if (name == null) name = PlayerCache.nameForUuid(profile.getId());
+        if (name == null) name = "?";
+        meta.displayName(Component.text().content(name)
                          .color(NamedTextColor.WHITE)
                          .decoration(TextDecoration.ITALIC, false)
                          .build());
