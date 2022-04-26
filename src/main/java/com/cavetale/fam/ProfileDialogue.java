@@ -1,9 +1,10 @@
 package com.cavetale.fam;
 
-import com.cavetale.core.font.DefaultFont;
+import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLFriends;
+import com.cavetale.fam.trophy.TrophyDialogue;
 import com.cavetale.fam.util.Gui;
 import com.cavetale.fam.util.Items;
 import com.cavetale.mytems.Mytems;
@@ -19,12 +20,15 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.TextColor.color;
+import static net.kyori.adventure.text.format.TextDecoration.*;
+import static org.bukkit.Sound.*;
+import static org.bukkit.SoundCategory.*;
 
 /**
  * Show the player their profile page.
@@ -39,9 +43,7 @@ public final class ProfileDialogue {
     private SQLFriends bestFriend;
     private int friendsCount = 0;
 
-    public static final TextColor BG = TextColor.color(0xFF69B4);
-    public static final TextColor COLOR = TextColor.color(0x366797);
-    public static final TextColor TOOLTIP = TextColor.color(0xFF69B4);
+    public static final TextColor TOOLTIP = color(0xFF69B4);
     public static final Locale LOCALE = Locale.US;
 
     public void open(Player player) {
@@ -70,17 +72,19 @@ public final class ProfileDialogue {
 
     private Gui openLoaded(Player player) {
         if (!player.isValid()) return null;
-        int size = 27;
+        int size = 4 * 9;
+        GuiOverlay.Builder builder = GuiOverlay.BLANK
+            .builder(size, BLUE)
+            .layer(GuiOverlay.TOP_BAR, DARK_BLUE)
+            .title(text("Your Profile", BLUE));
         Gui gui = new Gui(plugin)
             .size(size)
-            .title(Component.text()
-                   .append(DefaultFont.guiBlankOverlay(size, BG))
-                   .append(Component.text("Your Profile", COLOR))
-                   .build());
+            .title(builder.build());
         gui.setItem(4, Items.makeSkull(player));
-        int friendsIndex = 10;
-        int marriedIndex = 11;
-        int birthdayIndex = 15;
+        int friendsIndex = 19;
+        int marriedIndex = 20;
+        int birthdayIndex = 24;
+        int trophyIndex = 25;
         // Friends
         ItemStack friendsIcon = null;
         if (bestFriend != null) {
@@ -94,25 +98,24 @@ public final class ProfileDialogue {
         }
         friendsIcon.setAmount(Math.max(1, Math.min(64, friendsCount)));
         friendsIcon.editMeta(meta -> {
-                meta.displayName(Component.text().content("You have " + friendsCount + " friends")
+                meta.displayName(text().content("You have " + friendsCount + " friends")
                                  .color(TOOLTIP)
-                                 .decoration(TextDecoration.ITALIC, false)
+                                 .decoration(ITALIC, false)
                                  .build());
                 List<Component> lore = new ArrayList<>();
                 if (bestFriend != null) {
                     String bestFriendName = PlayerCache.nameForUuid(bestFriend.getOther(uuid));
-                    lore.add(Component.text().content("Best Friend: " + bestFriendName)
+                    lore.add(text().content("Best Friend: " + bestFriendName)
                              .color(TOOLTIP)
-                             .decoration(TextDecoration.ITALIC, false)
+                             .decoration(ITALIC, false)
                              .build());
                 }
                 meta.lore(lore);
             });
         gui.setItem(friendsIndex, friendsIcon, click -> {
                 if (!click.isLeftClick()) return;
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                gui.close(player);
-                plugin.openFriendsOnlyGui(player, 1);
+                plugin.openFriendshipsGui(player, 1);
+                click(player);
             });
         // Married
         ItemStack marriedIcon = null;
@@ -129,14 +132,14 @@ public final class ProfileDialogue {
                 meta.lore(Collections.emptyList());
                 if (married != null) {
                     String marriedName = PlayerCache.nameForUuid(married.getOther(uuid));
-                    meta.displayName(Component.text().content("Married to " + marriedName)
+                    meta.displayName(text().content("Married to " + marriedName)
                                      .color(TOOLTIP)
-                                     .decoration(TextDecoration.ITALIC, false)
+                                     .decoration(ITALIC, false)
                                      .build());
                 } else {
-                    meta.displayName(Component.text().content("Not married!")
+                    meta.displayName(text().content("Not married!")
                                      .color(TOOLTIP)
-                                     .decoration(TextDecoration.ITALIC, false)
+                                     .decoration(ITALIC, false)
                                      .build());
                 }
             });
@@ -150,28 +153,39 @@ public final class ProfileDialogue {
             birthdayIcon = Mytems.STAR.createItemStack();
             birthdayIcon.editMeta(meta -> {
                     meta.lore(Collections.emptyList());
-                    meta.displayName(Component.text().content("Your birthday: " + birthdayName)
+                    meta.displayName(text().content("Your birthday: " + birthdayName)
                                      .color(TOOLTIP)
-                                     .decoration(TextDecoration.ITALIC, false)
+                                     .decoration(ITALIC, false)
                                      .build());
                 });
         } else {
             birthdayIcon = Mytems.QUESTION_MARK.createItemStack();
             birthdayIcon.editMeta(meta -> {
                     meta.lore(Collections.emptyList());
-                    meta.displayName(Component.text().content("Set your birthday?")
+                    meta.displayName(text().content("Set your birthday?")
                                      .color(TOOLTIP)
-                                     .decoration(TextDecoration.ITALIC, false)
+                                     .decoration(ITALIC, false)
                                      .build());
                 });
         }
         gui.setItem(birthdayIndex, birthdayIcon, click -> {
                 if (!click.isLeftClick()) return;
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
+                click(player);
                 gui.close(player);
                 new BirthdayDialogue(plugin).open(player);
             });
+        gui.setItem(trophyIndex,
+                    com.cavetale.mytems.util.Items.text(Mytems.GOLDEN_CUP.createIcon(), List.of(text("Trophies", GOLD))),
+                    click -> {
+                        if (!click.isLeftClick()) return;
+                        click(player);
+                        new TrophyDialogue(plugin.trophies, new PlayerCache(player.getUniqueId(), player.getName())).open(player);
+                    });
         gui.open(player);
         return gui;
+    }
+
+    private void click(Player player) {
+        player.playSound(player.getLocation(), UI_BUTTON_CLICK, MASTER, 0.5f, 1.0f);
     }
 }

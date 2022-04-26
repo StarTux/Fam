@@ -16,10 +16,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import static org.bukkit.Sound.*;
+import static org.bukkit.SoundCategory.*;
 
 @RequiredArgsConstructor
 public final class BirthdayDialogue {
@@ -40,7 +40,7 @@ public final class BirthdayDialogue {
     }
 
     private Gui openMonthGui(Player player) {
-        int size = 18;
+        int size = 36;
         Gui gui = new Gui(plugin)
             .size(size)
             .title(Component.text()
@@ -51,21 +51,24 @@ public final class BirthdayDialogue {
             final Month theMonth = Month.of(i + 1);
             ItemStack icon = Items.button(Mytems.CHECKBOX, theMonth.getDisplayName(TextStyle.FULL, LOCALE));
             icon.setAmount(i + 1);
-            gui.setItem(i, icon, click -> {
+            gui.setItem(9 + i, icon, click -> {
                     if (!click.isLeftClick()) return;
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     month = theMonth;
-                    gui.close(player);
                     openDayGui(player);
+                    click(player);
                 });
         }
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                if (!click.isLeftClick()) return;
+                new ProfileDialogue(plugin).open(player);
+            });
         gui.open(player);
         return gui;
     }
 
     private Gui openDayGui(Player player) {
         int length = Objects.requireNonNull(month).maxLength();
-        int size = 9 * ((length - 1) / 9 + 1);
+        int size = Math.max(36, 9 * ((length - 1) / 9 + 1));
         String monthName = month.getDisplayName(TextStyle.FULL, LOCALE);
         Gui gui = new Gui(plugin)
             .size(size)
@@ -79,18 +82,23 @@ public final class BirthdayDialogue {
             icon.setAmount(theDay);
             gui.setItem(i, icon, click -> {
                     if (!click.isLeftClick()) return;
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                     day = theDay;
-                    gui.close(player);
                     openConfirmGui(player);
+                    click(player);
                 });
         }
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                if (!click.isLeftClick()) return;
+                month = null;
+                openMonthGui(player);
+                click(player);
+            });
         gui.open(player);
         return gui;
     }
 
     private Gui openConfirmGui(Player player) {
-        int size = 18;
+        int size = 36;
         String birthdayName = Objects.requireNonNull(month).getDisplayName(TextStyle.FULL, LOCALE) + " " + day;
         Gui gui = new Gui(plugin)
             .size(size)
@@ -98,27 +106,33 @@ public final class BirthdayDialogue {
                    .append(DefaultFont.guiBlankOverlay(size, BG))
                    .append(Component.text("Your birthday is on " + birthdayName + "?", COLOR))
                    .build());
-        gui.setItem(size - 8, Items.button(Mytems.OK, ChatColor.GREEN + "Yes, my birthday is on " + birthdayName), click -> {
+        gui.setItem(size - 8, Items.button(Mytems.CHECKED_CHECKBOX, ChatColor.GREEN + "Yes, my birthday is on " + birthdayName), click -> {
                 if (!click.isLeftClick()) return;
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-                gui.close(player);
                 confirm(player, false);
+                gui.close(player);
+                click(player);
             });
-        gui.setItem(size - 6, Items.button(Mytems.QUESTION_MARK, ChatColor.AQUA + "Yes, but keep it a secret"), click -> {
+        gui.setItem(size - 6, Items.button(Mytems.BOMB, ChatColor.AQUA + "Yes, but keep it a secret"), click -> {
                 if (!click.isLeftClick()) return;
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                 gui.close(player);
                 confirm(player, true);
+                click(player);
             });
-        gui.setItem(size - 2, Items.button(Mytems.NO, ChatColor.RED + "No, go back!"), click -> {
+        gui.setItem(size - 2, Items.button(Mytems.CROSSED_CHECKBOX, ChatColor.RED + "No, go back!"), click -> {
                 if (!click.isLeftClick()) return;
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
                 gui.close(player);
                 month = null;
                 day = 0;
                 open(player);
+                click(player);
             });
         gui.setItem(4, Items.makeSkull(player));
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                if (!click.isLeftClick()) return;
+                day = 0;
+                openDayGui(player);
+                click(player);
+            });
         gui.open(player);
         return gui;
     }
@@ -136,9 +150,13 @@ public final class BirthdayDialogue {
                 }
                 String birthdayName = Objects.requireNonNull(month).getDisplayName(TextStyle.FULL, LOCALE) + " " + day;
                 player.sendMessage(Component.text("Your birthday was set to " + birthdayName + "!", COLOR));
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.25f, 2.0f);
+                player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.25f, 2.0f);
                 Database.fillCacheAsync(player);
                 PluginPlayerEvent.Name.ENTER_BIRTHDAY.call(plugin, player);
             });
+    }
+
+    private static void click(Player player) {
+        player.playSound(player.getLocation(), UI_BUTTON_CLICK, MASTER, 0.5f, 1.0f);
     }
 }

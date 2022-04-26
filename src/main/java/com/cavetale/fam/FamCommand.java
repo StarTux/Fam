@@ -139,9 +139,11 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
             birthday.setPlayer(to.uuid);
             plugin.getDatabase().save(birthday);
         }
+        int trophies = plugin.trophies.transfer(from.uuid, to.uuid);
         sender.sendMessage(text("Transferred friendship data from " + from.name + " to " + to.name + ":"
                                 + " friends=" + friendsList.size()
-                                + " birthday=" + (birthday != null ? 1 : 0),
+                                + " birthday=" + (birthday != null ? 1 : 0)
+                                + " trophies=" + trophies,
                                 YELLOW));
         return true;
     }

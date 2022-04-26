@@ -4,6 +4,7 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.FamPlugin;
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
+import com.cavetale.fam.trophy.SQLTrophy;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
 import java.util.Arrays;
@@ -49,7 +50,8 @@ public final class Database {
                             SQLFriendLog.class,
                             SQLPlayerSkin.class,
                             SQLDaybreak.class,
-                            SQLBirthday.class);
+                            SQLBirthday.class,
+                            SQLTrophy.class);
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();

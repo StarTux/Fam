@@ -61,6 +61,18 @@ commands:
     permission: fam.marriage
     usage: /divorce
 
+  trophy:
+    aliases: [trophies]
+    description: View trophies
+    permission: fam.trophy
+    usage: /trophy
+
+  trophyadmin:
+    aliases: [trophyadm]
+    description: Trophy admin command
+    permission: fam.admin
+    usage: /trophyadmin
+
 permissions:
 
   fam.admin:
@@ -77,4 +89,8 @@ permissions:
 
   fam.debug:
     description: View debug information
+    default: op
+
+  fam.trophy:
+    description: Use /trophy
     default: op
