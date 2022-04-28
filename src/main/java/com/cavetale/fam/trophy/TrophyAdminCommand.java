@@ -9,6 +9,7 @@ import com.cavetale.core.editor.Editor;
 import com.cavetale.fam.FamPlugin;
 import com.cavetale.fam.sql.Database;
 import com.winthier.playercache.PlayerCache;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -76,6 +77,8 @@ public final class TrophyAdminCommand extends AbstractCommand<FamPlugin> {
         return true;
     }
 
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yy/mm/dd");
+
     private void listCallback(CommandSender sender, List<SQLTrophy> trophies) {
         if (trophies.isEmpty()) {
             sender.sendMessage(text("No trophies found!", RED));
@@ -85,8 +88,9 @@ public final class TrophyAdminCommand extends AbstractCommand<FamPlugin> {
             String cmd = "/trophyadmin edit " + it.id;
             sender.sendMessage(join(separator(space()),
                                     text("id=" + it.id
+                                         + " " + it.category
                                          + " #" + it.placement
-                                         + " " + SQLTrophy.DATE_FORMAT.format(it.time)),
+                                         + " " + DATE_FORMAT.format(it.time)),
                                     it.getTitleComponent())
                                .clickEvent(runCommand(cmd))
                                .hoverEvent(showText(text(cmd, YELLOW))));
