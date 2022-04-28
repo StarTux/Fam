@@ -73,7 +73,7 @@ public final class TrophyDialogue {
         Gui gui = new Gui(trophies.plugin).size(GUI_SIZE);
         final int pageSize = GUI_SIZE - 9;
         final int pageOffset = pageIndex * pageSize;
-        final int pageCount = categoryList.size() / pageSize;
+        final int pageCount = (categoryList.size() - 1) / pageSize + 1;
         GuiOverlay.Builder builder = GuiOverlay.BLANK
             .builder(GUI_SIZE, GRAY)
             .layer(GuiOverlay.TOP_BAR, DARK_GRAY)
@@ -141,7 +141,7 @@ public final class TrophyDialogue {
         final int pageSize = GUI_SIZE - 9;
         final int pageOffset = thePageIndex * pageSize;
         List<SQLTrophy> trophyList = trophyMap.get(category);
-        final int pageCount = trophyList.size() / pageSize;
+        final int pageCount = (trophyList.size() - 1) / pageSize + 1;
         GuiOverlay.Builder builder = GuiOverlay.BLANK
             .builder(GUI_SIZE, color(0x777777))
             .layer(GuiOverlay.TOP_BAR, color(0x222222))
@@ -198,6 +198,7 @@ public final class TrophyDialogue {
                             it.setSeen(true);
                             Database.db().updateAsync(it, null, "seen");
                         }
+                        trophies.listener.refreshUnseenTrophies(List.of(target.uuid));
                         openCategory(player, category, thePageIndex);
                         click(player);
                     });
