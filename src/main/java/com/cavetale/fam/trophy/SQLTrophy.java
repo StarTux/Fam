@@ -111,23 +111,16 @@ public final class SQLTrophy implements EditMenuAdapter {
             String name = iconType.substring(7);
             try {
                 trophyCategory = TrophyCategory.valueOf(name.toUpperCase());
-            } catch (IllegalArgumentException iae) { }
-            if (trophyCategory != null) {
-                TrophyType trophyType = null;
-                for (TrophyType it : TrophyType.values()) {
-                    if (it.category == trophyCategory) {
-                        if (placement == 0) {
-                            trophyType = it;
-                            break;
-                        } else if (it.quality.ordinal() <= placement - 1) {
-                            trophyType = it;
-                        }
-                    }
+                List<TrophyType> types = TrophyType.of(trophyCategory);
+                if (!types.isEmpty()) {
+                    TrophyType trophyType = placement == 0
+                        ? types.get(0)
+                        : types.get(Math.min(placement, types.size()) - 1);
+                    return trophyType.mytems.createItemStack();
                 }
-                if (trophyType != null) return trophyType.mytems.createItemStack();
-            }
+            } catch (IllegalArgumentException iae) { }
         }
-            return Mytems.QUESTION_MARK.createIcon();
+        return Mytems.QUESTION_MARK.createIcon();
     }
 
     private static String th(int in) {
