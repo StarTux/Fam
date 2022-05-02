@@ -34,7 +34,7 @@ import static net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.g
            @Index(name = "owner", columnList = "owner", unique = false),
            @Index(name = "category", columnList = "category", unique = false),
        })
-public final class SQLTrophy implements EditMenuAdapter {
+public final class SQLTrophy implements EditMenuAdapter, Cloneable {
     @Id @EditMenuItem(settable = false, deletable = true)
     protected Integer id;
 
@@ -69,6 +69,18 @@ public final class SQLTrophy implements EditMenuAdapter {
 
     public SQLTrophy() { }
 
+    public SQLTrophy(final SQLTrophy o) {
+        this.id = o.id;
+        this.owner = o.owner;
+        this.category = o.category;
+        this.time = o.time;
+        this.placement = o.placement;
+        this.iconType = o.iconType;
+        this.title = o.title;
+        this.inscription = o.inscription;
+        this.seen = o.seen;
+    }
+
     public SQLTrophy(final UUID owner,
                      final String category,
                      final int placement,
@@ -97,6 +109,11 @@ public final class SQLTrophy implements EditMenuAdapter {
         this.iconType = "trophy:" + trophyCategory.name().toLowerCase();
         this.title = gson().serialize(title);
         this.inscription = inscription;
+    }
+
+    @Override
+    public SQLTrophy clone() {
+        return new SQLTrophy(this);
     }
 
     public ItemStack getIcon() {

@@ -9,8 +9,16 @@ import com.cavetale.core.editor.Editor;
 import com.cavetale.fam.FamPlugin;
 import com.cavetale.fam.sql.Database;
 import com.winthier.playercache.PlayerCache;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static net.kyori.adventure.text.Component.join;
@@ -41,6 +49,10 @@ public final class TrophyAdminCommand extends AbstractCommand<FamPlugin> {
             .completers(CommandArgCompleter.integer(i -> i > 0))
             .description("Edit a trophy")
             .playerCaller(this::edit);
+        rootNode.addChild("fromFile").arguments("<path>")
+            .completers(CommandArgCompleter.NULL)
+            .description("Create trophies from file with uuids or names")
+            .playerCaller(this::fromFile);
     }
 
     private boolean create(Player player, String[] args) {
@@ -123,5 +135,54 @@ public final class TrophyAdminCommand extends AbstractCommand<FamPlugin> {
                     };
                 }
             });
+    }
+
+    private boolean fromFile(Player player, String[] args) {
+        if (args.length != 1) return false;
+        Path path = Paths.get(args[0]);
+        if (!Files.isReadable(path)) {
+            throw new CommandWarn("Path not found: " + path);
+        }
+        List<String> lines;
+        try {
+            lines = Files.lines(path).toList();
+        } catch (IOException ioe) {
+            throw new CommandWarn("Error reading: " + ioe.getMessage());
+        }
+        Set<PlayerCache> targets = new HashSet<>();
+        for (String line : lines) {
+            line = line.strip();
+            if (line.isEmpty()) continue;
+            targets.add(PlayerCache.require(line));
+        }
+        if (targets.isEmpty()) {
+            throw new CommandWarn("File is empty!");
+        }
+        String names = targets.stream().map(PlayerCache::getName).collect(Collectors.joining(" "));
+        player.sendMessage(text("Creating trophies for " + names + "...", YELLOW));
+        SQLTrophy trophy = new SQLTrophy();
+        trophy.setCategory("");
+        trophy.setNow();
+        trophy.setIconType("trophy:cup");
+        trophy.setTitleComponent(text("test"));
+        trophy.setInscription("");
+        Editor.get().open(plugin, player, trophy, new EditMenuDelegate() {
+                @Override
+                public Runnable getSaveFunction(EditMenuNode node) {
+                    return () -> {
+                        List<SQLTrophy> trophies = new ArrayList<>(targets.size());
+                        for (PlayerCache target : targets) {
+                            SQLTrophy clone = trophy.clone();
+                            clone.setId(null);
+                            clone.setOwner(target.uuid);
+                            trophies.add(clone);
+                        }
+                        Trophies.insertTrophies(trophies);
+                        player.sendMessage(text(trophies.size() + " trophies created", GREEN));
+                        player.closeInventory();
+                    };
+                }
+            });
+        return true;
     }
 }
