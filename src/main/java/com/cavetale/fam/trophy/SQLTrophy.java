@@ -2,6 +2,7 @@ package com.cavetale.fam.trophy;
 
 import com.cavetale.core.editor.EditMenuAdapter;
 import com.cavetale.core.editor.EditMenuButton;
+import com.cavetale.core.editor.EditMenuException;
 import com.cavetale.core.editor.EditMenuItem;
 import com.cavetale.core.editor.EditMenuNode;
 import com.cavetale.mytems.Mytems;
@@ -20,6 +21,8 @@ import javax.persistence.Table;
 import lombok.Data;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -111,6 +114,21 @@ public final class SQLTrophy implements EditMenuAdapter, Cloneable {
         this.inscription = inscription;
     }
 
+    public SQLTrophy(final UUID owner,
+                     final String category,
+                     final int placement,
+                     final ItemStack item,
+                     final Component title,
+                     final String inscription) {
+        this.owner = owner;
+        this.category = category;
+        this.time = new Date();
+        this.placement = placement;
+        this.iconType = "item:" + item.getType().getKey().getKey() + (item.hasItemMeta() ? item.getItemMeta().getAsString() : "");
+        this.title = gson().serialize(title);
+        this.inscription = inscription;
+    }
+
     @Override
     public SQLTrophy clone() {
         return new SQLTrophy(this);
@@ -135,6 +153,11 @@ public final class SQLTrophy implements EditMenuAdapter, Cloneable {
                         : types.get(Math.min(placement, types.size()) - 1);
                     return trophyType.mytems.createItemStack();
                 }
+            } catch (IllegalArgumentException iae) { }
+        }
+        if (iconType.startsWith("item:")) {
+            try {
+                return Bukkit.getItemFactory().createItemStack(iconType.substring(5));
             } catch (IllegalArgumentException iae) { }
         }
         return Mytems.QUESTION_MARK.createIcon();
@@ -206,6 +229,31 @@ public final class SQLTrophy implements EditMenuAdapter, Cloneable {
                 @Override
                 public void onClick(Player player, ClickType type) {
                     player.sendMessage("Meep meep!");
+                }
+            },
+            new EditMenuButton() {
+                @Override
+                public ItemStack getMenuIcon() {
+                    return Mytems.MAGNET.createIcon();
+                }
+
+                @Override
+                public List<Component> getTooltip() {
+                    return List.of(text("Copy item in hand", GRAY));
+                }
+
+                @Override
+                public void onClick(Player player, ClickType type) {
+                    ItemStack item = player.getInventory().getItemInMainHand();
+                    if (item == null || item.getType() == Material.AIR) {
+                        throw new EditMenuException("Hand is empty!");
+                    }
+                    Mytems mytems = Mytems.forItem(item);
+                    if (mytems != null) {
+                        SQLTrophy.this.iconType = "mytems:" + mytems.id;
+                        return;
+                    }
+                    SQLTrophy.this.iconType = "item:" + item.getType().getKey().getKey() + (item.hasItemMeta() ? item.getItemMeta().getAsString() : "");
                 }
             });
     }
