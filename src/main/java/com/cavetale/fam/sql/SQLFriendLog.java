@@ -1,6 +1,7 @@
 package com.cavetale.fam.sql;
 
 import com.cavetale.fam.Relation;
+import com.winthier.sql.SQLRow;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -10,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Table(name = "friend_log")
-public final class SQLFriendLog {
+public final class SQLFriendLog implements SQLRow {
     @Id
     private Integer id;
     @Column(nullable = false)

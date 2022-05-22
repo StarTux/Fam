@@ -9,6 +9,7 @@ import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.item.trophy.TrophyCategory;
 import com.cavetale.mytems.item.trophy.TrophyQuality;
 import com.cavetale.mytems.item.trophy.TrophyType;
+import com.winthier.sql.SQLRow;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,7 +38,7 @@ import static net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.g
            @Index(name = "owner", columnList = "owner", unique = false),
            @Index(name = "category", columnList = "category", unique = false),
        })
-public final class SQLTrophy implements EditMenuAdapter, Cloneable {
+public final class SQLTrophy implements SQLRow, EditMenuAdapter, Cloneable {
     @Id @EditMenuItem(settable = false, deletable = true)
     protected Integer id;
 

@@ -1,15 +1,16 @@
 package com.cavetale.fam.sql;
 
+import com.cavetale.fam.FamPlugin;
+import com.winthier.sql.SQLRow;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
-import com.cavetale.fam.FamPlugin;
 
 @Data
 @Table(name = "progress")
-public final class SQLProgress {
+public final class SQLProgress implements SQLRow {
     @Id
     private Integer id;
     @Column(nullable = false, unique = true)

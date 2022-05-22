@@ -1,6 +1,7 @@
 package com.cavetale.fam.sql;
 
 import com.cavetale.fam.Timer;
+import com.winthier.sql.SQLRow;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -11,7 +12,7 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Data @Table(name = "birthdays")
-public final class SQLBirthday {
+public final class SQLBirthday implements SQLRow {
     @Id
     private Integer id;
     @Column(nullable = false, unique = true)

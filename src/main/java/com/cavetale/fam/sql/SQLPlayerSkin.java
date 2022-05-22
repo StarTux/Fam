@@ -1,5 +1,6 @@
 package com.cavetale.fam.sql;
 
+import com.winthier.sql.SQLRow;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -20,7 +21,7 @@ import lombok.Data;
  * This table maps unique Mojang texture URLs to their content.
  */
 @Data @Table(name = "skins")
-public final class SQLPlayerSkin {
+public final class SQLPlayerSkin implements SQLRow {
     @Id
     private Integer id;
     @Column(length = 255, unique = true)

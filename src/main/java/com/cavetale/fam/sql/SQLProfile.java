@@ -3,6 +3,7 @@ package com.cavetale.fam.sql;
 import com.cavetale.fam.util.Json;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import com.winthier.sql.SQLRow;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
  * This table is a mapping of player UUIDs to their profile.
  */
 @Data @Table(name = "profiles")
-public final class SQLProfile {
+public final class SQLProfile implements SQLRow {
     @Id
     private Integer id;
     @Column(nullable = false, unique = true)

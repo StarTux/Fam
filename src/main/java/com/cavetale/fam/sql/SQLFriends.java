@@ -3,6 +3,7 @@ package com.cavetale.fam.sql;
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
 import com.winthier.playercache.PlayerCache;
+import com.winthier.sql.SQLRow;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -17,7 +18,7 @@ import lombok.Data;
        indexes = {@Index(name = "relation", columnList = "relation"),
                   @Index(name = "player_a", columnList = "player_a"),
                   @Index(name = "player_b", columnList = "player_b")})
-public final class SQLFriends implements Comparable<SQLFriends> {
+public final class SQLFriends implements SQLRow, Comparable<SQLFriends> {
     @Id
     private Integer id;
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package com.cavetale.fam.sql;
 
+import com.winthier.sql.SQLRow;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -11,7 +12,7 @@ import lombok.Data;
  * said row will be updated with the new dayId.
  */
 @Data @Table(name = "daybreak")
-public final class SQLDaybreak {
+public final class SQLDaybreak implements SQLRow {
     @Id
     private Integer id;
     @Column(nullable = false)
