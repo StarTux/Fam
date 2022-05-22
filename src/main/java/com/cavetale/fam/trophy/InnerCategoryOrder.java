@@ -17,8 +17,6 @@ public final class InnerCategoryOrder implements Comparator<SQLTrophy> {
         if (a.seen != b.seen) {
             return a.seen ? 1 : -1;
         }
-        int placement = Integer.compare(a.placement, b.placement);
-        if (placement != 0) return placement;
         return Long.compare(b.time.getTime(), a.time.getTime());
     }
 
