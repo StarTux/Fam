@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.event.item.PlayerAbsorbItemEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
@@ -15,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,13 +32,21 @@ public final class GiftListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    void onEntityPickupItem(EntityPickupItemEvent event) {
-        if (event.getItem().getItemStack().getType() != plugin.getTodaysGift()) return;
-        if (!(event.getEntity() instanceof Player)) return;
-        if (event.getItem().getThrower() == null) return;
-        Player thrower = Bukkit.getPlayer(event.getItem().getThrower());
+    private void onEntityPickupItem(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        onPickup(player, event.getItem());
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onPlayerAbsorbItem(PlayerAbsorbItemEvent event) {
+        onPickup(event.getPlayer(), event.getItem());
+    }
+
+    private void onPickup(Player player, Item item) {
+        if (item.getItemStack().getType() != plugin.getTodaysGift()) return;
+        if (item.getThrower() == null) return;
+        Player thrower = Bukkit.getPlayer(item.getThrower());
         if (thrower == null) return;
-        Player player = (Player) event.getEntity();
         if (player.equals(thrower)) return;
         if (!player.hasPermission("fam.friends")) return;
         if (!thrower.hasPermission("fam.friends")) return;
