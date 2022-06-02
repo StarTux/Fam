@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -76,7 +77,8 @@ public final class Highscore {
                              String category,
                              TrophyCategory trophyCategory,
                              Component title,
-                             Function<Highscore, String> inscriptionMaker) {
+                             Function<Highscore, String> inscriptionMaker,
+                             Consumer<SQLTrophy> editor) {
         List<SQLTrophy> trophies = new ArrayList<>();
         for (Highscore hi : of(scoreMap)) {
             if (hi.score <= 0) break;
@@ -88,7 +90,20 @@ public final class Highscore {
                                        inscriptionMaker.apply(hi)));
         }
         if (trophies.isEmpty()) return 0;
+        if (editor != null) {
+            for (SQLTrophy trophy : trophies) {
+                editor.accept(trophy);
+            }
+        }
         Trophies.insertTrophies(trophies);
         return trophies.size();
+    }
+
+    public static int reward(Map<UUID, Integer> scoreMap,
+                             String category,
+                             TrophyCategory trophyCategory,
+                             Component title,
+                             Function<Highscore, String> inscriptionMaker) {
+        return reward(scoreMap, category, trophyCategory, title, inscriptionMaker, null);
     }
 }
