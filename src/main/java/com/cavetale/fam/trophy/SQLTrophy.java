@@ -152,7 +152,7 @@ public final class SQLTrophy implements SQLRow, EditMenuAdapter, Cloneable {
                     TrophyType trophyType = placement == 0
                         ? types.get(0)
                         : types.get(Math.min(placement, types.size()) - 1);
-                    return trophyType.mytems.createItemStack();
+                    return trophyType.createItemStack();
                 }
             } catch (IllegalArgumentException iae) { }
         }
@@ -162,6 +162,22 @@ public final class SQLTrophy implements SQLRow, EditMenuAdapter, Cloneable {
             } catch (IllegalArgumentException iae) { }
         }
         return Mytems.QUESTION_MARK.createIcon();
+    }
+
+    public void setIcon(ItemStack item) {
+        this.iconType = "item:" + item.getType().getKey().getKey() + (item.hasItemMeta() ? item.getItemMeta().getAsString() : "");
+    }
+
+    public void setIcon(Material material) {
+        this.iconType = "item:" + material.getKey().getKey();
+    }
+
+    public void setIcon(Mytems mytems) {
+        this.iconType = "mytems:" + mytems.id;
+    }
+
+    public void setIcon(TrophyCategory trophyCategory) {
+        this.iconType = "trophy:" + trophyCategory.name().toLowerCase();
     }
 
     private static String th(int in) {
