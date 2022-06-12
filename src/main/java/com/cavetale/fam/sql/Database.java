@@ -44,14 +44,14 @@ public final class Database {
     }
 
     public static boolean init() {
-        db().registerTables(SQLFriends.class,
-                            SQLProfile.class,
-                            SQLProgress.class,
-                            SQLFriendLog.class,
-                            SQLPlayerSkin.class,
-                            SQLDaybreak.class,
-                            SQLBirthday.class,
-                            SQLTrophy.class);
+        db().registerTables(List.of(SQLFriends.class,
+                                    SQLProfile.class,
+                                    SQLProgress.class,
+                                    SQLFriendLog.class,
+                                    SQLPlayerSkin.class,
+                                    SQLDaybreak.class,
+                                    SQLBirthday.class,
+                                    SQLTrophy.class));
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();

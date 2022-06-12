@@ -3,6 +3,7 @@ package com.cavetale.fam.trophy;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.item.font.Glyph;
 import com.cavetale.mytems.item.trophy.TrophyCategory;
+import com.cavetale.mytems.item.trophy.TrophyType;
 import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,10 +14,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import static com.cavetale.core.font.Unicode.subscript;
 import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -29,18 +29,28 @@ public final class Highscore {
     protected int placement;
 
     public Component name() {
-        if (this == ZERO) return text("???", GRAY);
-        Player player = Bukkit.getPlayer(uuid);
-        return player != null
-            ? player.displayName()
-            : text(PlayerCache.nameForUuid(uuid), WHITE);
+        return this == ZERO
+            ? text("???", GRAY)
+            : text(PlayerCache.nameForUuid(uuid));
     }
 
     public Component sidebar() {
         return join(noSeparators(),
                     (placement > 0 ? Glyph.toComponent("" + placement) : Mytems.QUESTION_MARK.component),
                     text(subscript(score), WHITE),
-                    Component.space(),
+                    space(),
+                    name());
+    }
+
+    public Component sidebar(TrophyCategory trophyCategory) {
+        List<TrophyType> types = TrophyType.of(trophyCategory);
+        final TrophyType trophyType = placement > 0 && !types.isEmpty()
+            ? types.get(Math.min(placement, types.size()) - 1)
+            : null;
+        return join(noSeparators(),
+                    (placement > 0 ? Glyph.toComponent("" + placement) : Mytems.QUESTION_MARK.component),
+                    text(subscript(score), WHITE),
+                    (trophyType != null ? trophyType : space()),
                     name());
     }
 
@@ -49,6 +59,15 @@ public final class Highscore {
         for (int i = 0; i < 10; i += 1) {
             Highscore hi = i < highscore.size() ? highscore.get(i) : ZERO;
             result.add(hi.sidebar());
+        }
+        return result;
+    }
+
+    public static List<Component> sidebar(List<Highscore> highscore, TrophyCategory trophyCategory) {
+        List<Component> result = new ArrayList<>();
+        for (int i = 0; i < 10; i += 1) {
+            Highscore hi = i < highscore.size() ? highscore.get(i) : ZERO;
+            result.add(hi.sidebar(trophyCategory));
         }
         return result;
     }
