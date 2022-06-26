@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import static com.cavetale.core.font.Unicode.subscript;
@@ -21,7 +22,7 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
-@RequiredArgsConstructor
+@Getter @RequiredArgsConstructor
 public final class Highscore {
     public static final Highscore ZERO = new Highscore(new UUID(0L, 0L), 0);
     public final UUID uuid;

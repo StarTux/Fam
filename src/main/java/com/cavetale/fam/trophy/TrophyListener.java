@@ -1,7 +1,7 @@
 package com.cavetale.fam.trophy;
 
-import com.cavetale.sidebar.PlayerSidebarEvent;
-import com.cavetale.sidebar.Priority;
+import com.cavetale.core.event.hud.PlayerHudEvent;
+import com.cavetale.core.event.hud.PlayerHudPriority;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -49,14 +49,14 @@ public final class TrophyListener implements Listener {
     }
 
     @EventHandler
-    void onPlayerSidebar(PlayerSidebarEvent event) {
+    void onPlayerHud(PlayerHudEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPermission("fam.trophy")) return;
         if (playersWithUnseenTrophies.contains(player.getUniqueId())) {
-            event.add(trophies.plugin, Priority.DEFAULT, List.of(//text("You have a", AQUA),
-                                                                 join(noSeparators(),
-                                                                      text("You have a ", AQUA),
-                                                                      text("/trophy", YELLOW))));
+            event.sidebar(PlayerHudPriority.DEFAULT, List.of(//text("You have a", AQUA),
+                                                             join(noSeparators(),
+                                                                  text("You have a ", AQUA),
+                                                                  text("/trophy", YELLOW))));
         }
     }
 

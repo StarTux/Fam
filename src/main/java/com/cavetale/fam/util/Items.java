@@ -82,13 +82,6 @@ public final class Items {
                   .collect(Collectors.toList()));
     }
 
-    public static String getDisplayName(Material material) {
-        if (material.isItem()) {
-            return new ItemStack(material).getI18NDisplayName();
-        }
-        return Text.toCamelCase(material);
-    }
-
     public static ItemStack makeSkull(Player player) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
