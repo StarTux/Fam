@@ -1,7 +1,6 @@
 package com.cavetale.fam.sql;
 
 import com.winthier.sql.SQLDatabase;
-import java.util.UUID;
 import org.junit.Test;
 
 public final class SQLTest {

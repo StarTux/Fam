@@ -30,6 +30,7 @@ public final class SQLFriends implements SQLRow, Comparable<SQLFriends> {
         if (uuids.length != 2) throw new IllegalStateException("length=" + uuids.length);
         this.playerA = uuids[0];
         this.playerB = uuids[1];
+        this.changed = new Date();
     }
 
     /**
