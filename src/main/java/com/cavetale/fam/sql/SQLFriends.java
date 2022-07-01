@@ -3,34 +3,25 @@ package com.cavetale.fam.sql;
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
 import com.winthier.playercache.PlayerCache;
+import com.winthier.sql.SQLRow.Name;
+import com.winthier.sql.SQLRow.NotNull;
+import com.winthier.sql.SQLRow.UniqueKey;
 import com.winthier.sql.SQLRow;
+import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
-@Data
-@Table(name = "friends",
-       uniqueConstraints = {@UniqueConstraint(columnNames = {"player_a", "player_b"})},
-       indexes = {@Index(name = "relation", columnList = "relation"),
-                  @Index(name = "player_a", columnList = "player_a"),
-                  @Index(name = "player_b", columnList = "player_b")})
+@Data @NotNull @Name("friends")
+@UniqueKey({"player_a", "player_b"})
 public final class SQLFriends implements SQLRow, Comparable<SQLFriends> {
-    @Id
-    private Integer id;
-    @Column(nullable = false)
-    UUID playerA;
-    @Column(nullable = false)
-    UUID playerB;
-    @Column(nullable = false, columnDefinition = "INT(3) DEFAULT 0")
-    int friendship;
-    @Column(nullable = false, columnDefinition = "INT(8) DEFAULT 0")
-    int dailyGift;
-    @Column(nullable = true)
-    String relation;
+    @Id private Integer id;
+    @Keyed private UUID playerA;
+    @Keyed private UUID playerB;
+    @Default("0") private int friendship;
+    @Default("0") private int dailyGift;
+    @Keyed @Nullable private String relation;
+    // When did they change their status, especially marriage
+    @Default("NOW()") private Date changed;
     private transient String cachedName; // Cached for sorting
 
     public SQLFriends() { }

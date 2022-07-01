@@ -103,7 +103,8 @@ public final class Database {
 
     public static void setRelation(SQLFriends row, UUID you, Relation relation) {
         row.setRelationFor(you, relation);
-        db().update(row, "relation");
+        row.setChanged(new Date());
+        db().update(row, "relation", "changed");
     }
 
     public static SQLFriends findFriends(UUID a, UUID b) {
