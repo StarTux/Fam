@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -336,5 +337,25 @@ public final class Database {
             result.put(row.getPlayer(), row);
         }
         return result;
+    }
+
+    public static SQLProfile findProfile(UUID uuid) {
+        return db().find(SQLProfile.class).eq("uuid", uuid).findUnique();
+    }
+
+    public static SQLPlayerSkin findPlayerSkin(String url) {
+        return db().find(SQLPlayerSkin.class).eq("textureUrl", url).findUnique();
+    }
+
+    public static void findPlayerProfileAsync(UUID uuid, Consumer<PlayerProfile> callback) {
+        db().find(SQLProfile.class).eq("uuid", uuid).findUniqueAsync(row -> {
+                if (row == null) {
+                    callback.accept(null);
+                    return;
+                }
+                PlayerProfile profile = Bukkit.createProfile(uuid, row.getName());
+                row.fill(profile);
+                callback.accept(profile);
+            });
     }
 }
