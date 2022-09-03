@@ -5,6 +5,7 @@ import com.cavetale.fam.util.Colors;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -32,6 +33,7 @@ public final class MarriageListener implements Listener {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (!(event.getRightClicked() instanceof Player)) return;
         Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.SPECTATOR) return;
         if (player.isSneaking()) return;
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand != null && hand.getAmount() > 0) return;
