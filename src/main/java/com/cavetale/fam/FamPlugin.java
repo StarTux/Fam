@@ -71,7 +71,6 @@ public final class FamPlugin extends JavaPlugin {
         divorceCommand.enable();
         profileCommand.enable();
         eventListener.enable();
-        marriageListener.enable();
         trophies.enable();
         if (Timer.isValentineSeason()) {
             new SidebarListener(this).enable();
@@ -80,6 +79,7 @@ public final class FamPlugin extends JavaPlugin {
         Timer.enable();
         NetworkServer networkServer = NetworkServer.current();
         if (networkServer.category.isSurvival()) {
+            marriageListener.enable();
             new GiftListener(this).enable();
             new WeddingRingListener(this).enable();
             getLogger().info("Survival features enabled: Gifts, Wedding Ring");
