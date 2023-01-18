@@ -59,6 +59,7 @@ public final class FamPlugin extends JavaPlugin {
     private final SQLDatabase database = new SQLDatabase(this);
     private List<Reward> rewardList;
     private boolean doDaybreak;
+    private final FamFriendsSupplier famFriendsSupplier = new FamFriendsSupplier();
 
     @Override
     public void onEnable() {
@@ -94,6 +95,7 @@ public final class FamPlugin extends JavaPlugin {
             Database.storePlayerProfileAsync(player).fetchPlayerSkinAsync();
         }
         Gui.enable(this);
+        famFriendsSupplier.register();
     }
 
     public List<Reward> getRewardList() {
@@ -136,6 +138,7 @@ public final class FamPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        famFriendsSupplier.unregister();
         Gui.disable(this);
         database.waitForAsyncTask();
         database.close();

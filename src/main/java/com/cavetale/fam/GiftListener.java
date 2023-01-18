@@ -7,6 +7,7 @@ import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.sql.SQLProgress;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Text;
+import com.cavetale.mytems.Mytems;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -43,6 +44,7 @@ public final class GiftListener implements Listener {
     }
 
     private void onPickup(Player player, Item item) {
+        if (Mytems.forItem(item.getItemStack()) != null) return;
         if (item.getItemStack().getType() != plugin.getTodaysGift()) return;
         if (item.getThrower() == null) return;
         Player thrower = Bukkit.getPlayer(item.getThrower());
