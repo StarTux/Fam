@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.event.friends.PlayerShareFriendshipGiftEvent;
 import com.cavetale.core.event.item.PlayerAbsorbItemEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.sql.Database;
@@ -23,6 +24,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.inventory.ItemStack;
 
 @RequiredArgsConstructor
 public final class GiftListener implements Listener {
@@ -44,8 +46,9 @@ public final class GiftListener implements Listener {
     }
 
     private void onPickup(Player player, Item item) {
-        if (Mytems.forItem(item.getItemStack()) != null) return;
-        if (item.getItemStack().getType() != plugin.getTodaysGift()) return;
+        ItemStack itemStack = item.getItemStack();
+        if (Mytems.forItem(itemStack) != null) return;
+        if (itemStack.getType() != plugin.getTodaysGift()) return;
         if (item.getThrower() == null) return;
         Player thrower = Bukkit.getPlayer(item.getThrower());
         if (thrower == null) return;
@@ -85,12 +88,12 @@ public final class GiftListener implements Listener {
                 }
                 Bukkit.getScheduler().runTask(plugin, () -> callback(player, playerProgress,
                                                                      thrower, throwerProgress,
-                                                                     hearts, oldFriendship, newFriendship));
+                                                                     hearts, oldFriendship, newFriendship, itemStack));
             });
     }
 
     private void callback(Player player, SQLProgress playerProgress, Player thrower, SQLProgress throwerProgress,
-                          Component hearts, int oldFriendship, int newFriendship) {
+                          Component hearts, int oldFriendship, int newFriendship, ItemStack itemStack) {
         if (player.isOnline()) {
             player.sendMessage(Component.text().color(Colors.HOTPINK)
                                .content("Your friendship with " + thrower.getName() + " increased! ")
@@ -123,6 +126,7 @@ public final class GiftListener implements Listener {
                 valentineRewardReminder(thrower);
             }
             PluginPlayerEvent.Name.SHARE_FRIENDSHIP_ITEM.call(plugin, thrower);
+            new PlayerShareFriendshipGiftEvent(thrower, player, itemStack).callEvent();
         }
     }
 
