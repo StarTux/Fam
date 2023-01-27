@@ -106,7 +106,7 @@ public final class BirthdayDialogue {
                    .append(DefaultFont.guiBlankOverlay(size, BG))
                    .append(Component.text("Your birthday is on " + birthdayName + "?", COLOR))
                    .build());
-        gui.setItem(size - 8, Items.button(Mytems.CHECKED_CHECKBOX, ChatColor.GREEN + "Yes, my birthday is on " + birthdayName), click -> {
+        gui.setItem(size - 8, Items.button(Mytems.OK, ChatColor.GREEN + "Yes, my birthday is on " + birthdayName), click -> {
                 if (!click.isLeftClick()) return;
                 confirm(player, false);
                 gui.close(player);
@@ -118,7 +118,7 @@ public final class BirthdayDialogue {
                 confirm(player, true);
                 click(player);
             });
-        gui.setItem(size - 2, Items.button(Mytems.CROSSED_CHECKBOX, ChatColor.RED + "No, go back!"), click -> {
+        gui.setItem(size - 2, Items.button(Mytems.NO, ChatColor.RED + "No, go back!"), click -> {
                 if (!click.isLeftClick()) return;
                 gui.close(player);
                 month = null;
