@@ -78,9 +78,6 @@ public final class FamPlugin extends JavaPlugin {
         profileCommand.enable();
         eventListener.enable();
         trophies.enable();
-        if (Timer.isValentineSeason()) {
-            new SidebarListener(this).enable();
-        }
         Database.init();
         Timer.enable();
         NetworkServer networkServer = NetworkServer.current();
@@ -89,8 +86,12 @@ public final class FamPlugin extends JavaPlugin {
             new GiftListener(this).enable();
             new WeddingRingListener(this).enable();
             getLogger().info("Survival features enabled: Gifts, Wedding Ring");
+            if (Timer.isValentineSeason()) {
+                getLogger().info("Valentine sidebar enabled");
+                new SidebarListener(this).enable();
+            }
         }
-        if (networkServer == NetworkServer.CAVETALE || networkServer == NetworkServer.BETA) {
+        if (networkServer == NetworkServer.HUB || networkServer == NetworkServer.BETA) {
             computePossibleDaybreak();
             doDaybreak = true;
             getLogger().info("Daybreak enabled");
@@ -535,6 +536,10 @@ public final class FamPlugin extends JavaPlugin {
             gui.setItem(i, Items.text(icon, text), click -> {
                     if (!player.isValid()) return;
                     if (!click.isLeftClick()) return;
+                    if (!NetworkServer.current().isSurvival()) {
+                        player.sendMessage(text("You can only open rewards in survival mode", RED));
+                        return;
+                    }
                     if (!canClaim) {
                         player.playSound(player.getLocation(), UI_BUTTON_CLICK, MASTER, 0.5f, 0.5f);
                         giveReward(player, index, false);
