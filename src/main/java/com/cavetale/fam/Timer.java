@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.connect.NetworkServer;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,12 +39,12 @@ public final class Timer {
     }
 
     public static boolean isValentineSeason() {
-        return false; // isValentinesDay() || (month == 2 && day <= 14);
+        return NetworkServer.current() == NetworkServer.BETA
+            || month == 2 && (day >= 12 && day <= 19);
     }
 
     public static boolean isValentinesDay() {
-        return month == 2
-            && (day == 14 || (day == 15 && hour <= 12));
+        return month == 2 && day == 14;
     }
 
     private static void tick() {

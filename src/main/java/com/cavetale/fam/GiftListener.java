@@ -5,7 +5,6 @@ import com.cavetale.core.event.item.PlayerAbsorbItemEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
-import com.cavetale.fam.sql.SQLProgress;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
@@ -75,25 +74,15 @@ public final class GiftListener implements Listener {
                 Component hearts = won
                     ? Component.text().content(sb.toString()).color(Colors.HOTPINK).append(Component.text(Text.HEART_ICON, Colors.GOLD)).build()
                     : Component.text(sb.toString(), Colors.HOTPINK);
-                final SQLProgress playerProgress;
-                final SQLProgress throwerProgress;
                 if (Timer.isValentineSeason()) {
                     Database.addProgress(a);
                     Database.addProgress(b);
-                    playerProgress = Database.findProgress(b);
-                    throwerProgress = Database.findProgress(a);
-                } else {
-                    playerProgress = null;
-                    throwerProgress = null;
                 }
-                Bukkit.getScheduler().runTask(plugin, () -> callback(player, playerProgress,
-                                                                     thrower, throwerProgress,
-                                                                     hearts, oldFriendship, newFriendship, itemStack));
+                Bukkit.getScheduler().runTask(plugin, () -> callback(player, thrower, hearts, oldFriendship, newFriendship, itemStack));
             });
     }
 
-    private void callback(Player player, SQLProgress playerProgress, Player thrower, SQLProgress throwerProgress,
-                          Component hearts, int oldFriendship, int newFriendship, ItemStack itemStack) {
+    private void callback(Player player, Player thrower, Component hearts, int oldFriendship, int newFriendship, ItemStack itemStack) {
         if (player.isOnline()) {
             player.sendMessage(Component.text().color(Colors.HOTPINK)
                                .content("Your friendship with " + thrower.getName() + " increased! ")
@@ -103,9 +92,6 @@ public final class GiftListener implements Listener {
             if (player.hasPermission("fam.debug")) {
                 player.sendMessage(Component.text("Debug Friendship: " + oldFriendship + " => " + newFriendship,
                                                   Colors.DARK_GRAY));
-            }
-            if (playerProgress != null && playerProgress.isRewardAvailable()) {
-                valentineRewardReminder(player);
             }
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
             player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
@@ -122,9 +108,6 @@ public final class GiftListener implements Listener {
             }
             thrower.playSound(thrower.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
             thrower.getWorld().spawnParticle(Particle.HEART, thrower.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
-            if (throwerProgress != null && throwerProgress.isRewardAvailable()) {
-                valentineRewardReminder(thrower);
-            }
             PluginPlayerEvent.Name.SHARE_FRIENDSHIP_ITEM.call(plugin, thrower);
             new PlayerShareFriendshipGiftEvent(thrower, player, itemStack).callEvent();
         }

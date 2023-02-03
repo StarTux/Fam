@@ -1,7 +1,6 @@
 package com.cavetale.fam.sql;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
-import com.cavetale.fam.FamPlugin;
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
 import com.cavetale.fam.trophy.SQLTrophy;
@@ -20,6 +19,7 @@ import java.util.function.Consumer;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import static com.cavetale.fam.FamPlugin.plugin;
 
 public final class Database {
     private Database() { }
@@ -27,7 +27,7 @@ public final class Database {
     private static final Map<UUID, Cache> PLAYER_CACHE = new HashMap<>();
 
     public static SQLDatabase db() {
-        return FamPlugin.getInstance().getDatabase();
+        return plugin().getDatabase();
     }
 
     public static final class Cache {
@@ -209,32 +209,42 @@ public final class Database {
     }
 
     public static SQLProgress findProgress(UUID uuid) {
-        SQLProgress row = db().find(SQLProgress.class)
+        return db().find(SQLProgress.class)
             .eq("player", uuid)
+            .eq("year", Timer.getYear())
             .findUnique();
-        if (row != null) {
-            Bukkit.getScheduler().runTask(FamPlugin.getInstance(), () -> {
+    }
+
+    public static void findProgress(UUID uuid, Consumer<SQLProgress> callback) {
+        db().scheduleAsyncTask(() -> {
+                SQLProgress row = findProgress(uuid);
+                Bukkit.getScheduler().runTask(plugin(), () -> callback.accept(row));
+                if (row != null) {
                     Cache cache = PLAYER_CACHE.get(uuid);
                     if (cache != null) cache.score = row.getScore();
-                });
-        }
-        return row;
+                }
+            });
     }
 
     public static void addProgress(UUID uuid) {
-        String sql = "INSERT INTO `" + db().getTable(SQLProgress.class).getTableName() + "`"
-            + " (player, score, claimed)"
-            + " VALUES ('" + uuid + "', 1, 0)"
-            + " ON DUPLICATE KEY UPDATE `score` = `score` + 1";
-        db().executeUpdate(sql);
+        db().update(SQLProgress.class)
+            .where(c -> c
+                   .eq("player", uuid)
+                   .eq("year", Timer.getYear()))
+            .add("score", 1)
+            .async(i -> {
+                    if (i != 0) return;
+                    db().insertAsync(new SQLProgress(uuid, Timer.getYear(), 1, 0), null);
+                });
     }
 
-    public static boolean claimProgress(SQLProgress row) {
-        String sql = "UPDATE `" + db().getTable(SQLProgress.class).getTableName() + "`"
-            + " SET `claimed` = " + (row.getClaimed() + 1)
-            + " WHERE `id` = " + row.getId()
-            + " AND `claimed` = " + row.getClaimed();
-        return 0 != db().executeUpdate(sql);
+    public static void claimProgress(SQLProgress row, Consumer<Boolean> callback) {
+        db().update(SQLProgress.class)
+            .row(row)
+            .atomic("claimed", row.getClaimed() + 1)
+            .async(i -> {
+                    callback.accept(i != 0);
+                });
     }
 
     public static void fillCacheAsync(Player player) {
@@ -259,11 +269,11 @@ public final class Database {
                 }
                 SQLProgress progress = findProgress(uuid);
                 cache.score = progress != null ? progress.getScore() : 0;
-                Bukkit.getScheduler().runTask(FamPlugin.getInstance(), () -> {
+                Bukkit.getScheduler().runTask(plugin(), () -> {
                         Player player = Bukkit.getPlayer(uuid);
                         if (player == null) return;
                         PLAYER_CACHE.put(uuid, cache);
-                        PluginPlayerEvent.Name.PLAYER_SESSION_LOADED.call(FamPlugin.getInstance(), player);
+                        PluginPlayerEvent.Name.PLAYER_SESSION_LOADED.call(plugin(), player);
                     });
             });
     }

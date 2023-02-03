@@ -1,6 +1,7 @@
 package com.cavetale.fam;
 
 import com.cavetale.core.connect.NetworkServer;
+import com.cavetale.core.event.item.PlayerReceiveItemsEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
@@ -13,9 +14,9 @@ import com.cavetale.fam.trophy.Trophies;
 import com.cavetale.fam.trophy.TrophyDialogue;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Gui;
-import com.cavetale.fam.util.Items;
 import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.util.Items;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.connect.Connect;
 import com.winthier.playercache.PlayerCache;
@@ -34,14 +35,18 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import static org.bukkit.Sound.*;
-import static org.bukkit.SoundCategory.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import static com.cavetale.core.font.Unicode.tiny;
+import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static org.bukkit.Sound.*;
+import static org.bukkit.SoundCategory.*;
 
 @Getter
 public final class FamPlugin extends JavaPlugin {
@@ -102,35 +107,54 @@ public final class FamPlugin extends JavaPlugin {
         if (rewardList == null) {
             rewardList = new ArrayList<>(10);
             // 1
-            rewardList.add(new Reward().item(new ItemStack(Material.DIAMOND, 4), 5));
+            rewardList.add(new Reward()
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(new ItemStack(Material.DIAMOND, 4), 4));
             // 2
             rewardList.add(new Reward()
-                        .item(new ItemStack(Material.MELON_SLICE, 16), 5)
-                        .item(new ItemStack(Material.APPLE, 16), 6));
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(new ItemStack(Material.MELON_SLICE, 16), 4)
+                           .item(new ItemStack(Material.APPLE, 16), 6));
             // 3
-            rewardList.add(new Reward().item(new ItemStack(Material.COOKIE, 16), 5));
+            rewardList.add(new Reward()
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(new ItemStack(Material.COOKIE, 16), 4));
             // 4
-            rewardList.add(new Reward().item(new ItemStack(Material.PUMPKIN_PIE, 16), 5));
+            rewardList.add(new Reward()
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(new ItemStack(Material.PUMPKIN_PIE, 16), 4));
             // 5
             rewardList.add(new Reward()
-                        .item(new ItemStack(Material.NETHER_STAR))
-                        .item(new ItemStack(Material.OBSIDIAN), 4));
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(Mytems.RUBY.createItemStack(), 4));
             // 6
-            rewardList.add(new Reward().item(new ItemStack(Material.CAKE), 11));
+            rewardList.add(new Reward()
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(new ItemStack(Material.CAKE), 10));
             // 7
             rewardList.add(new Reward()
-                        .item(new ItemStack(Material.DIAMOND))
-                        .item(Mytems.KITTY_COIN.createItemStack(), 4)
-                        .item(new ItemStack(Material.MELON_SLICE, 16), 6));
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(Mytems.KITTY_COIN.createItemStack(), 4)
+                           .item(new ItemStack(Material.MELON_SLICE, 16), 6));
             // 8
-            rewardList.add(new Reward().item(new ItemStack(Material.GOLDEN_APPLE), 27));
+            rewardList.add(new Reward()
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(new ItemStack(Material.GOLDEN_APPLE), 26));
             // 9
-            rewardList.add(new Reward().item(new ItemStack(Material.NETHERITE_INGOT), 5));
+            rewardList.add(new Reward()
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(new ItemStack(Material.NETHERITE_INGOT), 4));
             // 10
-            rewardList.add(new Reward().item(Mytems.WEDDING_RING.createItemStack()));
+            rewardList.add(new Reward()
+                           .item(Mytems.LOVE_LETTER.createItemStack())
+                           .item(Mytems.WEDDING_RING.createItemStack()));
             for (int i = 0; i < 4; i += 1) {
-                rewardList.add(new Reward().item(new ItemStack(Material.DIAMOND), 3 * 9));
-                rewardList.add(new Reward().item(new ItemStack(Material.EMERALD), 3 * 9));
+                rewardList.add(new Reward()
+                               .item(Mytems.LOVE_LETTER.createItemStack())
+                               .item(new ItemStack(Material.DIAMOND), 4));
+                rewardList.add(new Reward()
+                               .item(Mytems.LOVE_LETTER.createItemStack())
+                               .item(new ItemStack(Material.EMERALD), 4));
             }
         }
         return rewardList;
@@ -159,13 +183,13 @@ public final class FamPlugin extends JavaPlugin {
     }
 
     public static ItemStack makeTodaysGiftIcon(boolean withClick) {
-        final List<Component> lines = List.of(Component.text("Today's Friendship Gift", Colors.HOTPINK),
-                                              Component.text("One Point per Player.", Colors.YELLOW),
-                                              Component.text("New Item every Day.", Colors.YELLOW),
+        final List<Component> lines = List.of(text("Today's Friendship Gift", Colors.HOTPINK),
+                                              text("One Point per Player.", Colors.YELLOW),
+                                              text("New Item every Day.", Colors.YELLOW),
                                               Component.empty(),
-                                              Component.text("Click to view only people", Colors.SILVER),
-                                              Component.text("missing a gift from you.", Colors.SILVER));
-        return Items.button(getTodaysGift(), withClick ? lines : lines.subList(0, 3));
+                                              text("Click to view only people", Colors.SILVER),
+                                              text("missing a gift from you.", Colors.SILVER));
+        return Items.text(new ItemStack(getTodaysGift()), withClick ? lines : lines.subList(0, 3));
     }
 
     public static ItemStack makeSkull(Player perspective, SQLFriends row, SQLBirthday birthday) {
@@ -191,22 +215,22 @@ public final class FamPlugin extends JavaPlugin {
             }
         }
         List<Component> text = new ArrayList<>();
-        text.add(Component.text(name, color));
+        text.add(text(name, color));
         text.add(Text.toHeartString(row.getHearts()));
         if (perspective.hasPermission("fam.debug")) {
-            text.add(Component.text("Debug Friendship: " + row.getFriendship(), Colors.DARK_GRAY));
+            text.add(text("Debug Friendship: " + row.getFriendship(), Colors.DARK_GRAY));
         }
         if (relation != null) {
-            text.add(Component.text(relation.humanName, Colors.HOTPINK));
+            text.add(text(relation.humanName, Colors.HOTPINK));
         }
         if (row.dailyGiftGiven()) {
-            text.add(Component.text("\u2611 Daily Gift", Colors.HOTPINK));
+            text.add(text("\u2611 Daily Gift", Colors.HOTPINK));
         } else {
-            text.add(Component.text("\u2610 Daily Gift", Colors.DARK_GRAY));
+            text.add(text("\u2610 Daily Gift", Colors.DARK_GRAY));
         }
         if (birthday != null) {
-            text.add(Component.text("Birthday ", DARK_GRAY)
-                     .append(Component.text(birthday.getBirthdayName(), Colors.GOLD)));
+            text.add(text("Birthday ", DARK_GRAY)
+                     .append(text(birthday.getBirthdayName(), Colors.GOLD)));
         }
         Items.text(meta, text);
         item.setItemMeta(meta);
@@ -220,7 +244,7 @@ public final class FamPlugin extends JavaPlugin {
         meta.setPlayerProfile(profile);
         String name = PlayerCache.nameForUuid(uuid);
         if (name == null) name = profile.getName();
-        Items.text(meta, List.of(Component.text(name, WHITE)));
+        Items.text(meta, List.of(text(name, WHITE)));
         item.setItemMeta(meta);
         return item;
     }
@@ -317,8 +341,8 @@ public final class FamPlugin extends JavaPlugin {
                   .layer(GuiOverlay.BLANK, type.menuColor)
                   .layer(GuiOverlay.TOP_BAR, TextColor.lerp(0.5f, type.menuColor, BLACK))
                   .title(pageCount > 1
-                         ? Component.text(type.menuTitle + " " + pageNumber + "/" + pageCount, WHITE)
-                         : Component.text(type.menuTitle, WHITE))
+                         ? text(type.menuTitle + " " + pageNumber + "/" + pageCount, WHITE)
+                         : text(type.menuTitle, WHITE))
                   .build());
         for (int i = 0; i < pageSize; i += 1) {
             int friendsIndex = offset + i;
@@ -332,14 +356,14 @@ public final class FamPlugin extends JavaPlugin {
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
-            gui.setItem(0, Items.button(Mytems.ARROW_LEFT, Component.text("Previous Page", GRAY)), c -> {
+            gui.setItem(0, Mytems.ARROW_LEFT.createIcon(List.of(text("Previous Page", GRAY))), c -> {
                     openFriendsGui(player, friendsList, birthdays, type, to);
                     click(player);
                 });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
-            gui.setItem(8, Items.button(Mytems.ARROW_RIGHT, Component.text("Next Page", GRAY)), c -> {
+            gui.setItem(8, Mytems.ARROW_RIGHT.createIcon(List.of(text("Next Page", GRAY))), c -> {
                     openFriendsGui(player, friendsList, birthdays, type, to);
                     click(player);
                 });
@@ -354,8 +378,7 @@ public final class FamPlugin extends JavaPlugin {
                 openOnlineNotGiftedGui(player, 1);
             });
         gui.setItem(3,
-                    Items.button(Mytems.HEART.createItemStack(),
-                                 List.of(Component.text("Friends", Colors.HOTPINK))),
+                    Mytems.HEART.createIcon(List.of(text("Friends", Colors.HOTPINK))),
                     click -> {
                         if (!click.isLeftClick()) return;
                         if (type == FriendsListView.FRIENDS) {
@@ -372,13 +395,13 @@ public final class FamPlugin extends JavaPlugin {
             .collect(Collectors.toList());
         List<Component> birthdayTooltip = new ArrayList<>();
         Collections.sort(birthdayNameList);
-        birthdayTooltip.add(Component.text("Birthdays " + Timer.getTodaysName(), Colors.GOLD));
+        birthdayTooltip.add(text("Birthdays " + Timer.getTodaysName(), Colors.GOLD));
         for (String name : birthdayNameList) {
-            birthdayTooltip.add(Component.text(Unicode.BULLET_POINT.character + " ", GRAY)
-                                .append(Component.text(name, WHITE)));
+            birthdayTooltip.add(text(Unicode.BULLET_POINT.character + " ", GRAY)
+                                .append(text(name, WHITE)));
         }
         gui.setItem(5,
-                    Items.button(Mytems.STAR.createItemStack(), birthdayTooltip),
+                    Mytems.STAR.createIcon(birthdayTooltip),
                     click -> {
                         if (!click.isLeftClick()) return;
                         if (type == FriendsListView.BIRTHDAYS) {
@@ -432,7 +455,7 @@ public final class FamPlugin extends JavaPlugin {
         }
         gui.title(GuiOverlay.BLANK.builder(size, DARK_GRAY)
                   .layer(GuiOverlay.TOP_BAR, color)
-                  .title(Component.text(playerCache.name, WHITE))
+                  .title(text(playerCache.name, WHITE))
                   .build());
         gui.size(size);
         for (int i = 0; i < row.getHearts(); i += 1) {
@@ -441,17 +464,17 @@ public final class FamPlugin extends JavaPlugin {
         for (int i = row.getHearts(); i < 5; i += 1) {
             gui.setItem(2 + i, Mytems.EMPTY_HEART.createItemStack());
         }
-        gui.setItem(18 + 2, Items.button(Mytems.TURN_RIGHT, Component.text("/tpa " + playerCache.name, LIGHT_PURPLE)), click -> {
+        gui.setItem(18 + 2, Mytems.TURN_RIGHT.createIcon(List.of(text("/tpa " + playerCache.name, LIGHT_PURPLE))), click -> {
                 Bukkit.dispatchCommand(player, "tpa " + playerCache.name);
             });
         if (birthday != null) {
-            gui.setItem(18 + 3, Items.button(Mytems.STAR, Component.text("Birthday: " + birthday.getBirthdayName(), Colors.HOTPINK)));
+            gui.setItem(18 + 3, Mytems.STAR.createIcon(List.of(text("Birthday: " + birthday.getBirthdayName(), Colors.HOTPINK))));
         }
         gui.setItem(18 + 4, makeSkull(player, row, birthday));
         if (row.dailyGiftAvailable()) {
             gui.setItem(18 + 5, makeTodaysGiftIcon(true));
         }
-        gui.setItem(18 + 6, Items.button(Mytems.GOLDEN_CUP, Component.text("Trophies", GOLD)), click -> {
+        gui.setItem(18 + 6, Mytems.GOLDEN_CUP.createIcon(List.of(text("Trophies", GOLD))), click -> {
                 new TrophyDialogue(instance.trophies, playerCache).open(player);
                 click(player);
             });
@@ -464,10 +487,7 @@ public final class FamPlugin extends JavaPlugin {
     }
 
     public static void openRewardsGui(Player player) {
-        instance.database.scheduleAsyncTask(() -> {
-                SQLProgress progress = Database.findProgress(player.getUniqueId());
-                Bukkit.getScheduler().runTask(instance, () -> openRewardsGui(player, progress));
-            });
+        Database.findProgress(player.getUniqueId(), row -> openRewardsGui(player, row));
     }
 
     public static Gui openRewardsGui(Player player, SQLProgress row) {
@@ -475,36 +495,44 @@ public final class FamPlugin extends JavaPlugin {
         int claimed = row != null ? row.getClaimed() : 0;
         int score = row != null ? row.getScore() : 0;
         int available = row != null ? row.getAvailable() : 0;
+        final int size = instance.getRewardList().size();
+        final int guiSize = ((size - 1) / 9) * 9 + 18;
+        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(guiSize, Colors.HOTPINK)
+            .title(text("Valentine Score " + score, WHITE));
         Gui gui = new Gui(instance);
-        int size = instance.getRewardList().size();
-        int guiSize = ((size - 1) / 9) * 9 + 18;
         gui.size(guiSize);
-        gui.title(Component.text("Valentine Score " + score, Colors.HOTPINK));
         for (int i = 0; i < size; i += 1) {
             final int index = i;
             List<Component> text = new ArrayList<>();
-            text.add(Component.text("Reward #" + (i + 1), Colors.HOTPINK));
-            Material material;
+            text.add(textOfChildren(text("Reward ", GRAY), Mytems.HEART, text("" + (i + 1), Colors.HOTPINK)));
+            ItemStack icon;
             boolean canClaim;
             if (claimed > i) {
-                text.add(Component.text("Claimed", Colors.HOTPINK));
-                material = Material.PINK_SHULKER_BOX;
+                text.add(textOfChildren(Mytems.CHECKED_CHECKBOX, text(" Claimed", Colors.HOTPINK)));
+                icon = Mytems.CHECKED_CHECKBOX.createIcon();
                 canClaim = false;
             } else if (available > i) {
-                text.add(Component.text("Available", Colors.HOTPINK));
+                text.add(text("Available", Colors.HOTPINK));
                 if (claimed != i) {
-                    text.add(Component.text("Claim previous rewards first", YELLOW));
+                    text.add(text("Claim your previous", YELLOW));
+                    text.add(text("rewards first.", YELLOW));
+                    text.add(empty());
+                    text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Open preview", GRAY)));
                     canClaim = false;
                 } else {
+                    text.add(empty());
+                    text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Claim this reward", GRAY)));
                     canClaim = true;
                 }
-                material = Material.CHEST;
+                icon = Mytems.CHECKBOX.createIcon();
             } else {
-                text.add(Component.text("Required: " + (i * 10 + 10), RED));
-                material = Material.ENDER_CHEST;
+                text.add(textOfChildren(text(tiny("required score "), GRAY), text((i * 10 + 10), RED)));
+                text.add(empty());
+                text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Open preview", GRAY)));
                 canClaim = false;
+                icon = Mytems.NO.createIcon();
             }
-            gui.setItem(i, Items.button(material, text), click -> {
+            gui.setItem(i, Items.text(icon, text), click -> {
                     if (!player.isValid()) return;
                     if (!click.isLeftClick()) return;
                     if (!canClaim) {
@@ -513,12 +541,15 @@ public final class FamPlugin extends JavaPlugin {
                         return;
                     }
                     player.playSound(player.getLocation(), UI_BUTTON_CLICK, MASTER, 0.5f, 1.0f);
-                    if (Database.claimProgress(row)) {
-                        giveReward(player, index, true);
-                    }
+                    Database.claimProgress(row, success -> {
+                            if (success) {
+                                giveReward(player, index, true);
+                            }
+                        });
                 });
         }
         gui.setItem(guiSize - 5, makeTodaysGiftIcon(true));
+        gui.title(builder.build());
         gui.open(player);
         player.playSound(player.getLocation(), BLOCK_CHEST_OPEN, MASTER, 0.5f, 1.2f);
         return gui;
@@ -531,20 +562,25 @@ public final class FamPlugin extends JavaPlugin {
     }
 
     /**
-     * Must be called AFTER the progress was claimed in the database.
+     * If isForReal=true, this must be called AFTER the progress was
+     * claimed in the database.
      */
     public static Gui giveReward(Player player, int index, boolean isForReal) {
+        final int size = 3 * 9;
         Reward reward = instance.getRewardList().get(index);
+        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, (isForReal ? WHITE : Colors.HOTPINK))
+            .title(isForReal
+                   ? textOfChildren(text("Valentine Reward ", WHITE), Mytems.HEART, text((index + 1), WHITE))
+                   : textOfChildren(text("Valentine Reward Preview ", WHITE), Mytems.HEART, text((index + 1), WHITE)));
+        if (isForReal) builder.layer(GuiOverlay.HOLES, Colors.HOTPINK);
         Gui gui = new Gui(instance);
-        gui.size(3 * 9);
-        gui.title(isForReal
-                  ? Component.text("Valentine Reward #" + (index + 1), Colors.HOTPINK)
-                  : Component.text("Valentine Reward Preview #" + (index + 1), Colors.HOTPINK));
+        gui.size(size);
+        gui.title(builder.build());
         if (reward.getItems().size() == 1) {
             gui.getInventory().setItem(9 + 4, reward.getItems().get(0).clone());
         } else {
-            List<Integer> slots = new ArrayList<>(3 * 9);
-            for (int i = 0; i < 3 * 9; i += 1) slots.add(i);
+            List<Integer> slots = new ArrayList<>(size);
+            for (int i = 0; i < size; i += 1) slots.add(i);
             Collections.sort(slots, (a, b) -> Integer.compare(slotDist(a, 4, 1), slotDist(b, 4, 1)));
             for (int i = 0; i < reward.getItems().size(); i += 1) {
                 gui.getInventory().setItem(slots.get(i), reward.getItems().get(i).clone());
@@ -553,24 +589,21 @@ public final class FamPlugin extends JavaPlugin {
         gui.setEditable(isForReal);
         if (isForReal) {
             gui.onClose(event -> {
-                    for (ItemStack item : gui.getInventory()) {
-                        if (item == null || item.getAmount() == 0) continue;
-                        for (ItemStack drop : player.getInventory().addItem(item).values()) {
-                            player.getWorld().dropItem(player.getEyeLocation(), drop);
-                        }
-                    }
+                    PlayerReceiveItemsEvent itemsEvent = new PlayerReceiveItemsEvent(player, gui.getInventory());
+                    itemsEvent.giveItems();
+                    itemsEvent.callEvent();
+                    itemsEvent.dropItems();
                     if (index == 9) {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "titles unlockset " + player.getName() + " Cupid");
                     }
                     player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
-                    player.sendMessage(Component.text("Reward #" + (index + 1) + " claimed", Colors.HOTPINK));
-                });
-        } else {
-            gui.setItem(Gui.OUTSIDE, null, evt -> {
-                    openRewardsGui(player);
-                    click(player);
+                    player.sendMessage(text("Reward #" + (index + 1) + " claimed", Colors.HOTPINK));
                 });
         }
+        gui.setItem(Gui.OUTSIDE, null, evt -> {
+                openRewardsGui(player);
+                click(player);
+            });
         gui.open(player);
         return gui;
     }
@@ -578,6 +611,7 @@ public final class FamPlugin extends JavaPlugin {
     public static void showHighscore(Player player, int page) {
         instance.database.scheduleAsyncTask(() -> {
                 List<SQLProgress> list = instance.database.find(SQLProgress.class)
+                    .eq("year", Timer.getYear())
                     .gt("score", 0)
                     .orderByDescending("score")
                     .findList();
@@ -588,7 +622,7 @@ public final class FamPlugin extends JavaPlugin {
     public static Gui showHighscore(Player player, List<SQLProgress> list, int pageNumber) {
         if (!player.isValid()) return null;
         if (list.isEmpty()) {
-            player.sendMessage(Component.text("No highscores to show", RED));
+            player.sendMessage(text("No highscores to show", RED));
             return null;
         }
         Gui gui = new Gui(instance);
@@ -597,7 +631,7 @@ public final class FamPlugin extends JavaPlugin {
         int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
         gui.size(pageSize + 9);
-        gui.title(Component.text("Valentine Highscore " + pageNumber + "/" + pageCount, Colors.HOTPINK));
+        gui.title(text("Valentine Highscore " + pageNumber + "/" + pageCount, Colors.HOTPINK));
         int score = -1;
         int rank = 0;
         for (int i = 0; i < list.size(); i += 1) {
@@ -614,23 +648,23 @@ public final class FamPlugin extends JavaPlugin {
             ItemStack itemStack = makeSkull(row.getPlayer());
             ItemMeta meta = itemStack.getItemMeta();
             List<Component> text = new ArrayList<>();
-            text.add(Component.text(PlayerCache.nameForUuid(row.getPlayer())));
-            text.add(Component.text("Rank #", Colors.BLUE).append(Component.text("" + rank, WHITE)));
-            text.add(Component.text("Score ", Colors.BLUE).append(Component.text("" + score, WHITE)));
+            text.add(text(PlayerCache.nameForUuid(row.getPlayer())));
+            text.add(text("Rank #", Colors.BLUE).append(text("" + rank, WHITE)));
+            text.add(text("Score ", Colors.BLUE).append(text("" + score, WHITE)));
             Items.text(meta, text);
             itemStack.setItemMeta(meta);
             gui.setItem(menuIndex, itemStack);
         }
         if (pageIndex > 0) {
             int to = pageNumber - 1;
-            gui.setItem(3 * 9, Items.button(Mytems.ARROW_LEFT, Component.text("Previous Page", GRAY)), c -> {
+            gui.setItem(3 * 9, Mytems.ARROW_LEFT.createIcon(List.of(text("Previous Page", GRAY))), c -> {
                     player.playSound(player.getLocation(), UI_BUTTON_CLICK, MASTER, 0.5f, 1.0f);
                     showHighscore(player, list, to);
                 });
         }
         if (pageIndex < pageCount - 1) {
             int to = pageNumber + 1;
-            gui.setItem(3 * 9 + 8, Items.button(Mytems.ARROW_RIGHT, Component.text("Next Page", GRAY)), c -> {
+            gui.setItem(3 * 9 + 8, Mytems.ARROW_RIGHT.createIcon(List.of(text("Next Page", GRAY))), c -> {
                     player.playSound(player.getLocation(), UI_BUTTON_CLICK, MASTER, 0.5f, 1.0f);
                     showHighscore(player, list, to);
                 });
@@ -688,5 +722,9 @@ public final class FamPlugin extends JavaPlugin {
 
     private static void click(Player player) {
         player.playSound(player.getLocation(), UI_BUTTON_CLICK, MASTER, 0.5f, 1.0f);
+    }
+
+    public static FamPlugin plugin() {
+        return instance;
     }
 }

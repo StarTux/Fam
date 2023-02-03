@@ -1,29 +1,30 @@
 package com.cavetale.fam.sql;
 
 import com.cavetale.fam.FamPlugin;
+import com.winthier.sql.SQLRow.Name;
+import com.winthier.sql.SQLRow.NotNull;
+import com.winthier.sql.SQLRow.UniqueKey;
 import com.winthier.sql.SQLRow;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
 
-@Data
-@Table(name = "progress")
+@Data @NotNull
+@Name("progress")
+@UniqueKey({"player", "year"})
 public final class SQLProgress implements SQLRow {
-    @Id
-    private Integer id;
-    @Column(nullable = false, unique = true)
-    UUID player;
-    @Column(nullable = false, columnDefinition = "INT(3) DEFAULT 0")
-    int score;
-    @Column(nullable = false, columnDefinition = "INT(3) DEFAULT 0")
-    int claimed;
+    @Id private Integer id;
+    private UUID player;
+    @Default("2020") private int year;
+    @Default("0") private int score;
+    @Default("0") private int claimed;
 
     public SQLProgress() { }
 
-    public SQLProgress(final UUID player) {
+    public SQLProgress(final UUID player, final int year, final int score, final int claimed) {
         this.player = player;
+        this.year = year;
+        this.score = score;
+        this.claimed = claimed;
     }
 
     public int getAvailable() {
