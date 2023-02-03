@@ -94,3 +94,7 @@ permissions:
   fam.trophy:
     description: Use /trophy
     default: op
+
+  fam.valentine:
+    description: Use /valentine
+    default: op
