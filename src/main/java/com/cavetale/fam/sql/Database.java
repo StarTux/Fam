@@ -233,8 +233,7 @@ public final class Database {
                    .eq("year", Timer.getYear()))
             .add("score", 1)
             .async(i -> {
-                    if (i != 0) return;
-                    db().insertAsync(new SQLProgress(uuid, Timer.getYear(), 1, 0), null);
+                    if (i == 0) db().insertAsync(new SQLProgress(uuid, Timer.getYear(), 1, 0), null);
                     Cache cache = PLAYER_CACHE.get(uuid);
                     if (cache != null) cache.score += 1;
                 });
