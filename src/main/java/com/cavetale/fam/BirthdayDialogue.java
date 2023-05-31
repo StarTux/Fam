@@ -2,6 +2,7 @@ package com.cavetale.fam;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.DefaultFont;
+import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.util.Gui;
@@ -60,7 +61,10 @@ public final class BirthdayDialogue {
         }
         gui.setItem(Gui.OUTSIDE, null, click -> {
                 if (!click.isLeftClick()) return;
-                new ProfileDialogue(plugin).open(player);
+                Session session = Session.of(player);
+                if (session.isReady()) {
+                    new ProfileDialogue(plugin, session).open(player);
+                }
             });
         gui.open(player);
         return gui;

@@ -3,6 +3,7 @@ package com.cavetale.fam.trophy;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.fam.ProfileDialogue;
+import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.util.Gui;
 import com.cavetale.mytems.Mytems;
@@ -126,7 +127,10 @@ public final class TrophyDialogue {
         gui.setItem(Gui.OUTSIDE, null, click -> {
                 if (!click.isLeftClick()) return;
                 if (owner) {
-                    new ProfileDialogue(trophies.plugin).open(player);
+                    Session session = Session.of(player);
+                    if (session.isReady()) {
+                        new ProfileDialogue(trophies.plugin, session).open(player);
+                    }
                 } else {
                     trophies.plugin.openFriendGui(player, target.uuid, 1);
                 }

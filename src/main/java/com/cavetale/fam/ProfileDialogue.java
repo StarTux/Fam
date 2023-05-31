@@ -1,6 +1,9 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.font.GlyphPolicy;
 import com.cavetale.core.font.GuiOverlay;
+import com.cavetale.core.text.LineWrap;
+import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLFriends;
@@ -21,9 +24,14 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import static com.cavetale.mytems.util.Items.text;
+import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.event.ClickEvent.suggestCommand;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextColor.color;
 import static net.kyori.adventure.text.format.TextDecoration.*;
@@ -36,6 +44,7 @@ import static org.bukkit.SoundCategory.*;
 @RequiredArgsConstructor
 public final class ProfileDialogue {
     private final FamPlugin plugin;
+    private final Session session;
     private UUID uuid;
     private SQLBirthday birthday;
     private List<SQLFriends> friends;
@@ -83,6 +92,7 @@ public final class ProfileDialogue {
         gui.setItem(4, Items.makeSkull(player));
         int friendsIndex = 19;
         int marriedIndex = 20;
+        int statusIndex = 23;
         int birthdayIndex = 24;
         int trophyIndex = 25;
         // Friends
@@ -144,6 +154,31 @@ public final class ProfileDialogue {
                 }
             });
         gui.setItem(marriedIndex, marriedIcon);
+        // Status
+        final String statusMessage = session.getPlayerRow().getStatusMessage();
+        final List<Component> statusLore = new ArrayList<>();
+        statusLore.add(text("Status Message", AQUA));
+        if (statusMessage != null) {
+            statusLore.addAll(new LineWrap()
+                              .emoji(player.hasPermission("chat.emoji"))
+                              .glyphPolicy(GlyphPolicy.PUBLIC)
+                              .tooltip(false)
+                              .componentMaker(str -> text(str, WHITE))
+                              .wrap(statusMessage));
+            statusLore.add(empty());
+        }
+        statusLore.addAll(new LineWrap()
+                          .componentMaker(str -> text(str, GRAY, ITALIC))
+                          .wrap(":mouse_left: Set your status message"));
+        final ItemStack statusItem = text(new ItemStack(Material.WRITABLE_BOOK), statusLore);
+        gui.setItem(statusIndex, statusItem, click -> {
+                if (!click.isLeftClick()) return;
+                click(player);
+                player.sendMessage(textOfChildren(Mytems.MOUSE_LEFT, text(" Click here to edit your status message", GREEN, BOLD))
+                                   .hoverEvent(text("/setstatus", GRAY))
+                                   .clickEvent(suggestCommand("/setstatus "))
+                                   .insertion(statusMessage != null ? statusMessage : ""));
+            });
         // Birthday
         ItemStack birthdayIcon;
         if (birthday != null) {

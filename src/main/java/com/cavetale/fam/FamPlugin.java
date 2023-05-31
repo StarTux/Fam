@@ -5,6 +5,8 @@ import com.cavetale.core.event.item.PlayerReceiveItemsEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
+import com.cavetale.fam.session.Session;
+import com.cavetale.fam.session.Sessions;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLDaybreak;
@@ -58,6 +60,7 @@ public final class FamPlugin extends JavaPlugin {
     private final LoveCommand loveCommand = new LoveCommand(this);
     private final DivorceCommand divorceCommand = new DivorceCommand(this);
     private final ProfileCommand profileCommand = new ProfileCommand(this);
+    private final SetStatusCommand setStatusCommand = new SetStatusCommand(this);
     private final PlayerListener eventListener = new PlayerListener(this);
     private final MarriageListener marriageListener = new MarriageListener(this);
     protected final Trophies trophies = new Trophies(this);
@@ -65,6 +68,7 @@ public final class FamPlugin extends JavaPlugin {
     private List<Reward> rewardList;
     private boolean doDaybreak;
     private final FamFriendsSupplier famFriendsSupplier = new FamFriendsSupplier();
+    private final Sessions sessions = new Sessions();
 
     @Override
     public void onEnable() {
@@ -76,10 +80,12 @@ public final class FamPlugin extends JavaPlugin {
         loveCommand.enable();
         divorceCommand.enable();
         profileCommand.enable();
+        setStatusCommand.enable();
         eventListener.enable();
         trophies.enable();
         Database.init();
         Timer.enable();
+        sessions.enable();
         NetworkServer networkServer = NetworkServer.current();
         if (networkServer.category.isSurvival()) {
             marriageListener.enable();
@@ -420,7 +426,10 @@ public final class FamPlugin extends JavaPlugin {
                 });
         } else {
             gui.setItem(Gui.OUTSIDE, null, click -> {
-                    new ProfileDialogue(instance).open(player);
+                    Session session = Session.of(player);
+                    if (session.isReady()) {
+                        new ProfileDialogue(instance, session).open(player);
+                    }
                     click(player);
                 });
         }

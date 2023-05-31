@@ -1,35 +1,27 @@
 package com.cavetale.fam;
 
-import java.util.Collections;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
+import com.cavetale.core.command.AbstractCommand;
+import com.cavetale.core.command.CommandWarn;
+import com.cavetale.fam.session.Session;
 import org.bukkit.entity.Player;
 
-@RequiredArgsConstructor
-public final class ProfileCommand implements TabExecutor {
-    private final FamPlugin plugin;
-
-    public void enable() {
-        plugin.getCommand("profile").setExecutor(this);
+public final class ProfileCommand extends AbstractCommand<FamPlugin> {
+    public ProfileCommand(final FamPlugin plugin) {
+        super(plugin, "profile");
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String alias, final String[] args) {
-        if (args.length != 0) return false;
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("[fam:profile] Player expected");
-            return true;
+    protected void onEnable() {
+        rootNode.description("View your profile page")
+            .denyTabCompletion()
+            .playerCaller(this::profile);
+    }
+
+    private void profile(Player player) {
+        Session session = Session.of(player);
+        if (!session.isReady()) {
+            throw new CommandWarn("Session not ready. Try again later!");
         }
-        Player player = (Player) sender;
-        new ProfileDialogue(plugin).open(player);
-        return true;
-    }
-
-    @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
-        return Collections.emptyList();
+        new ProfileDialogue(plugin, session).open(player);
     }
 }

@@ -6,6 +6,7 @@ import com.cavetale.fam.Timer;
 import com.cavetale.fam.trophy.SQLTrophy;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
+import com.winthier.sql.SQLRow;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,15 +45,20 @@ public final class Database {
         }
     }
 
+    public static List<Class<? extends SQLRow>> getAllDatabaseTables() {
+        return List.of(SQLFriends.class,
+                       SQLProfile.class,
+                       SQLProgress.class,
+                       SQLFriendLog.class,
+                       SQLPlayerSkin.class,
+                       SQLDaybreak.class,
+                       SQLBirthday.class,
+                       SQLTrophy.class,
+                       SQLPlayer.class);
+    }
+
     public static boolean init() {
-        db().registerTables(List.of(SQLFriends.class,
-                                    SQLProfile.class,
-                                    SQLProgress.class,
-                                    SQLFriendLog.class,
-                                    SQLPlayerSkin.class,
-                                    SQLDaybreak.class,
-                                    SQLBirthday.class,
-                                    SQLTrophy.class));
+        db().registerTables(getAllDatabaseTables());
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();

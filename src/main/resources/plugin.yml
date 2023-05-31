@@ -8,7 +8,7 @@ api-version: 1.19
 author: StarTux
 website: https://github.com/StarTux/Fam
 
-depend: [Core, SQL, Mytems, PlayerCache, Connect]
+depend: [Core, SQL, Mytems, PlayerCache, Connect, Chat]
 softdepend: []
 
 commands:
@@ -73,6 +73,12 @@ commands:
     permission: fam.admin
     usage: /trophyadmin
 
+  setstatus:
+    aliases: []
+    description: Set your status
+    permission: fam.setstatus
+    usage: /setstatus <message>
+
 permissions:
 
   fam.admin:
@@ -97,4 +103,8 @@ permissions:
 
   fam.valentine:
     description: Use /valentine
+    default: op
+
+  fam.setstatus:
+    description: Use /setstatus
     default: op
