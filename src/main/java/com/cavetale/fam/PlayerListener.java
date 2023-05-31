@@ -47,6 +47,8 @@ public final class PlayerListener implements Listener {
     @EventHandler
     private void onChatMessage(ChatMessageEvent event) {
         if (event.getMessage().getSender() == null) return;
+        Player player = Bukkit.getPlayer(event.getMessage().getSender());
+        if (player == null || !player.hasPermission("fam.setstatus")) return;
         Session session = Session.of(event.getMessage().getSender());
         if (session == null || !session.isReady() || session.getPlayerRow().getStatusMessage() == null) return;
         event.getMessage().setStatusMessage(session.getPlayerRow().getStatusMessage());

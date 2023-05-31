@@ -155,30 +155,32 @@ public final class ProfileDialogue {
             });
         gui.setItem(marriedIndex, marriedIcon);
         // Status
-        final String statusMessage = session.getPlayerRow().getStatusMessage();
-        final List<Component> statusLore = new ArrayList<>();
-        statusLore.add(text("Status Message", AQUA));
-        if (statusMessage != null) {
+        if (player.hasPermission("fam.setstatus")) {
+            final String statusMessage = session.getPlayerRow().getStatusMessage();
+            final List<Component> statusLore = new ArrayList<>();
+            statusLore.add(text("Status Message", AQUA));
+            if (statusMessage != null) {
+                statusLore.addAll(new LineWrap()
+                                  .emoji(player.hasPermission("chat.emoji"))
+                                  .glyphPolicy(GlyphPolicy.PUBLIC)
+                                  .tooltip(false)
+                                  .componentMaker(str -> text(str, WHITE))
+                                  .wrap(statusMessage));
+                statusLore.add(empty());
+            }
             statusLore.addAll(new LineWrap()
-                              .emoji(player.hasPermission("chat.emoji"))
-                              .glyphPolicy(GlyphPolicy.PUBLIC)
-                              .tooltip(false)
-                              .componentMaker(str -> text(str, WHITE))
-                              .wrap(statusMessage));
-            statusLore.add(empty());
+                              .componentMaker(str -> text(str, GRAY, ITALIC))
+                              .wrap(":mouse_left: Set your status message"));
+            final ItemStack statusItem = text(new ItemStack(Material.WRITABLE_BOOK), statusLore);
+            gui.setItem(statusIndex, statusItem, click -> {
+                    if (!click.isLeftClick()) return;
+                    click(player);
+                    player.sendMessage(textOfChildren(Mytems.MOUSE_LEFT, text(" Click here to edit your status message", GREEN, BOLD))
+                                       .hoverEvent(text("/setstatus", GRAY))
+                                       .clickEvent(suggestCommand("/setstatus "))
+                                       .insertion(statusMessage != null ? statusMessage : ""));
+                });
         }
-        statusLore.addAll(new LineWrap()
-                          .componentMaker(str -> text(str, GRAY, ITALIC))
-                          .wrap(":mouse_left: Set your status message"));
-        final ItemStack statusItem = text(new ItemStack(Material.WRITABLE_BOOK), statusLore);
-        gui.setItem(statusIndex, statusItem, click -> {
-                if (!click.isLeftClick()) return;
-                click(player);
-                player.sendMessage(textOfChildren(Mytems.MOUSE_LEFT, text(" Click here to edit your status message", GREEN, BOLD))
-                                   .hoverEvent(text("/setstatus", GRAY))
-                                   .clickEvent(suggestCommand("/setstatus "))
-                                   .insertion(statusMessage != null ? statusMessage : ""));
-            });
         // Birthday
         ItemStack birthdayIcon;
         if (birthday != null) {
