@@ -2,10 +2,13 @@ package com.cavetale.fam;
 
 import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandArgCompleter;
+import com.cavetale.core.command.CommandNode;
 import com.cavetale.core.command.CommandWarn;
+import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLFriends;
+import com.cavetale.fam.sql.SQLPlayer;
 import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,7 @@ import org.bukkit.entity.Player;
 import static net.kyori.adventure.text.Component.join;
 import static net.kyori.adventure.text.Component.newline;
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
@@ -45,7 +49,7 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
             .description("Account transfer")
             .completers(PlayerCache.NAME_COMPLETER, PlayerCache.NAME_COMPLETER)
             .senderCaller(this::transfer);
-        var friendshipNode = rootNode.addChild("friendship")
+        CommandNode friendshipNode = rootNode.addChild("friendship")
             .description("Friendship increase options");
         friendshipNode.addChild("mutual")
             .arguments("<amount> <playerA> <playerB...>")
@@ -61,6 +65,16 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
                         CommandArgCompleter.NULL,
                         CommandArgCompleter.REPEAT)
             .senderCaller(this::friendshipSingle);
+        CommandNode statusNode = rootNode.addChild("status")
+            .description("Status message commands");
+        statusNode.addChild("get").arguments("<player>")
+            .description("Get player status message")
+            .completers(PlayerCache.NAME_COMPLETER)
+            .senderCaller(this::statusGet);
+        statusNode.addChild("reset").arguments("<player>")
+            .description("Reset player status message")
+            .completers(PlayerCache.NAME_COMPLETER)
+            .senderCaller(this::statusReset);
     }
 
     boolean info(CommandSender sender, String[] args) {
@@ -198,6 +212,34 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         int count = Database.increaseSingleFriendship(main.uuid, set, amount);
         sender.sendMessage(count + " friendships of " + main.name + " increased by " + amount + ": "
                            + friends.stream().map(PlayerCache::getName).collect(Collectors.joining(", ")));
+        return true;
+    }
+
+    private boolean statusGet(CommandSender sender, String[] args) {
+        if (args.length != 1) return false;
+        PlayerCache target = PlayerCache.require(args[0]);
+        SQLPlayer row = Database.db().find(SQLPlayer.class).eq("uuid", target.uuid).findUnique();
+        if (row == null || row.getStatusMessage() == null) {
+            throw new CommandWarn("Player does not set status message: " + target.name);
+        }
+        sender.sendMessage(textOfChildren(text("Status message of " + target.name + ": ", YELLOW),
+                                          text(row.getStatusMessage(), GRAY)));
+        return true;
+    }
+
+    private boolean statusReset(CommandSender sender, String[] args) {
+        if (args.length != 1) return false;
+        PlayerCache target = PlayerCache.require(args[0]);
+        int result = Database.db().update(SQLPlayer.class)
+            .where(w -> w.eq("uuid", target.uuid).isNotNull("statusMessage"))
+            .set("statusMessage", null)
+            .sync();
+        if (result == 0) {
+            throw new CommandWarn("Player did not set status message: " + target.name);
+        }
+        sender.sendMessage(text("Status message of " + target.name + " was reset", YELLOW));
+        Session session = Session.of(target.uuid);
+        if (session != null) session.reload();
         return true;
     }
 }

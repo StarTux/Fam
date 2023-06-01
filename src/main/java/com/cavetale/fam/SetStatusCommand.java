@@ -29,7 +29,10 @@ public final class SetStatusCommand extends AbstractCommand<FamPlugin> {
     }
 
     private boolean setStatus(Player player, String[] args) {
-        if (args.length == 0) return false;
+        if (args.length == 0) {
+            resetStatus(player);
+            return true;
+        }
         String msg = String.join(" ", args);
         if (msg.length() > 256) return false;
         setStatus(player, msg);
@@ -52,6 +55,17 @@ public final class SetStatusCommand extends AbstractCommand<FamPlugin> {
             .tooltip(false)
             .componentMaker(str -> text(str, WHITE))
             .format(message);
-        player.sendMessage(textOfChildren(text("Status Message Updated: ", GRAY), displayMessage));
+        player.sendMessage(textOfChildren(text("Status Message Updated: ", GREEN), displayMessage));
+    }
+
+    public void resetStatus(Player player) {
+        Session session = Session.of(player);
+        if (!session.isReady()) throw new CommandWarn("Session not ready. Try again later");
+        if (session.getPlayerRow().getStatusMessage() == null) {
+            throw new CommandWarn("You did not set a status message");
+        }
+        session.getPlayerRow().setStatusMessage(null);
+        db().updateAsync(session.getPlayerRow(), null, "statusMessage");
+        player.sendMessage(text("Status message cleared", GREEN));
     }
 }

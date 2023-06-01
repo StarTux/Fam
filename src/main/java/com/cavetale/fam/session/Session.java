@@ -24,6 +24,11 @@ public final class Session {
     }
 
     protected void enable() {
+        reload();
+    }
+
+    public void reload() {
+        ready = false;
         db().find(SQLPlayer.class).eq("uuid", uuid).findUniqueAsync(row -> {
                 if (row == null) {
                     this.playerRow = new SQLPlayer(uuid);
