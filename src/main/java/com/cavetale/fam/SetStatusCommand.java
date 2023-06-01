@@ -30,7 +30,9 @@ public final class SetStatusCommand extends AbstractCommand<FamPlugin> {
 
     private boolean setStatus(Player player, String[] args) {
         if (args.length == 0) return false;
-        setStatus(player, String.join(" ", args));
+        String msg = String.join(" ", args);
+        if (msg.length() > 256) return false;
+        setStatus(player, msg);
         return true;
     }
 
