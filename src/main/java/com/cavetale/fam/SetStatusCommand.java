@@ -1,7 +1,9 @@
 package com.cavetale.fam;
 
 import com.cavetale.core.command.AbstractCommand;
+import com.cavetale.core.command.CommandArgCompleter;
 import com.cavetale.core.command.CommandWarn;
+import com.cavetale.core.font.Emoji;
 import com.cavetale.core.font.GlyphPolicy;
 import com.cavetale.core.perm.Rank;
 import com.cavetale.core.text.LineWrap;
@@ -23,7 +25,7 @@ public final class SetStatusCommand extends AbstractCommand<FamPlugin> {
     @Override
     protected void onEnable() {
         rootNode.description("Set your status message")
-            .denyTabCompletion()
+            .completers(Emoji.PUBLIC_COMPLETER, CommandArgCompleter.REPEAT)
             .arguments("<message>")
             .playerCaller(this::setStatus);
     }
