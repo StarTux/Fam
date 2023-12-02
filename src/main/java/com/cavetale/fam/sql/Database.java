@@ -3,6 +3,7 @@ package com.cavetale.fam.sql;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
+import com.cavetale.fam.advent.SQLAdventPlayer;
 import com.cavetale.fam.trophy.SQLTrophy;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
@@ -54,7 +55,8 @@ public final class Database {
                        SQLDaybreak.class,
                        SQLBirthday.class,
                        SQLTrophy.class,
-                       SQLPlayer.class);
+                       SQLPlayer.class,
+                       SQLAdventPlayer.class);
     }
 
     public static boolean init() {

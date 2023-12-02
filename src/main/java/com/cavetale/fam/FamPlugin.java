@@ -5,6 +5,8 @@ import com.cavetale.core.event.item.PlayerReceiveItemsEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
+import com.cavetale.fam.advent.Advent;
+import com.cavetale.fam.eventhost.EventHosts;
 import com.cavetale.fam.session.Session;
 import com.cavetale.fam.session.Sessions;
 import com.cavetale.fam.sql.Database;
@@ -64,11 +66,13 @@ public final class FamPlugin extends JavaPlugin {
     private final PlayerListener eventListener = new PlayerListener(this);
     private final MarriageListener marriageListener = new MarriageListener(this);
     protected final Trophies trophies = new Trophies(this);
+    private final EventHosts eventHosts = new EventHosts();
     private final SQLDatabase database = new SQLDatabase(this);
     private List<Reward> rewardList;
     private boolean doDaybreak;
     private final FamFriendsSupplier famFriendsSupplier = new FamFriendsSupplier();
     private final Sessions sessions = new Sessions();
+    private final Advent advent = new Advent();
 
     @Override
     public void onEnable() {
@@ -83,6 +87,7 @@ public final class FamPlugin extends JavaPlugin {
         setStatusCommand.enable();
         eventListener.enable();
         trophies.enable();
+        eventHosts.enable();
         Database.init();
         Timer.enable();
         sessions.enable();
@@ -108,6 +113,7 @@ public final class FamPlugin extends JavaPlugin {
         }
         Gui.enable(this);
         famFriendsSupplier.register();
+        advent.enable();
     }
 
     public List<Reward> getRewardList() {
@@ -170,6 +176,7 @@ public final class FamPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         famFriendsSupplier.unregister();
+        eventHosts.disable();
         Gui.disable(this);
         database.waitForAsyncTask();
         database.close();

@@ -79,6 +79,24 @@ commands:
     permission: fam.setstatus
     usage: /setstatus <message>
 
+  eventhost:
+    aliases: []
+    description: Event hosting interface
+    permission: fam.eventhost
+    usage: /eventhost
+
+  advent:
+    aliases: [adv]
+    description: Open Advent Calendar
+    permission: fam.advent
+    usage: /advent
+
+  adventadmin:
+    aliases: [adventadm]
+    description: Advent admin command
+    permission: fam.adventadmin
+    usage: /adventadmin
+
 permissions:
 
   fam.admin:
@@ -107,4 +125,16 @@ permissions:
 
   fam.setstatus:
     description: Use /setstatus
+    default: op
+
+  fam.eventhost:
+    description: Use /eventhost
+    default: op
+
+  fam.advent:
+    description: Use /advent
+    default: op
+
+  fam.adventadmin:
+    description: Use /adventadmin
     default: op
