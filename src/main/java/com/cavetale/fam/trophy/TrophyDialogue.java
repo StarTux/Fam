@@ -2,12 +2,12 @@ package com.cavetale.fam.trophy;
 
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.ProfileDialogue;
 import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.util.Gui;
 import com.cavetale.mytems.Mytems;
-import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

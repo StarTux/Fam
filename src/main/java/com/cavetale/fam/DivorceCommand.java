@@ -1,12 +1,12 @@
 package com.cavetale.fam;
 
 import com.cavetale.core.font.DefaultFont;
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Gui;
 import com.cavetale.fam.util.Items;
 import com.cavetale.mytems.Mytems;
-import com.winthier.playercache.PlayerCache;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;

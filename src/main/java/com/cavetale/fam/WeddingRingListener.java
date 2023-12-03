@@ -1,12 +1,12 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Fireworks;
 import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
-import com.winthier.playercache.PlayerCache;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

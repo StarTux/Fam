@@ -3,8 +3,8 @@ package com.cavetale.fam.trophy;
 import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandArgCompleter;
 import com.cavetale.core.command.CommandWarn;
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.FamPlugin;
-import com.winthier.playercache.PlayerCache;
 import org.bukkit.entity.Player;
 
 public final class TrophyCommand extends AbstractCommand<FamPlugin> {

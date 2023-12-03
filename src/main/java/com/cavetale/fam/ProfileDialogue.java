@@ -2,6 +2,7 @@ package com.cavetale.fam;
 
 import com.cavetale.core.font.GlyphPolicy;
 import com.cavetale.core.font.GuiOverlay;
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.core.text.LineWrap;
 import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
@@ -12,7 +13,6 @@ import com.cavetale.fam.util.Gui;
 import com.cavetale.fam.util.Items;
 import com.cavetale.mytems.Mytems;
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.winthier.playercache.PlayerCache;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;

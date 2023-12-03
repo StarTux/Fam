@@ -1,10 +1,10 @@
 package com.cavetale.fam.trophy;
 
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.item.font.Glyph;
 import com.cavetale.mytems.item.trophy.TrophyCategory;
 import com.cavetale.mytems.item.trophy.TrophyType;
-import com.winthier.playercache.PlayerCache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

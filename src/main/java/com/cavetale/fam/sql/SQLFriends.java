@@ -1,8 +1,8 @@
 package com.cavetale.fam.sql;
 
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
-import com.winthier.playercache.PlayerCache;
 import com.winthier.sql.SQLRow.Name;
 import com.winthier.sql.SQLRow.NotNull;
 import com.winthier.sql.SQLRow.UniqueKey;

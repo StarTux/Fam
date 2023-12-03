@@ -1,8 +1,8 @@
 package com.cavetale.fam.util;
 
+import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.mytems.Mytems;
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.winthier.playercache.PlayerCache;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
