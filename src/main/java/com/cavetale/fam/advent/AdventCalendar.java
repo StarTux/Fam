@@ -119,9 +119,12 @@ public final class AdventCalendar {
     }
 
     private static ItemStack rewardedItem(int day) {
-        return Items.text(Mytems.CROSSED_CHECKBOX.createIcon(),
-                          List.of(text("Door " + day, GREEN),
-                                  text("Complete!", DARK_GREEN)));
+        List<Component> text = new ArrayList<>();
+        text.add(text("Door " + day + " Complete!", GREEN));
+        for (Component line : getPage(day)) {
+            text.add(line.color(GRAY));
+        }
+        return Items.text(Mytems.CROSSED_CHECKBOX.createIcon(), text);
     }
 
     public static List<Component> getPage(int day) {
@@ -130,9 +133,13 @@ public final class AdventCalendar {
                           text("Christmas awaits if you"),
                           text("complete the parkour at "),
                           textOfChildren(text("/warp XmasParkour", GREEN)));
-        case 2 -> List.of(text("The second gift of Christmas"),
-                          text("is hidden in the Flamingo"),
-                          text("zone at Spawn"));
+        case 2 -> List.of(text("The second gift of"),
+                          text("Christmas is hidden in the"),
+                          text("Flamingo Zone at Spawn"));
+        case 3 -> List.of(text("Find the third gift of"),
+                          text("Christmas in the big"),
+                          text("snow globe at "),
+                          textOfChildren(text("/warp XmasChallenge", YELLOW)));
         default -> List.of();
         };
     }
