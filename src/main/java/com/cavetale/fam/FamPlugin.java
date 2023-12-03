@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.connect.Connect;
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.item.PlayerReceiveItemsEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
@@ -23,7 +24,6 @@ import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Items;
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.winthier.connect.Connect;
 import com.winthier.sql.SQLDatabase;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -285,10 +285,10 @@ public final class FamPlugin extends JavaPlugin {
                     friendsMap.put(row.getOther(uuid), row);
                 }
                 Set<UUID> onlineSet = new HashSet<>();
-                for (var online : Connect.getInstance().getOnlinePlayers()) {
-                    if (uuid.equals(online.getUuid())) continue;
-                    friendsMap.computeIfAbsent(online.getUuid(), uuid2 -> new SQLFriends(Database.sorted(uuid, uuid2)));
-                    onlineSet.add(online.getUuid());
+                for (UUID online : Connect.get().getOnlinePlayers()) {
+                    if (uuid.equals(online)) continue;
+                    friendsMap.computeIfAbsent(online, uuid2 -> new SQLFriends(Database.sorted(uuid, uuid2)));
+                    onlineSet.add(online);
                 }
                 friendsMap.keySet().retainAll(onlineSet);
                 List<SQLFriends> newFriendsList = new ArrayList<>(friendsMap.values());
