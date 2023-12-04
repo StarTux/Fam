@@ -141,8 +141,8 @@ public final class AdventCalendar {
                           text("snow globe at "),
                           textOfChildren(text("/warp XmasChallenge", YELLOW)));
         case 4 -> List.of(text("Win the fourth gift of"),
-                          text("from a snowball fight"),
-                          text("at the Spawn."));
+                          text("Christmas from a snowball"),
+                          text("fight at the Spawn."));
         default -> List.of();
         };
     }
