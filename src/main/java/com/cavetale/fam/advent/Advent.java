@@ -1,5 +1,6 @@
 package com.cavetale.fam.advent;
 
+import com.cavetale.fam.Timer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,15 +19,16 @@ public final class Advent {
 
     public List<SQLAdventPlayer> loadAllSync(UUID uuid) {
         List<SQLAdventPlayer> result = new ArrayList<>();
-        for (int i = 0; i < MAX_DAY; i += 1) result.add(null);
+        final int maxDay = Math.min(Advent.MAX_DAY, getThisDay());
+        for (int i = 0; i < maxDay; i += 1) result.add(null);
         for (SQLAdventPlayer row : plugin().getDatabase().find(SQLAdventPlayer.class)
                  .eq("player", uuid)
                  .eq("year", THIS_YEAR)
                  .findList()) {
-            if (row.getDay() < 1 || row.getDay() > MAX_DAY) continue;
+            if (row.getDay() < 1 || row.getDay() > maxDay) continue;
             result.set(row.getDay() - 1, row);
         }
-        for (int i = 0; i < MAX_DAY; i += 1) {
+        for (int i = 0; i < maxDay; i += 1) {
             SQLAdventPlayer row = result.get(i);
             if (row == null) {
                 row = new SQLAdventPlayer(uuid, THIS_YEAR, i + 1);
@@ -42,6 +44,14 @@ public final class Advent {
                 List<SQLAdventPlayer> result = loadAllSync(uuid);
                 Bukkit.getScheduler().runTask(plugin(), () -> callback.accept(result));
             });
+    }
+
+    public static int getThisDay() {
+        if (Timer.getYear() > Advent.THIS_YEAR) return 25;
+        if (Timer.getYear() == Advent.THIS_YEAR && Timer.getMonth() == 12) {
+            return Math.min(Timer.getDay(), 25);
+        }
+        return 0;
     }
 
     public static Advent advent() {
