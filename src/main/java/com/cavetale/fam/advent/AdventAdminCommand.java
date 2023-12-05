@@ -8,6 +8,8 @@ import com.cavetale.fam.FamPlugin;
 import com.cavetale.mytems.Mytems;
 import java.util.Date;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static com.cavetale.fam.FamPlugin.plugin;
@@ -54,6 +56,7 @@ public final class AdventAdminCommand extends AbstractCommand<FamPlugin> {
                                                                    text("You completed day " + day + " of the Advent Calendar", GREEN))
                                             .hoverEvent(showText(text("/advent", GRAY)))
                                             .clickEvent(runCommand("/advent")));
+                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1f, 1.65f);
                         }
                     }
                 });
