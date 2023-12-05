@@ -3,6 +3,7 @@ package com.cavetale.fam.advent;
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.item.PlayerReceiveItemsEvent;
 import com.cavetale.core.font.GuiOverlay;
+import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Gui;
 import com.cavetale.mytems.util.Items;
@@ -139,10 +140,12 @@ public final class AdventCalendar {
         case 3 -> List.of(text("Find the third gift of"),
                           text("Christmas in the big"),
                           text("snow globe at "),
-                          textOfChildren(text("/warp XmasChallenge", YELLOW)));
+                          textOfChildren(text("/warp XmasChallenge", GREEN)));
         case 4 -> List.of(text("Win the fourth gift of"),
                           text("Christmas from a snowball"),
                           text("fight at the Spawn."));
+        case 5 -> List.of(text("Explore the Secret Cave" + Unicode.TRADEMARK.string),
+                          textOfChildren(text("at "), text("/warp XmasParkour", GREEN)));
         default -> List.of();
         };
     }
