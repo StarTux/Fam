@@ -36,14 +36,15 @@ public final class AdventCalendar {
         GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(27, RED)
             .title(text("Advent Calendar", GREEN));
         int openedUntil = 0;
-        for (int i = 0; i < Advent.MAX_DAY; i += 1) {
+        final int maxDay = Math.min(Advent.MAX_DAY, Advent.getThisDay());
+        for (int i = 0; i < maxDay; i += 1) {
             SQLAdventPlayer row = rows.get(i);
             if (!(row.isOpened() && row.isSolved())) break;
             openedUntil = row.getDay(); // == i + 1
         }
         for (int i = 0; i < 25; i += 1) {
             final int day = i + 1;
-            if (day > openedUntil + 1 || day > Advent.MAX_DAY) {
+            if (day > openedUntil + 1 || day > maxDay) {
                 gui.setItem(i, lockedItem(day));
                 continue;
             }

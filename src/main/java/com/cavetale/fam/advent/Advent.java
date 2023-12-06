@@ -19,7 +19,7 @@ public final class Advent {
 
     public List<SQLAdventPlayer> loadAllSync(UUID uuid) {
         List<SQLAdventPlayer> result = new ArrayList<>();
-        final int maxDay = Math.min(Advent.MAX_DAY, getThisDay());
+        final int maxDay = Math.min(MAX_DAY, getThisDay());
         for (int i = 0; i < maxDay; i += 1) result.add(null);
         for (SQLAdventPlayer row : plugin().getDatabase().find(SQLAdventPlayer.class)
                  .eq("player", uuid)
