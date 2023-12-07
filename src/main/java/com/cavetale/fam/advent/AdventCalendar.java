@@ -148,7 +148,7 @@ public final class AdventCalendar {
         case 5 -> List.of(text("Explore the Secret Cave" + Unicode.TRADEMARK.string),
                           textOfChildren(text("at "), text("/warp XmasParkour", GREEN)));
         case 6 -> List.of(text("Dive under the ice at"),
-                          text("Spawn"));
+                          text("Spawn."));
         case 7 -> List.of(text("Explore the wrecked pirate"),
                           textOfChildren(text("ship at "), text("/warp", YELLOW)),
                           textOfChildren(text("XmasChallenge", YELLOW)));
