@@ -154,6 +154,8 @@ public final class AdventCalendar {
                           textOfChildren(text("XmasChallenge", YELLOW)));
         case 8 -> List.of(text("Play Merry Christmas under"),
                           text("the big tree at Spawn."));
+        case 9 -> List.of(text("Dive under the ice at"),
+                          textOfChildren(text("/warp XmasParkour", GREEN)));
         default -> List.of();
         };
     }
