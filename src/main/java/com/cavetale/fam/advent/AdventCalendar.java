@@ -156,6 +156,9 @@ public final class AdventCalendar {
                           text("the big tree at Spawn."));
         case 9 -> List.of(text("Dive under the ice at"),
                           textOfChildren(text("/warp XmasParkour", GREEN)));
+        case 10 -> List.of(text("Find the tenth gift of"),
+                           text("Christmas in the jail"),
+                           text("cell at Spawn."));
         default -> List.of();
         };
     }
