@@ -2,6 +2,7 @@ package com.cavetale.fam.advent;
 
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.item.PlayerReceiveItemsEvent;
+import com.cavetale.core.font.DefaultFont;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
@@ -16,9 +17,17 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import static com.cavetale.fam.FamPlugin.plugin;
+import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.JoinConfiguration.separator;
+import static net.kyori.adventure.text.event.ClickEvent.runCommand;
+import static net.kyori.adventure.text.event.HoverEvent.showText;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 @RequiredArgsConstructor
@@ -32,6 +41,7 @@ public final class AdventCalendar {
     }
 
     public void open() {
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
         Gui gui = new Gui(plugin()).size(27);
         GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(27, RED)
             .title(text("Advent Calendar", GREEN));
@@ -45,7 +55,10 @@ public final class AdventCalendar {
         for (int i = 0; i < 25; i += 1) {
             final int day = i + 1;
             if (day > openedUntil + 1 || day > maxDay) {
-                gui.setItem(i, lockedItem(day));
+                gui.setItem(i, lockedItem(day), click -> {
+                        if (!click.isLeftClick()) return;
+                        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_LOCKED, 1f, 0.9f);
+                    });
                 continue;
             }
             final SQLAdventPlayer row = rows.get(i);
@@ -58,11 +71,14 @@ public final class AdventCalendar {
                             .row(row)
                             .atomic("opened", true)
                             .set("openedTime", new Date())
-                            .async(r -> open(player));
+                            .async(r -> read(day));
                         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
                     });
             } else if (!row.isSolved()) {
-                gui.setItem(i, unsolvedItem(day));
+                gui.setItem(i, unsolvedItem(day), click -> {
+                        if (!click.isLeftClick()) return;
+                        read(day);
+                    });
             } else if (!row.isRewarded()) {
                 gui.setItem(i, solvedItem(day), click -> {
                         if (!click.isLeftClick()) return;
@@ -86,7 +102,10 @@ public final class AdventCalendar {
                         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
                     });
             } else {
-                gui.setItem(i, rewardedItem(day));
+                gui.setItem(i, rewardedItem(day), click -> {
+                        if (!click.isLeftClick()) return;
+                        read(day);
+                    });
             }
         }
         gui.title(builder.build());
@@ -134,34 +153,36 @@ public final class AdventCalendar {
         case 1 -> List.of(text("The first gift of"),
                           text("Christmas awaits if you"),
                           text("complete the parkour at "),
-                          textOfChildren(text("/warp XmasParkour", GREEN)));
+                          textOfChildren(xmasParkour(text("/warp XmasParkour", BLUE))));
         case 2 -> List.of(text("The second gift of"),
                           text("Christmas is hidden in the"),
                           text("Flamingo Zone at Spawn"));
         case 3 -> List.of(text("Find the third gift of"),
                           text("Christmas in the big"),
                           text("snow globe at "),
-                          textOfChildren(text("/warp XmasChallenge", GREEN)));
+                          textOfChildren(xmasChallenge(text("/warp XmasChallenge", BLUE))));
         case 4 -> List.of(text("Win the fourth gift of"),
                           text("Christmas from a snowball"),
                           text("fight at the Spawn."));
         case 5 -> List.of(text("Explore the Secret Cave" + Unicode.TRADEMARK.string),
-                          textOfChildren(text("at "), text("/warp XmasParkour", GREEN)));
+                          textOfChildren(text("at "), xmasParkour(text("/warp XmasParkour", BLUE))));
         case 6 -> List.of(text("Dive under the ice at"),
                           text("Spawn."));
         case 7 -> List.of(text("Explore the wrecked pirate"),
-                          textOfChildren(text("ship at "), text("/warp", YELLOW)),
-                          textOfChildren(text("XmasChallenge", YELLOW)));
+                          textOfChildren(text("ship at "), xmasChallenge(text("/warp", BLUE))),
+                          textOfChildren(xmasChallenge(text("XmasChallenge", BLUE))));
         case 8 -> List.of(text("Play Merry Christmas under"),
                           text("the big tree at Spawn."));
         case 9 -> List.of(text("Dive under the ice at"),
-                          textOfChildren(text("/warp XmasParkour", GREEN)));
+                          textOfChildren(xmasParkour(text("/warp XmasParkour", BLUE))));
         case 10 -> List.of(text("Find the tenth gift of"),
                            text("Christmas in the jail"),
                            text("cell at Spawn."));
         case 11 -> List.of(text("Explore past the clock"),
-                           textOfChildren(text("tower at "), text("/warp", YELLOW)),
-                           textOfChildren(text("XmasChallenge", YELLOW)));
+                           textOfChildren(text("tower at "), xmasChallenge(text("/warp", BLUE))),
+                           textOfChildren(xmasChallenge(text("XmasChallenge", BLUE))));
+        case 12 -> List.of(text("Scale the icy cliffs at"),
+                           textOfChildren(northPole(text("/warp NorthPole", BLUE))));
         default -> List.of();
         };
     }
@@ -178,5 +199,43 @@ public final class AdventCalendar {
             });
         gui.title(builder.build());
         gui.open(player);
+    }
+
+    private static Component cmd(Component component, String cmd) {
+        return component.hoverEvent(showText(text(cmd, BLUE)))
+            .clickEvent(runCommand(cmd));
+    }
+
+    private static Component xmasParkour(Component component) {
+        return cmd(component, "/warp XmasParkour");
+    }
+
+    private static Component xmasChallenge(Component component) {
+        return cmd(component, "/warp XmasChallenge");
+    }
+
+    private static Component northPole(Component component) {
+        return cmd(component, "/warp NorthPole");
+    }
+
+    private void read(int day) {
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        book.editMeta(m -> {
+                if (!(m instanceof BookMeta meta)) return;
+                List<Component> lines = new ArrayList<>();
+                lines.add(text("Door " + day, BLUE));
+                lines.add(empty());
+                lines.add(join(separator(space()), getPage(day)));
+                lines.add(empty());
+                lines.add(DefaultFont.BACK_BUTTON.component
+                          .hoverEvent(showText(text("/advent", GREEN)))
+                          .clickEvent(runCommand("/advent")));
+                meta.author(text("Cavetale"));
+                meta.title(text("Advent"));
+                meta.pages(List.of(join(separator(newline()), lines)));
+            });
+        player.closeInventory();
+        player.openBook(book);
     }
 }
