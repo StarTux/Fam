@@ -72,7 +72,6 @@ public final class AdventCalendar {
                             .atomic("opened", true)
                             .set("openedTime", new Date())
                             .async(r -> read(day));
-                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
                     });
             } else if (!row.isSolved()) {
                 gui.setItem(i, unsolvedItem(day), click -> {
