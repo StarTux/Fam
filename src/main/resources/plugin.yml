@@ -86,7 +86,7 @@ commands:
     usage: /eventhost
 
   advent:
-    aliases: [adv]
+    aliases: []
     description: Open Advent Calendar
     permission: fam.advent
     usage: /advent
