@@ -182,6 +182,9 @@ public final class AdventCalendar {
                            textOfChildren(xmasChallenge(text("XmasChallenge", BLUE))));
         case 12 -> List.of(text("Scale the icy cliffs at"),
                            textOfChildren(northPole(text("/warp NorthPole", BLUE))));
+        case 13 -> List.of(text("Get inside the giant"),
+                           text("Christmas tree at"),
+                           textOfChildren(northPole(text("/warp NorthPole", BLUE))));
         default -> List.of();
         };
     }
