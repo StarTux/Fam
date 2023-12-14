@@ -188,6 +188,9 @@ public final class AdventCalendar {
         case 14 -> List.of(text("Find the Santa's Sleigh"),
                            text("hangar bay at"),
                            textOfChildren(northPole(text("/warp NorthPole", BLUE))));
+        case 15 -> List.of(text("Look behind Santa's"),
+                           text("big head at"),
+                           textOfChildren(northPole(text("/warp NorthPole", BLUE))));
         default -> List.of();
         };
     }
