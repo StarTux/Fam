@@ -195,7 +195,7 @@ public final class AdventCalendar {
                            text("Christmas Tree at at"),
                            textOfChildren(xmasParkour(text("/warp XmasParkour", BLUE))));
         case 17 -> List.of(text("Go through the giant snow"),
-                           text("globw and follow the long"),
+                           text("globe and follow the long"),
                            text("path leading North at"),
                            textOfChildren(xmasChallenge(text("/warp XmasChallenge", BLUE))));
         default -> List.of();
