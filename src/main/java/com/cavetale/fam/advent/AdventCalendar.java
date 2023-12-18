@@ -155,28 +155,28 @@ public final class AdventCalendar {
                           textOfChildren(xmasParkour(text("/warp XmasParkour", BLUE))));
         case 2 -> List.of(text("The second gift of"),
                           text("Christmas is hidden in the"),
-                          text("Flamingo Zone at Spawn"));
+                          textOfChildren(text("Flamingo Zone at "), spawn(text("/spawn", BLUE))));
         case 3 -> List.of(text("Find the third gift of"),
                           text("Christmas in the big"),
                           text("snow globe at "),
                           textOfChildren(xmasChallenge(text("/warp XmasChallenge", BLUE))));
         case 4 -> List.of(text("Win the fourth gift of"),
                           text("Christmas from a snowball"),
-                          text("fight at the Spawn."));
+                          textOfChildren(text("fight at "), spawn(text("/spawn", BLUE))));
         case 5 -> List.of(text("Explore the Secret Cave" + Unicode.TRADEMARK.string),
                           textOfChildren(text("at "), xmasParkour(text("/warp XmasParkour", BLUE))));
         case 6 -> List.of(text("Dive under the ice at"),
-                          text("Spawn."));
+                          textOfChildren(spawn(text("/spawn", BLUE))));
         case 7 -> List.of(text("Explore the wrecked pirate"),
                           textOfChildren(text("ship at "), xmasChallenge(text("/warp", BLUE))),
                           textOfChildren(xmasChallenge(text("XmasChallenge", BLUE))));
         case 8 -> List.of(text("Play Merry Christmas under"),
-                          text("the big tree at Spawn."));
+                          textOfChildren(text("the big tree at "), spawn(text("/spawn", BLUE))));
         case 9 -> List.of(text("Dive under the ice at"),
                           textOfChildren(xmasParkour(text("/warp XmasParkour", BLUE))));
         case 10 -> List.of(text("Find the tenth gift of"),
                            text("Christmas in the jail"),
-                           text("cell at Spawn."));
+                           textOfChildren(text("cell at "), spawn(text("/spawn", BLUE))));
         case 11 -> List.of(text("Explore past the clock"),
                            textOfChildren(text("tower at "), xmasChallenge(text("/warp", BLUE))),
                            textOfChildren(xmasChallenge(text("XmasChallenge", BLUE))));
@@ -201,6 +201,8 @@ public final class AdventCalendar {
         case 18 -> List.of(text("Venture through the"),
                            text("Polar Express at"),
                            textOfChildren(northPole(text("/warp NorthPole", BLUE))));
+        case 19 -> List.of(text("Get to the top of the"),
+                           textOfChildren(text("Wizard tower at "), spawn(text("/spawn", BLUE))));
         default -> List.of();
         };
     }
@@ -234,6 +236,10 @@ public final class AdventCalendar {
 
     private static Component northPole(Component component) {
         return cmd(component, "/warp NorthPole");
+    }
+
+    private static Component spawn(Component component) {
+        return cmd(component, "/spawn");
     }
 
     private void read(int day) {
