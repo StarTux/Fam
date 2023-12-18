@@ -198,6 +198,9 @@ public final class AdventCalendar {
                            text("globe and follow the long"),
                            text("path leading North at"),
                            textOfChildren(xmasChallenge(text("/warp XmasChallenge", BLUE))));
+        case 18 -> List.of(text("Venture through the"),
+                           text("Polar Express at"),
+                           textOfChildren(northPole(text("/warp NorthPole", BLUE))));
         default -> List.of();
         };
     }
