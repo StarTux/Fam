@@ -203,6 +203,10 @@ public final class AdventCalendar {
                            textOfChildren(northPole(text("/warp NorthPole", BLUE))));
         case 19 -> List.of(text("Get to the top of the"),
                            textOfChildren(text("Wizard tower at "), spawn(text("/spawn", BLUE))));
+        case 20 -> List.of(text("Follow the path that"),
+                           text("leads away from the"),
+                           text("wrecked pirate ship"),
+                           textOfChildren(text("at "), xmasChallenge(text("/warp XmasChallenge", BLUE))));
         default -> List.of();
         };
     }
