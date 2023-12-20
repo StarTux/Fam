@@ -218,6 +218,13 @@ public final class AdventCalendar {
         gui.setEditable(true);
         gui.setItem(12, Mytems.KITTY_COIN.createItemStack());
         gui.setItem(14, Mytems.KITTY_COIN.createItemStack());
+        gui.setItem(13, switch (day) {
+            case 22 -> Mytems.SANTA_BOOTS.createItemStack();
+            case 23 -> Mytems.SANTA_PANTS.createItemStack();
+            case 24 -> Mytems.SANTA_JACKET.createItemStack();
+            case 25 -> Mytems.SANTA_HAT.createItemStack();
+            default -> null;
+            });
         gui.onClose(close -> {
                 PlayerReceiveItemsEvent.receiveInventory(player, gui.getInventory());
             });
