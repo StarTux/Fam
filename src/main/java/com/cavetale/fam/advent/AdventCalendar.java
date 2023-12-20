@@ -207,6 +207,8 @@ public final class AdventCalendar {
                            text("leads away from the"),
                            text("wrecked pirate ship"),
                            textOfChildren(text("at "), xmasChallenge(text("/warp XmasChallenge", BLUE))));
+        case 21 -> List.of(text("Book at hotel room"),
+                           textOfChildren(text("at "), northPole(text("/warp NorthPole", BLUE))));
         default -> List.of();
         };
     }
