@@ -209,6 +209,8 @@ public final class AdventCalendar {
                            textOfChildren(text("at "), xmasChallenge(text("/warp XmasChallenge", BLUE))));
         case 21 -> List.of(text("Book at hotel room"),
                            textOfChildren(text("at "), northPole(text("/warp NorthPole", BLUE))));
+        case 22 -> List.of(text("Explore the ice cave"),
+                           textOfChildren(text("at "), xmasParkour(text("/warp XmasParkour", BLUE))));
         default -> List.of();
         };
     }

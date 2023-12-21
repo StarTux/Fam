@@ -14,7 +14,7 @@ public final class Advent {
         new AdventAdminCommand(plugin()).enable();
     }
 
-    public static final int MAX_DAY = 21;
+    public static final int MAX_DAY = 22;
     public static final int THIS_YEAR = 2023;
 
     public List<SQLAdventPlayer> loadAllSync(UUID uuid) {
