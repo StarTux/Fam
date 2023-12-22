@@ -211,6 +211,12 @@ public final class AdventCalendar {
                            textOfChildren(text("at "), northPole(text("/warp NorthPole", BLUE))));
         case 22 -> List.of(text("Explore the ice cave"),
                            textOfChildren(text("at "), xmasParkour(text("/warp XmasParkour", BLUE))));
+        case 23 -> List.of(text("Find the hospital"),
+                           textOfChildren(text("at "), spawn(text("/spawn", BLUE))));
+        case 24 -> List.of(text("Explore the gingerbread"),
+                           textOfChildren(text("castle at "), warpBuild(text("/warp build", BLUE))));
+        case 25 -> List.of(text("Climb the tallest"),
+                           textOfChildren(text("tree at "), spawn(text("/spawn", BLUE))));
         default -> List.of();
         };
     }
@@ -255,6 +261,10 @@ public final class AdventCalendar {
 
     private static Component spawn(Component component) {
         return cmd(component, "/spawn");
+    }
+
+    private static Component warpBuild(Component component) {
+        return cmd(component, "/warp build");
     }
 
     private void read(int day) {
