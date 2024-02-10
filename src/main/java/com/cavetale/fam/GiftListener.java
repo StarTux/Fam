@@ -54,9 +54,10 @@ public final class GiftListener implements Listener {
         if (player.equals(thrower)) return;
         if (!player.hasPermission("fam.friends")) return;
         if (!thrower.hasPermission("fam.friends")) return;
-        UUID a = thrower.getUniqueId();
-        UUID b = player.getUniqueId();
+        final UUID a = thrower.getUniqueId();
+        final UUID b = player.getUniqueId();
         final boolean birthday = Database.getCache(player).isBirthday() || Database.getCache(thrower).isBirthday();
+        plugin.getLogger().info(thrower.getName() + " and " + player.getName() + " shared friendship gifts");
         Database.db().scheduleAsyncTask(() -> {
                 boolean res = Database.dailyGift(a, b, Timer.getDayId());
                 if (!res) return;
