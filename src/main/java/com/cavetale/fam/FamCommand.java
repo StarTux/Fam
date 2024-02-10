@@ -66,9 +66,6 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
                         CommandArgCompleter.NULL,
                         CommandArgCompleter.REPEAT)
             .senderCaller(this::friendshipSingle);
-        friendshipNode.addChild("fixtodayprogress").denyTabCompletion()
-            .description("Fix progress from today's missed scores")
-            .senderCaller(this::friendshipFixTodayProgress);
         CommandNode statusNode = rootNode.addChild("status")
             .description("Status message commands");
         statusNode.addChild("get").arguments("<player>")
@@ -79,6 +76,14 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
             .description("Reset player status message")
             .completers(PlayerCache.NAME_COMPLETER)
             .senderCaller(this::statusReset);
+        CommandNode valentineNode = rootNode.addChild("valentine")
+            .description("Valentine subcommands");
+        valentineNode.addChild("addprogress").arguments("<player>")
+            .description("Add player progress")
+            .senderCaller(this::valentineAddProgress);
+        valentineNode.addChild("fixtodayprogress").denyTabCompletion()
+            .description("Fix progress from today's missed scores")
+            .senderCaller(this::valentineFixTodayProgress);
     }
 
     boolean info(CommandSender sender, String[] args) {
@@ -219,23 +224,6 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         return true;
     }
 
-    private void friendshipFixTodayProgress(CommandSender sender) {
-        final int today = Timer.getDayId();
-        Database.db().find(SQLFriends.class)
-            .eq("dailyGift", today)
-            .findListAsync((List<SQLFriends> list) -> {
-                    final Set<UUID> players = new HashSet<>();
-                    for (SQLFriends row : list) {
-                        Database.addProgress(row.getPlayerA());
-                        Database.addProgress(row.getPlayerB());
-                        players.add(row.getPlayerA());
-                        players.add(row.getPlayerB());
-                    }
-                    sender.sendMessage(text("Increased " + (2 * list.size()) + " scores"
-                                            + " for " + players.size() + " players", YELLOW));
-                });
-    }
-
     private boolean statusGet(CommandSender sender, String[] args) {
         if (args.length != 1) return false;
         PlayerCache target = PlayerCache.require(args[0]);
@@ -262,5 +250,30 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         Session session = Session.of(target.uuid);
         if (session != null) session.reload();
         return true;
+    }
+
+    private boolean valentineAddProgress(CommandSender sender, String[] args) {
+        if (args.length != 1) return false;
+        final PlayerCache target = PlayerCache.require(args[0]);
+        Database.addProgress(target.uuid);
+        sender.sendMessage(text("Increased progress of " + target.name + " by 1", YELLOW));
+        return true;
+    }
+
+    private void valentineFixTodayProgress(CommandSender sender) {
+        final int today = Timer.getDayId();
+        Database.db().find(SQLFriends.class)
+            .eq("dailyGift", today)
+            .findListAsync((List<SQLFriends> list) -> {
+                    final Set<UUID> players = new HashSet<>();
+                    for (SQLFriends row : list) {
+                        Database.addProgress(row.getPlayerA());
+                        Database.addProgress(row.getPlayerB());
+                        players.add(row.getPlayerA());
+                        players.add(row.getPlayerB());
+                    }
+                    sender.sendMessage(text("Increased " + (2 * list.size()) + " scores"
+                                            + " for " + players.size() + " players", YELLOW));
+                });
     }
 }
