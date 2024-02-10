@@ -28,7 +28,7 @@ public final class SQLProgress implements SQLRow {
     }
 
     public int getAvailable() {
-        return Math.min(FamPlugin.getInstance().getRewardList().size(), score / 10);
+        return Math.min(FamPlugin.getInstance().getRewardList().size(), score / 7);
     }
 
     public boolean isRewardAvailable() {
