@@ -11,6 +11,7 @@ import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.sql.SQLPlayer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -65,6 +66,9 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
                         CommandArgCompleter.NULL,
                         CommandArgCompleter.REPEAT)
             .senderCaller(this::friendshipSingle);
+        friendshipNode.addChild("fixtodayprogress").denyTabCompletion()
+            .description("Fix progress from today's missed scores")
+            .senderCaller(this::friendshipFixTodayProgress);
         CommandNode statusNode = rootNode.addChild("status")
             .description("Status message commands");
         statusNode.addChild("get").arguments("<player>")
@@ -213,6 +217,23 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         sender.sendMessage(count + " friendships of " + main.name + " increased by " + amount + ": "
                            + friends.stream().map(PlayerCache::getName).collect(Collectors.joining(", ")));
         return true;
+    }
+
+    private void friendshipFixTodayProgress(CommandSender sender) {
+        final int today = Timer.getDayId();
+        Database.db().find(SQLFriends.class)
+            .eq("dailyGift", today)
+            .findListAsync((List<SQLFriends> list) -> {
+                    final Set<UUID> players = new HashSet<>();
+                    for (SQLFriends row : list) {
+                        Database.addProgress(row.getPlayerA());
+                        Database.addProgress(row.getPlayerB());
+                        players.add(row.getPlayerA());
+                        players.add(row.getPlayerB());
+                    }
+                    sender.sendMessage(text("Increased " + (2 * list.size()) + " scores"
+                                            + " for " + players.size() + " players", YELLOW));
+                });
     }
 
     private boolean statusGet(CommandSender sender, String[] args) {

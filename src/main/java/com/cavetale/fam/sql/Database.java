@@ -235,16 +235,21 @@ public final class Database {
     }
 
     public static void addProgress(UUID uuid) {
-        db().update(SQLProgress.class)
-            .where(c -> c
-                   .eq("player", uuid)
-                   .eq("year", Timer.getYear()))
-            .add("score", 1)
-            .async(i -> {
-                    if (i == 0) db().insertAsync(new SQLProgress(uuid, Timer.getYear(), 1, 0), null);
-                    Cache cache = PLAYER_CACHE.get(uuid);
-                    if (cache != null) cache.score += 1;
-                });
+        db().scheduleAsyncTask(() -> {
+                final int rowCount = db().update(SQLProgress.class)
+                    .where(c -> c
+                           .eq("player", uuid)
+                           .eq("year", Timer.getYear()))
+                    .add("score", 1)
+                    .sync();
+                if (rowCount == 0) {
+                    db().insert(new SQLProgress(uuid, Timer.getYear(), 1, 0));
+                }
+                Bukkit.getScheduler().runTask(plugin(), () -> {
+                        Cache cache = PLAYER_CACHE.get(uuid);
+                        if (cache != null) cache.score += 1;
+                    });
+            });
     }
 
     public static void claimProgress(SQLProgress row, Consumer<Boolean> callback) {
