@@ -57,7 +57,6 @@ public final class GiftListener implements Listener {
         final UUID a = thrower.getUniqueId();
         final UUID b = player.getUniqueId();
         final boolean birthday = Database.getCache(player).isBirthday() || Database.getCache(thrower).isBirthday();
-        plugin.getLogger().info(thrower.getName() + " and " + player.getName() + " shared friendship gifts");
         Database.db().scheduleAsyncTask(() -> {
                 boolean res = Database.dailyGift(a, b, Timer.getDayId());
                 if (!res) return;
@@ -84,6 +83,7 @@ public final class GiftListener implements Listener {
     }
 
     private void callback(Player player, Player thrower, Component hearts, int oldFriendship, int newFriendship, ItemStack itemStack) {
+        plugin.getLogger().info(thrower.getName() + " and " + player.getName() + " shared friendship gifts");
         if (player.isOnline()) {
             player.sendMessage(Component.text().color(Colors.HOTPINK)
                                .content("Your friendship with " + thrower.getName() + " increased! ")
