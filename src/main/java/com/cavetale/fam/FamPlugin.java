@@ -646,13 +646,16 @@ public final class FamPlugin extends JavaPlugin {
             player.sendMessage(text("No highscores to show", RED));
             return null;
         }
-        Gui gui = new Gui(instance);
-        int pageSize = 3 * 9;
-        int pageCount = (list.size() - 1) / pageSize + 1;
-        int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
-        int offset = pageIndex * pageSize;
-        gui.size(pageSize + 9);
-        gui.title(text("Valentine Highscore " + pageNumber + "/" + pageCount, Colors.HOTPINK));
+        final Gui gui = new Gui(instance);
+        final int pageSize = 3 * 9;
+        final int pageCount = (list.size() - 1) / pageSize + 1;
+        final int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
+        final int offset = pageIndex * pageSize;
+        final int size = pageSize + 9;
+        gui.size(size);
+        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, Colors.HOTPINK)
+            .title(text("Valentine Highscore " + pageNumber + "/" + pageCount, WHITE));
+        gui.title(builder.build());
         int score = -1;
         int rank = 0;
         for (int i = 0; i < list.size(); i += 1) {
