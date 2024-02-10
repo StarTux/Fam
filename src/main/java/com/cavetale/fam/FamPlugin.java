@@ -543,7 +543,7 @@ public final class FamPlugin extends JavaPlugin {
                 }
                 icon = Mytems.CHECKBOX.createIcon();
             } else {
-                text.add(textOfChildren(text(tiny("required score "), GRAY), text((i * 10 + 10), RED)));
+                text.add(textOfChildren(text(tiny("required score "), GRAY), text(((i + 1) * 7), RED)));
                 text.add(empty());
                 text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Open preview", GRAY)));
                 canClaim = false;

@@ -40,7 +40,7 @@ public final class Timer {
 
     public static boolean isValentineSeason() {
         return (NetworkServer.current() == NetworkServer.BETA && month == 2 && day <= 14)
-            || month == 2 && (day >= 10 && day <= 18);
+            || month == 2 && (day >= 11 && day <= 18);
     }
 
     public static boolean isValentinesDay() {
