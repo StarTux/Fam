@@ -503,11 +503,11 @@ public final class FamPlugin extends JavaPlugin {
         return gui;
     }
 
-    public static void openRewardsGui(Player player) {
+    public void openRewardsGui(Player player) {
         Database.findProgress(player.getUniqueId(), row -> openRewardsGui(player, row));
     }
 
-    public static Gui openRewardsGui(Player player, SQLProgress row) {
+    public Gui openRewardsGui(Player player, SQLProgress row) {
         if (!player.isValid()) return null;
         int claimed = row != null ? row.getClaimed() : 0;
         int score = row != null ? row.getScore() : 0;
@@ -586,7 +586,7 @@ public final class FamPlugin extends JavaPlugin {
      * If isForReal=true, this must be called AFTER the progress was
      * claimed in the database.
      */
-    public static Gui giveReward(Player player, int index, boolean isForReal) {
+    public Gui giveReward(Player player, int index, boolean isForReal) {
         final int size = 3 * 9;
         Reward reward = instance.getRewardList().get(index);
         GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, (isForReal ? WHITE : Colors.HOTPINK))
@@ -619,6 +619,7 @@ public final class FamPlugin extends JavaPlugin {
                     }
                     player.playSound(player.getLocation(), ENTITY_PLAYER_LEVELUP, MASTER, 0.5f, 2.0f);
                     player.sendMessage(text("Reward #" + (index + 1) + " claimed", Colors.HOTPINK));
+                    getLogger().info(player.getName() + " claimed Valentine reward " + (index + 1));
                 });
         }
         gui.setItem(Gui.OUTSIDE, null, evt -> {
