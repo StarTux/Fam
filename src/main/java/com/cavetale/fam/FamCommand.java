@@ -10,9 +10,16 @@ import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.sql.SQLPlayer;
+import com.cavetale.fam.sql.SQLProgress;
+import com.cavetale.fam.trophy.Highscore;
+import com.cavetale.fam.util.Colors;
+import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.item.trophy.TrophyCategory;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -84,6 +91,9 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
         valentineNode.addChild("fixtodayprogress").denyTabCompletion()
             .description("Fix progress from today's missed scores")
             .senderCaller(this::valentineFixTodayProgress);
+        valentineNode.addChild("reward").denyTabCompletion()
+            .description("Give trophy rewards for Valentine")
+            .senderCaller(this::valentineReward);
     }
 
     boolean info(CommandSender sender, String[] args) {
@@ -274,6 +284,28 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
                     }
                     sender.sendMessage(text("Increased " + (2 * list.size()) + " scores"
                                             + " for " + players.size() + " players", YELLOW));
+                });
+    }
+
+    private void valentineReward(CommandSender sender) {
+        plugin.getDatabase().find(SQLProgress.class)
+            .eq("year", Timer.getYear())
+            .gt("score", 0)
+            .orderByDescending("score")
+            .findListAsync(list -> {
+                    final Map<UUID, Integer> scoreMap = new HashMap<>();
+                    for (var it : list) {
+                        scoreMap.put(it.getPlayer(), it.getScore());
+                    }
+                    final int count = Highscore.reward(scoreMap,
+                                                       "valentine_gift_giving",
+                                                       TrophyCategory.CUP,
+                                                       text("Valentine Gift Giving", Colors.HOTPINK),
+                                                       (hi -> hi.score == 1
+                                                        ? "You shared one gift"
+                                                        : "You shared " + hi.score + " gifts"),
+                                                       row -> row.setIcon(Mytems.LOVE_LETTER));
+                    sender.sendMessage(text("Rewarded " + count + " trophies", YELLOW));
                 });
     }
 }

@@ -8,6 +8,9 @@ import com.winthier.sql.SQLRow;
 import java.util.UUID;
 import lombok.Data;
 
+/**
+ * Player score in the Valentine Gift Giving event.
+ */
 @Data @NotNull
 @Name("progress")
 @UniqueKey({"player", "year"})

@@ -47,6 +47,10 @@ public final class Timer {
         return month == 2 && day == 14;
     }
 
+    public static LocalDate getValentinesDay() {
+        return LocalDate.of(year, 2, 14);
+    }
+
     private static void tick() {
         int oldDayId = dayId;
         update();
