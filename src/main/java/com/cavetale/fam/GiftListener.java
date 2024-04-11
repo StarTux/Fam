@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.chat.Chat;
 import com.cavetale.core.event.friends.PlayerShareFriendshipGiftEvent;
 import com.cavetale.core.event.item.PlayerAbsorbItemEvent;
 import com.cavetale.core.event.player.PluginPlayerEvent;
@@ -84,7 +85,7 @@ public final class GiftListener implements Listener {
 
     private void callback(Player player, Player thrower, Component hearts, int oldFriendship, int newFriendship, ItemStack itemStack) {
         plugin.getLogger().info(thrower.getName() + " and " + player.getName() + " shared friendship gifts");
-        if (player.isOnline()) {
+        if (player.isOnline() && !Chat.doesIgnore(player.getUniqueId(), thrower.getUniqueId())) {
             player.sendMessage(Component.text().color(Colors.HOTPINK)
                                .content("Your friendship with " + thrower.getName() + " increased! ")
                                .append(hearts)
@@ -97,7 +98,7 @@ public final class GiftListener implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
             player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
         }
-        if (thrower.isOnline()) {
+        if (thrower.isOnline() && !Chat.doesIgnore(thrower.getUniqueId(), player.getUniqueId())) {
             thrower.sendMessage(Component.text().color(Colors.HOTPINK)
                                 .content("Your friendship with " + player.getName() + " increased! ")
                                 .append(hearts)
