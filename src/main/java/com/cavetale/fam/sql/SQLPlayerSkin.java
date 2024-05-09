@@ -1,6 +1,7 @@
 package com.cavetale.fam.sql;
 
 import com.winthier.sql.SQLRow;
+import com.winthier.sql.SQLRow.Name;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -12,24 +13,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import javax.imageio.ImageIO;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
 
 /**
  * This table maps unique Mojang texture URLs to their content.
  */
-@Data @Table(name = "skins")
+@Data
+@Name("skins")
 public final class SQLPlayerSkin implements SQLRow {
-    @Id
-    private Integer id;
-    @Column(length = 255, unique = true)
-    private String textureUrl;
-    @Column(length = 16384) // TEXT
-    private String textureBase64;
-    @Column(length = 1024) // VARCHAR(1024)
-    private String faceImageBase64;
+    @Id private Integer id;
+    @VarChar(255) @Unique private String textureUrl;
+    @Text private String textureBase64;
+    @VarChar(1024) private String faceImageBase64;
     private transient BufferedImage image;
     private transient BufferedImage faceImage;
 

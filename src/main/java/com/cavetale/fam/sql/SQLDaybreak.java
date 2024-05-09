@@ -1,9 +1,8 @@
 package com.cavetale.fam.sql;
 
 import com.winthier.sql.SQLRow;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.winthier.sql.SQLRow.Name;
+import com.winthier.sql.SQLRow.NotNull;
 import lombok.Data;
 
 /**
@@ -11,11 +10,11 @@ import lombok.Data;
  * daybreak (with friendship decay) was computed. Right afterward,
  * said row will be updated with the new dayId.
  */
-@Data @Table(name = "daybreak")
+@Data
+@NotNull
+@Name("daybreak")
 public final class SQLDaybreak implements SQLRow {
-    @Id
-    private Integer id;
-    @Column(nullable = false)
+    @Id private Integer id;
     private int dayId;
 
     public SQLDaybreak() { }

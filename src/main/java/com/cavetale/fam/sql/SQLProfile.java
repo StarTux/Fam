@@ -4,14 +4,12 @@ import com.cavetale.fam.util.Json;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.winthier.sql.SQLRow;
+import com.winthier.sql.SQLRow.Name;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,20 +17,15 @@ import lombok.NoArgsConstructor;
 /**
  * This table is a mapping of player UUIDs to their profile.
  */
-@Data @Table(name = "profiles")
+@Data
+@Name("profiles")
 public final class SQLProfile implements SQLRow {
-    @Id
-    private Integer id;
-    @Column(nullable = false, unique = true)
-    private UUID uuid;
-    @Column(length = 16)
-    private String name;
-    @Column(length = 4096)
-    private String json;
-    @Column(length = 255)
-    private String textureUrl;
-    @Column(nullable = false)
-    private Date updated;
+    @Id private Integer id;
+    @NotNull @Unique private UUID uuid;
+    @VarChar(16) private String name;
+    @Text private String json;
+    @VarChar(255) private String textureUrl;
+    @NotNull private Date updated;
     private transient Tag tag;
 
     /**

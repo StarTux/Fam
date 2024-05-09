@@ -2,24 +2,21 @@ package com.cavetale.fam.sql;
 
 import com.cavetale.fam.Timer;
 import com.winthier.sql.SQLRow;
+import com.winthier.sql.SQLRow.Name;
+import com.winthier.sql.SQLRow.NotNull;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
 
-@Data @Table(name = "birthdays")
+@Data
+@NotNull
+@Name("birthdays")
 public final class SQLBirthday implements SQLRow {
-    @Id
-    private Integer id;
-    @Column(nullable = false, unique = true)
-    private UUID player;
-    @Column(nullable = false, length = 2)
+    @Id private Integer id;
+    @Unique private UUID player;
     private int month; // 1-12
-    @Column(nullable = false, length = 2)
     private int day; // 1-31
 
     public SQLBirthday() { }
