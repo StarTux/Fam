@@ -23,7 +23,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import static com.cavetale.fam.sql.Database.db;
 import static com.cavetale.fam.trophy.InnerCategoryOrder.innerCategoryOrder;
-import static com.cavetale.mytems.util.Items.text;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.join;
 import static net.kyori.adventure.text.Component.text;
@@ -96,7 +96,7 @@ public final class TrophyDialogue {
             if (trophyList.isEmpty()) continue;
             SQLTrophy trophy = trophyList.get(0);
             if (owner && !trophy.seen) builder.highlightSlot(guiIndex, trophy.getQualityColor());
-            ItemStack icon = text(trophy.getIcon(), trophy.getTooltip());
+            ItemStack icon = tooltip(trophy.getIcon(), trophy.getTooltip());
             gui.setItem(guiIndex, icon, click -> {
                     if (click.isLeftClick()) {
                         openCategory(player, category, 0);
@@ -105,8 +105,8 @@ public final class TrophyDialogue {
                 });
         }
         if (pageIndex > 0) {
-            ItemStack icon = text(Mytems.ARROW_LEFT.createIcon(),
-                                        List.of(text("Previous Page", GRAY)));
+            ItemStack icon = tooltip(Mytems.ARROW_LEFT.createIcon(),
+                                     List.of(text("Previous Page", GRAY)));
             gui.setItem(0, icon, click -> {
                         if (!click.isLeftClick()) return;
                         pageIndex -= 1;
@@ -115,8 +115,7 @@ public final class TrophyDialogue {
                 });
         }
         if (pageIndex < pageCount - 1) {
-            ItemStack icon = text(Mytems.ARROW_RIGHT.createIcon(),
-                                  List.of(text("Next Page", GRAY)));
+            ItemStack icon = Mytems.ARROW_RIGHT.createIcon(List.of(text("Next Page", GRAY)));
             gui.setItem(8, icon, click -> {
                         if (!click.isLeftClick()) return;
                         pageIndex += 1;
@@ -171,7 +170,7 @@ public final class TrophyDialogue {
             if (player.hasPermission("fam.admin")) {
                 tooltip.add(text("#" + trophy.id, DARK_GRAY));
             }
-            ItemStack icon = text(trophy.getIcon(), tooltip);
+            ItemStack icon = tooltip(trophy.getIcon(), tooltip);
             Consumer<InventoryClickEvent> clickHandler = owner
                 ? (click -> {
                         if (!click.isLeftClick()) return;
@@ -195,7 +194,7 @@ public final class TrophyDialogue {
                 if (!it.seen) notSeenCount += 1;
             }
             if (notSeenCount > 0) {
-                gui.setItem(5, text(Mytems.CHECKED_CHECKBOX.createIcon(), List.of(text("Mark all as seen", GRAY))), click -> {
+                gui.setItem(5, Mytems.CHECKED_CHECKBOX.createIcon(List.of(text("Mark all as seen", GRAY))), click -> {
                         if (!click.isLeftClick()) return;
                         for (SQLTrophy it : trophyList) {
                             if (it.seen) continue;
@@ -209,8 +208,7 @@ public final class TrophyDialogue {
             }
         }
         if (thePageIndex > 0) {
-            ItemStack icon = text(Mytems.ARROW_LEFT.createIcon(),
-                                        List.of(text("Previous Page", GRAY)));
+            ItemStack icon = Mytems.ARROW_LEFT.createIcon(List.of(text("Previous Page", GRAY)));
             gui.setItem(0, icon, click -> {
                         if (!click.isLeftClick()) return;
                         openCategory(player, category, thePageIndex - 1);
@@ -218,8 +216,7 @@ public final class TrophyDialogue {
                 });
         }
         if (thePageIndex < pageCount - 1) {
-            ItemStack icon = text(Mytems.ARROW_RIGHT.createIcon(),
-                                  List.of(text("Next Page", GRAY)));
+            ItemStack icon = Mytems.ARROW_RIGHT.createIcon(List.of(text("Next Page", GRAY)));
             gui.setItem(8, icon, click -> {
                         if (!click.isLeftClick()) return;
                         openCategory(player, category, thePageIndex + 1);
@@ -232,7 +229,7 @@ public final class TrophyDialogue {
             openOverview(player);
         };
         gui.setItem(Gui.OUTSIDE, null, back);
-        gui.setItem(4, text(Mytems.TURN_LEFT.createIcon(), List.of(text("Go Back", GRAY))), back);
+        gui.setItem(4, Mytems.TURN_LEFT.createIcon(List.of(text("Go Back", GRAY))), back);
         gui.title(builder.build());
         gui.open(player);
     }

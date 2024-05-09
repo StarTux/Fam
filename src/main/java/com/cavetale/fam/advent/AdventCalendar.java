@@ -7,7 +7,6 @@ import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Gui;
-import com.cavetale.mytems.util.Items;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import static com.cavetale.fam.FamPlugin.plugin;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.join;
 import static net.kyori.adventure.text.Component.newline;
@@ -112,15 +112,15 @@ public final class AdventCalendar {
     }
 
     private static ItemStack lockedItem(int day) {
-        return Items.text(new ItemStack(Material.IRON_DOOR),
-                          List.of(text("Door " + day, GRAY),
-                                  text("Locked", DARK_GRAY)));
+        return tooltip(new ItemStack(Material.IRON_DOOR),
+                       List.of(text("Door " + day, GRAY),
+                               text("Locked", DARK_GRAY)));
     }
 
     private static ItemStack openableItem(int day) {
-        return Items.text(new ItemStack(Material.OAK_DOOR),
-                          List.of(text("Door " + day, GREEN),
-                                  textOfChildren(Mytems.MOUSE_LEFT, text(" Open", GRAY))));
+        return tooltip(new ItemStack(Material.OAK_DOOR),
+                       List.of(text("Door " + day, GREEN),
+                               textOfChildren(Mytems.MOUSE_LEFT, text(" Open", GRAY))));
     }
 
     private static ItemStack unsolvedItem(int day) {
@@ -129,13 +129,13 @@ public final class AdventCalendar {
         for (Component line : getPage(day)) {
             text.add(line.color(WHITE));
         }
-        return Items.text(Mytems.CHECKBOX.createIcon(), text);
+        return tooltip(Mytems.CHECKBOX.createIcon(), text);
     }
 
     private static ItemStack solvedItem(int day) {
-        return Items.text(Mytems.CHRISTMAS_TOKEN.createIcon(),
-                          List.of(text("Door " + day, GREEN),
-                                  textOfChildren(Mytems.MOUSE_LEFT, text(" Open Present", GRAY))));
+        return tooltip(Mytems.CHRISTMAS_TOKEN.createIcon(),
+                       List.of(text("Door " + day, GREEN),
+                               textOfChildren(Mytems.MOUSE_LEFT, text(" Open Present", GRAY))));
     }
 
     private static ItemStack rewardedItem(int day) {
@@ -144,7 +144,7 @@ public final class AdventCalendar {
         for (Component line : getPage(day)) {
             text.add(line.color(GRAY));
         }
-        return Items.text(Mytems.CROSSED_CHECKBOX.createIcon(), text);
+        return tooltip(Mytems.CROSSED_CHECKBOX.createIcon(), text);
     }
 
     public static List<Component> getPage(int day) {

@@ -10,7 +10,6 @@ import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.trophy.TrophyDialogue;
 import com.cavetale.fam.util.Gui;
-import com.cavetale.fam.util.Items;
 import com.cavetale.mytems.Mytems;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import java.time.Month;
@@ -27,7 +26,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import static com.cavetale.mytems.util.Items.text;
+import static com.cavetale.fam.util.Items.makeSkull;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -89,7 +89,7 @@ public final class ProfileDialogue {
         Gui gui = new Gui(plugin)
             .size(size)
             .title(builder.build());
-        gui.setItem(4, Items.makeSkull(player));
+        gui.setItem(4, makeSkull(player));
         int friendsIndex = 19;
         int marriedIndex = 20;
         int statusIndex = 23;
@@ -100,7 +100,7 @@ public final class ProfileDialogue {
         if (bestFriend != null) {
             PlayerProfile friendProfile = Database.getCachedPlayerProfile(bestFriend.getOther(uuid));
             if (friendProfile != null) {
-                friendsIcon = Items.makeSkull(friendProfile);
+                friendsIcon = makeSkull(friendProfile);
             }
         }
         if (friendsIcon == null) {
@@ -132,7 +132,7 @@ public final class ProfileDialogue {
         if (married != null) {
             PlayerProfile marriedProfile = Database.getCachedPlayerProfile(married.getOther(uuid));
             if (marriedProfile != null) {
-                marriedIcon = Items.makeSkull(marriedProfile);
+                marriedIcon = makeSkull(marriedProfile);
             }
         }
         if (marriedIcon == null) {
@@ -171,7 +171,7 @@ public final class ProfileDialogue {
             statusLore.addAll(new LineWrap()
                               .componentMaker(str -> text(str, GRAY, ITALIC))
                               .wrap(":mouse_left: Set your status message"));
-            final ItemStack statusItem = text(new ItemStack(Material.WRITABLE_BOOK), statusLore);
+            final ItemStack statusItem = tooltip(new ItemStack(Material.WRITABLE_BOOK), statusLore);
             gui.setItem(statusIndex, statusItem, click -> {
                     if (!click.isLeftClick()) return;
                     click(player);
@@ -212,7 +212,7 @@ public final class ProfileDialogue {
                 new BirthdayDialogue(plugin).open(player);
             });
         gui.setItem(trophyIndex,
-                    com.cavetale.mytems.util.Items.text(Mytems.GOLDEN_CUP.createIcon(), List.of(text("Trophies", GOLD))),
+                    Mytems.GOLDEN_CUP.createIcon(List.of(text("Trophies", GOLD))),
                     click -> {
                         if (!click.isLeftClick()) return;
                         click(player);

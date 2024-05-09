@@ -22,7 +22,6 @@ import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Gui;
 import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
-import com.cavetale.mytems.util.Items;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import static com.cavetale.core.font.Unicode.tiny;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -203,7 +203,7 @@ public final class FamPlugin extends JavaPlugin {
                                               Component.empty(),
                                               text("Click to view only people", Colors.SILVER),
                                               text("missing a gift from you.", Colors.SILVER));
-        return Items.text(new ItemStack(getTodaysGift()), withClick ? lines : lines.subList(0, 3));
+        return tooltip(new ItemStack(getTodaysGift()), withClick ? lines : lines.subList(0, 3));
     }
 
     public static ItemStack makeSkull(Player perspective, SQLFriends row, SQLBirthday birthday) {
@@ -246,7 +246,7 @@ public final class FamPlugin extends JavaPlugin {
             text.add(text("Birthday ", DARK_GRAY)
                      .append(text(birthday.getBirthdayName(), Colors.GOLD)));
         }
-        Items.text(meta, text);
+        tooltip(meta, text);
         item.setItemMeta(meta);
         return item;
     }
@@ -258,7 +258,7 @@ public final class FamPlugin extends JavaPlugin {
         meta.setPlayerProfile(profile);
         String name = PlayerCache.nameForUuid(uuid);
         if (name == null) name = profile.getName();
-        Items.text(meta, List.of(text(name, WHITE)));
+        tooltip(meta, List.of(text(name, WHITE)));
         item.setItemMeta(meta);
         return item;
     }
@@ -549,7 +549,7 @@ public final class FamPlugin extends JavaPlugin {
                 canClaim = false;
                 icon = Mytems.NO.createIcon();
             }
-            gui.setItem(i, Items.text(icon, text), click -> {
+            gui.setItem(i, tooltip(icon, text), click -> {
                     if (!player.isValid()) return;
                     if (!click.isLeftClick()) return;
                     if (!NetworkServer.current().isSurvival()) {
@@ -676,7 +676,7 @@ public final class FamPlugin extends JavaPlugin {
             text.add(text(PlayerCache.nameForUuid(row.getPlayer())));
             text.add(text("Rank #", Colors.BLUE).append(text("" + rank, WHITE)));
             text.add(text("Score ", Colors.BLUE).append(text("" + score, WHITE)));
-            Items.text(meta, text);
+            tooltip(meta, text);
             itemStack.setItemMeta(meta);
             gui.setItem(menuIndex, itemStack);
         }

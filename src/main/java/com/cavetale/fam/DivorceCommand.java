@@ -5,14 +5,12 @@ import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Gui;
-import com.cavetale.fam.util.Items;
 import com.cavetale.mytems.Mytems;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -21,6 +19,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 @RequiredArgsConstructor
 public final class DivorceCommand implements TabExecutor {
@@ -43,7 +44,7 @@ public final class DivorceCommand implements TabExecutor {
                 List<SQLFriends> rows = Database.findFriendsList(uuid, Relation.MARRIED);
                 if (rows.isEmpty()) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                            player.sendMessage(Component.text("You're not married!", NamedTextColor.RED));
+                            player.sendMessage(text("You're not married!", RED));
                         });
                     return;
                 }
@@ -66,14 +67,11 @@ public final class DivorceCommand implements TabExecutor {
         final String name = PlayerCache.nameForUuid(other);
         Gui gui = new Gui(plugin);
         int size = 18;
-        Component title = Component.text()
-            .append(Component.empty())
-            .append(DefaultFont.guiBlankOverlay(size, TextColor.color(0xFF0000)))
-            .append(Component.text("Really Divorce " + name + "?", NamedTextColor.WHITE))
-            .build();
+        final Component title = textOfChildren(DefaultFont.guiBlankOverlay(size, TextColor.color(0xFF0000)),
+                                               text("Really Divorce " + name + "?", WHITE));
         gui.title(title);
         gui.size(size);
-        gui.setItem(size - 8, Items.button(Mytems.OK, Component.text("Yes, Divorce " + name, NamedTextColor.GREEN)), click -> {
+        gui.setItem(size - 8, Mytems.OK.createIcon(List.of(text("Yes, Divorce " + name, GREEN))), click -> {
                 if (!click.isLeftClick()) return;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
                 Database.db().update(SQLFriends.class)
@@ -82,20 +80,19 @@ public final class DivorceCommand implements TabExecutor {
                     .async(success -> {
                             // sync
                             if (success <= 0) {
-                                player.sendMessage(Component.text("Something went wrong.", NamedTextColor.RED));
+                                player.sendMessage(text("Something went wrong.", RED));
                                 return;
                             }
                             Database.friendLogAsync(uuid, other, Relation.MARRIED, "Divorced");
-                            player.sendMessage(Component.text("You and " + name + " are now divorced!", NamedTextColor.AQUA));
+                            player.sendMessage(text("You and " + name + " are now divorced!", AQUA));
                             Player otherPlayer = Bukkit.getPlayer(other);
                             if (otherPlayer != null) {
-                                otherPlayer.sendMessage(Component.text("You and " + player.getName() + " are now divorced!",
-                                                                       NamedTextColor.AQUA));
+                                otherPlayer.sendMessage(text("You and " + player.getName() + " are now divorced!", AQUA));
                             }
                         });
                 player.closeInventory();
             });
-        gui.setItem(size - 2, Items.button(Mytems.NO, Component.text("No, stay married to " + name, NamedTextColor.RED)), click -> {
+        gui.setItem(size - 2, Mytems.NO.createIcon(List.of(text("No, stay married to " + name, RED))), click -> {
                 if (!click.isLeftClick()) return;
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 1.0f, 1.0f);
                 player.closeInventory();

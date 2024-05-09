@@ -6,19 +6,21 @@ import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.util.Gui;
-import com.cavetale.fam.util.Items;
 import com.cavetale.mytems.Mytems;
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import static com.cavetale.fam.util.Items.makeSkull;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static org.bukkit.Sound.*;
 import static org.bukkit.SoundCategory.*;
 
@@ -50,7 +52,7 @@ public final class BirthdayDialogue {
                    .build());
         for (int i = 0; i < 12; i += 1) {
             final Month theMonth = Month.of(i + 1);
-            ItemStack icon = Items.button(Mytems.CHECKBOX, theMonth.getDisplayName(TextStyle.FULL, LOCALE));
+            ItemStack icon = Mytems.CHECKBOX.createIcon(List.of(text(theMonth.getDisplayName(TextStyle.FULL, LOCALE))));
             icon.setAmount(i + 1);
             gui.setItem(9 + i, icon, click -> {
                     if (!click.isLeftClick()) return;
@@ -82,7 +84,7 @@ public final class BirthdayDialogue {
                    .build());
         for (int i = 0; i < length; i += 1) {
             int theDay = i + 1;
-            ItemStack icon = Items.button(Mytems.CHECKBOX, monthName + " " + theDay);
+            ItemStack icon = Mytems.CHECKBOX.createIcon(List.of(text(monthName + " " + theDay)));
             icon.setAmount(theDay);
             gui.setItem(i, icon, click -> {
                     if (!click.isLeftClick()) return;
@@ -110,19 +112,19 @@ public final class BirthdayDialogue {
                    .append(DefaultFont.guiBlankOverlay(size, BG))
                    .append(Component.text("Your birthday is on " + birthdayName + "?", COLOR))
                    .build());
-        gui.setItem(size - 8, Items.button(Mytems.OK, ChatColor.GREEN + "Yes, my birthday is on " + birthdayName), click -> {
+        gui.setItem(size - 8, Mytems.OK.createIcon(List.of(text("Yes, my birthday is on " + birthdayName, GREEN))), click -> {
                 if (!click.isLeftClick()) return;
                 confirm(player, false);
                 gui.close(player);
                 click(player);
             });
-        gui.setItem(size - 6, Items.button(Mytems.BOMB, ChatColor.AQUA + "Yes, but keep it a secret"), click -> {
+        gui.setItem(size - 6, Mytems.BOMB.createIcon(List.of(text("Yes, but keep it a secret", AQUA))), click -> {
                 if (!click.isLeftClick()) return;
                 gui.close(player);
                 confirm(player, true);
                 click(player);
             });
-        gui.setItem(size - 2, Items.button(Mytems.NO, ChatColor.RED + "No, go back!"), click -> {
+        gui.setItem(size - 2, Mytems.NO.createIcon(List.of(text("No, go back!", RED))), click -> {
                 if (!click.isLeftClick()) return;
                 gui.close(player);
                 month = null;
@@ -130,7 +132,7 @@ public final class BirthdayDialogue {
                 open(player);
                 click(player);
             });
-        gui.setItem(4, Items.makeSkull(player));
+        gui.setItem(4, makeSkull(player));
         gui.setItem(Gui.OUTSIDE, null, click -> {
                 if (!click.isLeftClick()) return;
                 day = 0;
