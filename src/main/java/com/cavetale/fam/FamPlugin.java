@@ -8,6 +8,7 @@ import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.advent.Advent;
+import com.cavetale.fam.core.CorePlayerSkinProvider;
 import com.cavetale.fam.eventhost.EventHosts;
 import com.cavetale.fam.session.Session;
 import com.cavetale.fam.session.Sessions;
@@ -73,6 +74,7 @@ public final class FamPlugin extends JavaPlugin {
     private final FamFriendsSupplier famFriendsSupplier = new FamFriendsSupplier();
     private final Sessions sessions = new Sessions();
     private final Advent advent = new Advent();
+    private final CorePlayerSkinProvider skinProvider = new CorePlayerSkinProvider();
 
     @Override
     public void onEnable() {
@@ -114,6 +116,7 @@ public final class FamPlugin extends JavaPlugin {
         Gui.enable(this);
         famFriendsSupplier.register();
         advent.enable();
+        skinProvider.register();
     }
 
     public List<Reward> getRewardList() {
@@ -175,6 +178,7 @@ public final class FamPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        skinProvider.unregister();
         famFriendsSupplier.unregister();
         eventHosts.disable();
         Gui.disable(this);

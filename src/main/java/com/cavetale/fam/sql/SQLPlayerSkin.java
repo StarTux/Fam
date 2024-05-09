@@ -1,5 +1,6 @@
 package com.cavetale.fam.sql;
 
+import com.cavetale.core.skin.PlayerSkin;
 import com.winthier.sql.SQLRow;
 import com.winthier.sql.SQLRow.Name;
 import java.awt.Graphics2D;
@@ -20,7 +21,7 @@ import lombok.Data;
  */
 @Data
 @Name("skins")
-public final class SQLPlayerSkin implements SQLRow {
+public final class SQLPlayerSkin implements SQLRow, PlayerSkin {
     @Id private Integer id;
     @VarChar(255) @Unique private String textureUrl;
     @Text private String textureBase64;
@@ -115,5 +116,15 @@ public final class SQLPlayerSkin implements SQLRow {
             faceImageBase64 = imageToBase64(faceImage);
         }
         return faceImage;
+    }
+
+    @Override
+    public String getFaceBase64() {
+        return imageToBase64(getFaceImage());
+    }
+
+    @Override
+    public BufferedImage getTextureImage() {
+        return image;
     }
 }
