@@ -1,8 +1,8 @@
 package com.cavetale.fam.sql;
 
 import com.cavetale.core.skin.PlayerSkin;
-import com.winthier.sql.SQLRow;
 import com.winthier.sql.SQLRow.Name;
+import com.winthier.sql.SQLRow;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Base64;
 import javax.imageio.ImageIO;
@@ -45,9 +47,11 @@ public final class SQLPlayerSkin implements SQLRow, PlayerSkin {
     public void loadTexture() {
         URL url;
         try {
-            url = new URL(textureUrl);
+            url = new URI(textureUrl).toURL();
         } catch (MalformedURLException murle) {
             throw new UncheckedIOException(murle);
+        } catch (URISyntaxException urise) {
+            throw new IllegalStateException(urise);
         }
         try {
             image = ImageIO.read(url);
