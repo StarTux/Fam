@@ -31,7 +31,6 @@ public final class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        plugin.getFriendCommand().clearRequest(player);
         Database.clearCache(player.getUniqueId());
     }
 

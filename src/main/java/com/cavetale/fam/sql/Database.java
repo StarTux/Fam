@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import lombok.Data;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -32,6 +33,7 @@ public final class Database {
         return plugin().getDatabase();
     }
 
+    @Data
     public static final class Cache {
         protected int score;
         protected UUID married;
@@ -114,6 +116,12 @@ public final class Database {
         row.setRelationFor(you, relation);
         row.setChanged(new Date());
         db().update(row, "relation", "changed");
+    }
+
+    public static void resetRelation(SQLFriends row) {
+        row.setRelation(null);
+        row.setChanged(new Date());
+        db().updateAsync(row, null, "relation", "changed");
     }
 
     public static SQLFriends findFriends(UUID a, UUID b) {

@@ -8,7 +8,12 @@ api-version: '1.21'
 author: StarTux
 website: https://github.com/StarTux/Fam
 
-depend: [Core, SQL, Mytems, Chat]
+depend:
+- Core
+- SQL
+- Mytems
+- Chat
+- Connect
 softdepend: []
 
 commands:
@@ -48,6 +53,12 @@ commands:
     description: Friend request
     permission: fam.friends
     usage: /friend <player>
+
+  unfriend:
+    aliases: []
+    description: Remove friend
+    permission: fam.friends
+    usage: /unfriend <player>
 
   love:
     aliases: []

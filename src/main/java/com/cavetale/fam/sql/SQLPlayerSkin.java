@@ -1,8 +1,8 @@
 package com.cavetale.fam.sql;
 
 import com.cavetale.core.skin.PlayerSkin;
-import com.winthier.sql.SQLRow.Name;
 import com.winthier.sql.SQLRow;
+import com.winthier.sql.SQLRow.Name;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

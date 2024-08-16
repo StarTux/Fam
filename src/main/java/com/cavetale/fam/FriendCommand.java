@@ -1,62 +1,52 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.command.AbstractCommand;
+import com.cavetale.core.command.CommandArgCompleter;
+import com.cavetale.core.command.CommandWarn;
+import com.cavetale.core.command.RemotePlayer;
+import com.cavetale.core.connect.Connect;
 import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import com.winthier.connect.Redis;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
-@RequiredArgsConstructor
-public final class FriendCommand implements TabExecutor {
-    private final FamPlugin plugin;
-    private final Map<UUID, UUID> requests = new HashMap<>(); // requestor -> requestee
+public final class FriendCommand extends AbstractCommand<FamPlugin> {
+    private static final String REDIS_PREFIX = "friend_request.";
+    public static final String CONNECT_FRIEND_DID_ACCEPT = "connect:friend_did_accept";
 
-    public void enable() {
-        plugin.getCommand("friend").setExecutor(this);
-    }
-
-    public void clearRequest(Player player) {
-        requests.remove(player.getUniqueId());
+    protected FriendCommand(final FamPlugin plugin) {
+        super(plugin, "friend");
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String alias, final String[] args) {
+    protected void onEnable() {
+        rootNode.description("Friend request")
+            .arguments("<player>")
+            .completers(CommandArgCompleter.ONLINE_PLAYERS)
+            .playerCaller(this::friend);
+    }
+
+    private boolean friend(Player player, String[] args) {
         if (args.length != 1) return false;
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("[Fam] Player expected");
-            return true;
+        final RemotePlayer target = CommandArgCompleter.requireRemotePlayer(args[0]);
+        final UUID a = player.getUniqueId();
+        final UUID b = target.getUniqueId();
+        if (a.equals(b)) {
+            throw new CommandWarn("You cannot friend yourself");
         }
-        Player player = (Player) sender;
-        Player target = Bukkit.getPlayerExact(args[0]);
-        if (target == null) {
-            player.sendMessage(Component.text("Player not found: " + args[0], NamedTextColor.RED));
-            return true;
-        }
-        if (player.equals(target)) {
-            player.sendMessage(Component.text("You cannot friend yourself", NamedTextColor.RED));
-            return true;
-        }
-        UUID a = player.getUniqueId();
-        UUID b = target.getUniqueId();
         Database.db().scheduleAsyncTask(() -> {
                 SQLFriends friends = Database.findFriends(a, b);
                 Bukkit.getScheduler().runTask(plugin, () -> callback(player, target, friends));
@@ -64,59 +54,69 @@ public final class FriendCommand implements TabExecutor {
         return true;
     }
 
-    private void callback(Player player, Player target, SQLFriends row) {
-        if (!player.isOnline() || !target.isOnline()) return;
+    private void callback(Player player, RemotePlayer target, SQLFriends row) {
+        if (!player.isOnline()) return;
         if (row == null || row.getHearts() < 3) {
-            player.sendMessage(Component.text("You need at least 3" + Text.HEART_ICON + " with " + target.getName(),
-                                              NamedTextColor.RED));
+            player.sendMessage(text("You need at least 3" + Text.HEART_ICON + " with " + target.getName(), RED));
             return;
         }
-        Relation relation = row.getRelationFor(player.getUniqueId());
+        final Relation relation = row.getRelationFor(player.getUniqueId());
         if (relation != null) {
-            player.sendMessage(Component.text(target.getName() + " is already your " + relation.getYour() + "!",
-                                              NamedTextColor.RED));
+            player.sendMessage(text(target.getName() + " is already your " + relation.getYour() + "!", RED));
             return;
         }
-        UUID request = requests.get(target.getUniqueId());
-        if (Objects.equals(request, player.getUniqueId())) {
-            // Accept request
-            requests.remove(target.getUniqueId());
-            Database.setRelation(row, player.getUniqueId(), Relation.FRIEND);
-            player.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                        Mytems.HEART.component,
-                        Component.text("You and " + target.getName() + " are now friends!", Colors.HOTPINK),
-                    })
-                .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
-                .clickEvent(ClickEvent.runCommand("/friends")));
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
-            target.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                        Mytems.HEART.component,
-                        Component.text("You and " + player.getName() + " are now friends!", Colors.HOTPINK),
-                    })
-                .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
-                .clickEvent(ClickEvent.runCommand("/friends")));
-            target.playSound(target.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
-            PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, player);
-            PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, target);
-            Database.fillCacheAsync(player);
-            Database.fillCacheAsync(target);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                // If this is a response, the target will have sent us
+                // a request, so their request will be stored in
+                // redis, with our UUID as a value.
+                final String redisKey = REDIS_PREFIX + target.getUniqueId();
+                final String request = Redis.get(redisKey);
+                if (request == null || !request.equals(player.getUniqueId().toString())) {
+                    Redis.set(REDIS_PREFIX + player.getUniqueId(), target.getUniqueId().toString(), 60L);
+                    Bukkit.getScheduler().runTask(plugin, () -> didMakeRequest(player, target));
+                } else {
+                    Redis.del(redisKey);
+                    Bukkit.getScheduler().runTask(plugin, () -> didAcceptRequest(player, target, row));
+                }
+            });
+    }
+
+    private void didAcceptRequest(Player player, RemotePlayer target, SQLFriends row) {
+        Database.setRelation(row, player.getUniqueId(), Relation.FRIEND);
+        player.sendMessage(textOfChildren(Mytems.HEART.component,
+                                          text("You and " + target.getName() + " are now friends!", Colors.HOTPINK))
+                           .hoverEvent(HoverEvent.showText(text("/friends", Colors.HOTPINK)))
+                           .clickEvent(ClickEvent.runCommand("/friends")));
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
+        target.sendMessage(textOfChildren(Mytems.HEART.component,
+                                          text("You and " + player.getName() + " are now friends!", Colors.HOTPINK))
+                           .hoverEvent(HoverEvent.showText(text("/friends", Colors.HOTPINK)))
+                           .clickEvent(ClickEvent.runCommand("/friends")));
+        PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, player);
+        Database.fillCacheAsync(player);
+        if (target.isPlayer()) {
+            final Player targetPlayer = target.getPlayer();
+            onFriendDidAccept(target.getPlayer());
         } else {
-            requests.put(player.getUniqueId(), target.getUniqueId());
-            target.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                        Mytems.HALF_HEART.component,
-                        Component.text(player.getName() + " sent you a friend request! Click here to accept", Colors.HOTPINK),
-                    })
-                .hoverEvent(HoverEvent.showText(Component.text("/friend " + player.getName(), Colors.HOTPINK)))
-                .clickEvent(ClickEvent.runCommand("/friend " + player.getName())));
-            player.sendMessage(Component.join(JoinConfiguration.noSeparators(), new Component[] {
-                        Mytems.HALF_HEART.component,
-                        Component.text("Friend request sent to " + target.getName(), Colors.HOTPINK),
-                    }));
+            Connect.get().broadcastMessage(CONNECT_FRIEND_DID_ACCEPT, target.getUniqueId().toString());
         }
     }
 
-    @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
-        return null;
+    /**
+     * Called by didAcceptRequest() and ConnectListener.
+     */
+    public void onFriendDidAccept(Player player) {
+        Database.fillCacheAsync(player);
+        PluginPlayerEvent.Name.MAKE_FRIEND.call(plugin, player);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
+    }
+
+    private void didMakeRequest(Player player, RemotePlayer target) {
+        target.sendMessage(textOfChildren(Mytems.HALF_HEART.component,
+                                          text(player.getName() + " sent you a friend request! Click here to accept", Colors.HOTPINK))
+                           .hoverEvent(HoverEvent.showText(text("/friend " + player.getName(), Colors.HOTPINK)))
+                           .clickEvent(ClickEvent.runCommand("/friend " + player.getName())));
+        player.sendMessage(textOfChildren(Mytems.HALF_HEART.component,
+                                          text("Friend request sent to " + target.getName(), Colors.HOTPINK)));
     }
 }
