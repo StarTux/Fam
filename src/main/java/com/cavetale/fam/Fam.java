@@ -31,7 +31,6 @@ public final class Fam {
                     Relation relation = row.getRelationEnum();
                     list.add(new Relationship(row.getOther(player),
                                               row.getFriendship(),
-                                              row.getHearts(),
                                               relation == Relation.FRIEND,
                                               relation == Relation.MARRIED));
                 }
@@ -45,7 +44,6 @@ public final class Fam {
     public static final class Relationship {
         public final UUID uuid;
         public final int friendship;
-        public final int hearts;
         public final boolean friend;
         public final boolean married;
 

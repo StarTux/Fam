@@ -21,7 +21,6 @@ import com.cavetale.fam.trophy.Trophies;
 import com.cavetale.fam.trophy.TrophyDialogue;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.fam.util.Gui;
-import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
@@ -238,7 +237,7 @@ public final class FamPlugin extends JavaPlugin {
         }
         List<Component> text = new ArrayList<>();
         text.add(text(name, color));
-        text.add(Text.toHeartString(row.getHearts()));
+        text.add(row.getHeartsComponent());
         if (perspective.hasPermission("fam.debug")) {
             text.add(text("Debug Friendship: " + row.getFriendship(), Colors.DARK_GRAY));
         }
@@ -463,31 +462,36 @@ public final class FamPlugin extends JavaPlugin {
     }
 
     public static Gui openFriendGui(Player player, SQLFriends row, SQLBirthday birthday, int page) {
-        UUID friendUuid = row.getOther(player.getUniqueId());
+        final UUID friendUuid = row.getOther(player.getUniqueId());
         final PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
         final PlayerCache playerCache = PlayerCache.forUuid(friendUuid);
-        Gui gui = new Gui(instance);
-        int size = 4 * 9;
-        TextColor color;
-        switch (row.getHearts()) {
-        case 0: color = DARK_GRAY; break;
-        case 1: color = GRAY; break;
-        case 2: color = WHITE; break;
-        case 3: color = BLUE; break;
-        case 4: color = RED; break;
-        case 5: color = GOLD; break;
-        default: color = WHITE;
+        final Gui gui = new Gui(instance);
+        final int size = 4 * 9;
+        final TextColor color;
+        final int friendship = row.getFriendship();
+        if (friendship < 20) {
+            color = DARK_GRAY;
+        } else if (friendship < 40) {
+            color = GRAY;
+        } else if (friendship < 60) {
+            color = WHITE;
+        } else if (friendship < 80) {
+            color = BLUE;
+        } else if (friendship < 100) {
+            color = RED;
+        } else {
+            color = GOLD;
         }
         gui.title(GuiOverlay.BLANK.builder(size, DARK_GRAY)
                   .layer(GuiOverlay.TOP_BAR, color)
                   .title(text(playerCache.name, WHITE))
                   .build());
         gui.size(size);
-        for (int i = 0; i < row.getHearts(); i += 1) {
-            gui.setItem(2 + i, Mytems.HEART.createItemStack());
-        }
-        for (int i = row.getHearts(); i < 5; i += 1) {
-            gui.setItem(2 + i, Mytems.EMPTY_HEART.createItemStack());
+        final var hearts = row.getHeartIcons();
+        for (int i = 0; i < 5; i += 1) {
+            final ItemStack heart = hearts.get(i).createItemStack();
+            heart.editMeta(meta -> meta.setHideTooltip(true));
+            gui.setItem(2 + i, heart);
         }
         gui.setItem(18 + 2, Mytems.TURN_RIGHT.createIcon(List.of(text("/tpa " + playerCache.name, LIGHT_PURPLE))), click -> {
                 Bukkit.dispatchCommand(player, "tpa " + playerCache.name);

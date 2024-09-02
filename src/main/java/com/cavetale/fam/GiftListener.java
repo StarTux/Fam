@@ -7,11 +7,9 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Colors;
-import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
@@ -25,6 +23,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
 
 @RequiredArgsConstructor
 public final class GiftListener implements Listener {
@@ -62,51 +62,38 @@ public final class GiftListener implements Listener {
                 boolean res = Database.dailyGift(a, b, Timer.getDayId());
                 if (!res) return;
                 final int amount = birthday ? 20 : 5;
-                SQLFriends row = Database.findFriends(a, b);
+                final SQLFriends oldRow = Database.findFriends(a, b);
                 Database.increaseFriendship(a, b, amount);
-                final int oldFriendship = row.getFriendship();
-                final int newFriendship = oldFriendship + amount;
-                final int heartCount = row.getHearts(newFriendship);
-                boolean won = row == null || row.getHearts() != heartCount;
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < heartCount - (won ? 1 : 0); i += 1) {
-                    sb.append(Text.HEART_ICON);
-                }
-                Component hearts = won
-                    ? Component.text().content(sb.toString()).color(Colors.HOTPINK).append(Component.text(Text.HEART_ICON, Colors.GOLD)).build()
-                    : Component.text(sb.toString(), Colors.HOTPINK);
+                final SQLFriends newRow = Database.findFriends(a, b);
                 if (Timer.isValentineSeason()) {
                     Database.addProgress(a);
                     Database.addProgress(b);
                 }
-                Bukkit.getScheduler().runTask(plugin, () -> callback(player, thrower, hearts, oldFriendship, newFriendship, itemStack));
+                Bukkit.getScheduler().runTask(plugin, () -> callback(player, thrower, oldRow, newRow, itemStack));
             });
     }
 
-    private void callback(Player player, Player thrower, Component hearts, int oldFriendship, int newFriendship, ItemStack itemStack) {
-        plugin.getLogger().info(thrower.getName() + " and " + player.getName() + " shared friendship gifts");
+    private void callback(Player player, Player thrower, SQLFriends oldRow, SQLFriends newRow, ItemStack itemStack) {
+        plugin.getLogger().info(thrower.getName() + " and " + player.getName() + " shared friendship gifts: "
+                                + oldRow.getFriendship() + " => " + newRow.getFriendship());
         if (player.isOnline() && !Chat.doesIgnore(player.getUniqueId(), thrower.getUniqueId())) {
-            player.sendMessage(Component.text().color(Colors.HOTPINK)
-                               .content("Your friendship with " + thrower.getName() + " increased! ")
-                               .append(hearts)
-                               .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
+            player.sendMessage(textOfChildren(text("Your friendship with " + thrower.getName() + " increased! ", Colors.HOTPINK),
+                                              newRow.getHeartsComponent())
+                               .hoverEvent(HoverEvent.showText(text("/friends", Colors.HOTPINK)))
                                .clickEvent(ClickEvent.runCommand("/friends")));
             if (player.hasPermission("fam.debug")) {
-                player.sendMessage(Component.text("Debug Friendship: " + oldFriendship + " => " + newFriendship,
-                                                  Colors.DARK_GRAY));
+                player.sendMessage(text("Debug Friendship: " + oldRow.getFriendship() + " => " + newRow.getFriendship(), Colors.DARK_GRAY));
             }
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
             player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
         }
         if (thrower.isOnline() && !Chat.doesIgnore(thrower.getUniqueId(), player.getUniqueId())) {
-            thrower.sendMessage(Component.text().color(Colors.HOTPINK)
-                                .content("Your friendship with " + player.getName() + " increased! ")
-                                .append(hearts)
-                                .hoverEvent(HoverEvent.showText(Component.text("/friends", Colors.HOTPINK)))
+            thrower.sendMessage(textOfChildren(text("Your friendship with " + player.getName() + " increased! ", Colors.HOTPINK),
+                                               newRow.getHeartsComponent())
+                                .hoverEvent(HoverEvent.showText(text("/friends", Colors.HOTPINK)))
                                 .clickEvent(ClickEvent.runCommand("/friends")));
             if (thrower.hasPermission("fam.debug")) {
-                thrower.sendMessage(Component.text("Debug Friendship: " + oldFriendship + " => " + newFriendship,
-                                                   Colors.DARK_GRAY));
+                thrower.sendMessage(text("Debug Friendship: " + oldRow.getFriendship() + " => " + newRow.getFriendship(), Colors.DARK_GRAY));
             }
             thrower.playSound(thrower.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1.0f, 2.0f);
             thrower.getWorld().spawnParticle(Particle.HEART, thrower.getLocation().add(0, player.getHeight() + 0.25, 0), 2, 0, 0, 0, 0);
@@ -116,9 +103,8 @@ public final class GiftListener implements Listener {
     }
 
     private void valentineRewardReminder(Player player) {
-        player.sendMessage(Component.text()
-                           .append(Component.text("A new valentine reward is available! See /valentine", Colors.HOTPINK))
-                           .hoverEvent(HoverEvent.showText(Component.text("/valentine", Colors.HOTPINK)))
+        player.sendMessage(text("A new valentine reward is available! See /valentine", Colors.HOTPINK)
+                           .hoverEvent(HoverEvent.showText(text("/valentine", Colors.HOTPINK)))
                            .clickEvent(ClickEvent.runCommand("/valentine")));
     }
 }

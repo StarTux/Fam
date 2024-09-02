@@ -3,13 +3,19 @@ package com.cavetale.fam.sql;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
+import com.cavetale.mytems.Mytems;
 import com.winthier.sql.SQLRow;
 import com.winthier.sql.SQLRow.Name;
 import com.winthier.sql.SQLRow.NotNull;
 import com.winthier.sql.SQLRow.UniqueKey;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import lombok.Data;
+import net.kyori.adventure.text.Component;
+import static net.kyori.adventure.text.Component.join;
+import static net.kyori.adventure.text.JoinConfiguration.noSeparators;
 
 @Data @NotNull @Name("friends")
 @UniqueKey({"player_a", "player_b"})
@@ -86,17 +92,31 @@ public final class SQLFriends implements SQLRow, Comparable<SQLFriends> {
         }
     }
 
-    public int getHearts() {
-        return getHearts(friendship);
+    public List<Mytems> getHeartIcons() {
+        return getHeartIcons(friendship);
     }
 
-    public static int getHearts(int friendship) {
-        if (friendship < 1) return 0;
-        if (friendship < 20) return 1;
-        if (friendship < 40) return 2;
-        if (friendship < 60) return 3;
-        if (friendship < 80) return 4;
-        return 5;
+    public static List<Mytems> getHeartIcons(int friendship) {
+        final List<Mytems> result = new ArrayList<>(5);
+        for (int i = 0; i < 5; i += 1) {
+            if (friendship >= 20) {
+                result.add(Mytems.HEART);
+            } else if (friendship >= 10 || (i == 0 && friendship > 0)) {
+                result.add(Mytems.HALF_HEART);
+            } else {
+                result.add(Mytems.EMPTY_HEART);
+            }
+            friendship -= 20;
+        }
+        return result;
+    }
+
+    public static Component getHeartsComponent(int friendship) {
+        return join(noSeparators(), getHeartIcons(friendship));
+    }
+
+    public Component getHeartsComponent() {
+        return getHeartsComponent(friendship);
     }
 
     public boolean dailyGiftAvailable() {

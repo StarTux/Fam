@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import static net.kyori.adventure.text.Component.text;
 
 @RequiredArgsConstructor
 public final class FriendsCommand implements TabExecutor {
@@ -35,11 +35,11 @@ public final class FriendsCommand implements TabExecutor {
         String name = args[0];
         UUID uuid = PlayerCache.uuidForName(name);
         if (uuid == null) {
-            player.sendMessage(Component.text("Player not found: " + name, NamedTextColor.RED));
+            player.sendMessage(text("Player not found: " + name, NamedTextColor.RED));
             return true;
         }
         if (uuid.equals(player.getUniqueId())) {
-            player.sendMessage(Component.text(name + " is you :)", NamedTextColor.RED));
+            player.sendMessage(text(name + " is you :)", NamedTextColor.RED));
             return true;
         }
         plugin.openFriendGui(player, uuid, 1);

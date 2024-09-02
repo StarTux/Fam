@@ -2,17 +2,18 @@ package com.cavetale.fam;
 
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.util.Colors;
-import com.cavetale.fam.util.Text;
+import com.cavetale.mytems.Mytems;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Particle;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 @RequiredArgsConstructor
 public final class LoveCommand implements TabExecutor {
@@ -32,13 +33,13 @@ public final class LoveCommand implements TabExecutor {
         Player player = (Player) sender;
         Player target = Database.getCachedMarriage(player);
         if (target == null) {
-            player.sendMessage(Component.text("No spouse in sight", NamedTextColor.RED));
+            player.sendMessage(text("No spouse in sight", RED));
             return true;
         }
         player.getWorld().spawnParticle(Particle.HEART, player.getEyeLocation(), 4, 0.5f, 0.5f, 0.5f, 0.0);
         target.getWorld().spawnParticle(Particle.HEART, target.getEyeLocation(), 4, 0.5f, 0.5f, 0.5f, 0.0);
-        player.sendMessage(Component.text("You send " + target.getName() + " your love " + Text.HEART_ICON, Colors.HOTPINK));
-        target.sendActionBar(Component.text(player.getName() + " sends you their love " + Text.HEART_ICON, Colors.HOTPINK));
+        player.sendMessage(textOfChildren(text("You send " + target.getName() + " your love ", Colors.HOTPINK), Mytems.HEART));
+        target.sendActionBar(textOfChildren(text(player.getName() + " sends you their love ", Colors.HOTPINK), Mytems.HEART));
         return true;
     }
 

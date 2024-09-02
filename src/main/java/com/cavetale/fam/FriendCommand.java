@@ -9,7 +9,6 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Colors;
-import com.cavetale.fam.util.Text;
 import com.cavetale.mytems.Mytems;
 import com.winthier.connect.Redis;
 import java.util.UUID;
@@ -56,8 +55,11 @@ public final class FriendCommand extends AbstractCommand<FamPlugin> {
 
     private void callback(Player player, RemotePlayer target, SQLFriends row) {
         if (!player.isOnline()) return;
-        if (row == null || row.getHearts() < 3) {
-            player.sendMessage(text("You need at least 3" + Text.HEART_ICON + " with " + target.getName(), RED));
+        if (row == null || row.getFriendship() < 60) {
+            player.sendMessage(textOfChildren(text("You need at least "),
+                                              SQLFriends.getHeartsComponent(60),
+                                              text(" with " + target.getName()))
+                               .color(RED));
             return;
         }
         final Relation relation = row.getRelationFor(player.getUniqueId());
