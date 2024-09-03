@@ -31,7 +31,7 @@ public final class EloAdminCommand extends AbstractCommand<FamPlugin> {
                         CommandArgCompleter.integer(i -> i > 0))
             .senderCaller(this::rank);
         rootNode.addChild("set").arguments("<category> <player> <rating>")
-            .description("Set the ELO of a player")
+            .description("Set the Elo of a player")
             .completers(CommandArgCompleter.enumLowerList(MinigameMatchType.class),
                         CommandArgCompleter.PLAYER_CACHE,
                         CommandArgCompleter.doubles(r -> r >= 0.0))

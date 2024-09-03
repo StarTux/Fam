@@ -126,7 +126,7 @@ public final class EloListener implements Listener {
     }
 
     private void logRating(MinigameMatchType type, SQLElo elo, double oldRating) {
-        plugin().getLogger().info("[ELO] " + type.getDisplayName()
+        plugin().getLogger().info("[Elo] " + type.getDisplayName()
                                   + " " + PlayerCache.nameForUuid(elo.getPlayer())
                                   + " #" + elo.getGames()
                                   + " " + fmt(oldRating) + " => " + fmt(elo.getRating()));
