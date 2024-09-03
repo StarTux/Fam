@@ -85,6 +85,7 @@ public final class EloListener implements Listener {
             // We simplify this and adjust the elo against every player unless they are in the same team.
             for (SQLElo elo : elos.values()) {
                 elo.increaseGames();
+                final double oldRating = elo.getRating();
                 for (SQLElo opponent : elos.values()) {
                     if (elo == opponent) continue;
                     if (playerTeamQuery.hasTeams() && playerTeamQuery.getTeam(elo.getPlayer()) == playerTeamQuery.getTeam(opponent.getPlayer())) {
@@ -93,13 +94,15 @@ public final class EloListener implements Listener {
                     final boolean weWin = winners.contains(elo.getPlayer());
                     final boolean theyWin = winners.contains(opponent.getPlayer());
                     if (weWin == theyWin) {
-                        updateRating(type, elo, opponent.getRating(), 0.5);
+                        elo.updateRatingAgainst(opponent.getRating(), 0.5);
                     } else if (weWin) {
-                        updateRating(type, elo, opponent.getRating(), 1.0);
+                        elo.updateRatingAgainst(opponent.getRating(), 1.0);
                     } else {
-                        updateRating(type, elo, opponent.getRating(), 0.0);
+                        elo.updateRatingAgainst(opponent.getRating(), 0.0);
                     }
                 }
+                saveRating(elo);
+                logRating(type, elo, oldRating);
             }
         } else {
             throw new IllegalStateException("players.size=" + players.size() + " draw=" + draw);
@@ -109,11 +112,18 @@ public final class EloListener implements Listener {
     private void updateRating(MinigameMatchType type, SQLElo elo, double opponent, double winResult) {
         final double oldRating = elo.getRating();
         elo.updateRatingAgainst(opponent, winResult);
+        saveRating(elo);
+        logRating(type, elo, oldRating);
+    }
+
+    private void saveRating(SQLElo elo) {
         Database.db().update(elo, "rating", "games", "lastUpdate");
+    }
+
+    private void logRating(MinigameMatchType type, SQLElo elo, double oldRating) {
         plugin().getLogger().info("[ELO] " + type.getDisplayName()
-                                  + " #" + elo.getGames()
                                   + " " + PlayerCache.nameForUuid(elo.getPlayer())
-                                  + " " + String.format("%.1f", winResult)
+                                  + " #" + elo.getGames()
                                   + " " + fmt(oldRating) + " => " + fmt(elo.getRating()));
     }
 
