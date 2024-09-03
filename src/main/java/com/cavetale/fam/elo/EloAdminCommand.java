@@ -70,7 +70,7 @@ public final class EloAdminCommand extends AbstractCommand<FamPlugin> {
             if (index >= elos.size()) break;
             final SQLElo elo = elos.get(index);
             sender.sendMessage(textOfChildren(text((index + 1), GRAY),
-                                              text(" " + elo.getRating(), YELLOW),
+                                              text(" " + fmt(elo.getRating()), YELLOW),
                                               text(" " + PlayerCache.nameForUuid(elo.getPlayer())),
                                               text("(" + elo.getGames() + ")", DARK_GRAY)));
         }
