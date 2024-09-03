@@ -9,6 +9,7 @@ import com.cavetale.core.font.Unicode;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.advent.Advent;
 import com.cavetale.fam.core.CorePlayerSkinProvider;
+import com.cavetale.fam.elo.EloAdminCommand;
 import com.cavetale.fam.elo.EloListener;
 import com.cavetale.fam.eventhost.EventHosts;
 import com.cavetale.fam.session.Session;
@@ -126,6 +127,7 @@ public final class FamPlugin extends JavaPlugin {
         advent.enable();
         skinProvider.register();
         new EloListener().enable();
+        new EloAdminCommand(this).enable();
     }
 
     public List<Reward> getRewardList() {

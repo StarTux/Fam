@@ -15,7 +15,9 @@ import lombok.Data;
 public final class SQLElo implements SQLRow {
     public static final double DEFAULT_K = 32.0;
     public static final double DEFAULT_RATING = 500.0;
+    @Id
     private Integer id;
+    @VarChar(40)
     private String category;
     private UUID player;
     private double rating;
@@ -33,17 +35,17 @@ public final class SQLElo implements SQLRow {
     }
 
     public double computeWinProbabilityAgainst(double opponent) {
-        return 1.0 / (1.0 + Math.pow(10.0, (rating - opponent) / 400.0));
+        return 1.0 / (1.0 + Math.pow(10.0, (opponent - rating) / 400.0));
     }
 
-    public void updateRatingAgainst(double opponent, double winResult, double k) {
-        final double winChance = computeWinProbabilityAgainst(opponent);
-        this.rating = rating + k * (winResult - winChance);
+    public void updateRatingAgainst(double opponent, double outcome, double k) {
+        final double expecation = computeWinProbabilityAgainst(opponent);
+        this.rating += k * (outcome - expecation);
         this.lastUpdate = new Date();
     }
 
-    public void updateRatingAgainst(double opponent, double winResult) {
-        updateRatingAgainst(opponent, winResult, DEFAULT_K);
+    public void updateRatingAgainst(double opponent, double outcome) {
+        updateRatingAgainst(opponent, outcome, DEFAULT_K);
     }
 
     public void increaseGames() {

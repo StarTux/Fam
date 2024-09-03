@@ -108,6 +108,12 @@ commands:
     permission: fam.adventadmin
     usage: /adventadmin
 
+  eloadmin:
+    aliases: [eloadm]
+    description: Elo admin command
+    permission: fam.admin
+    usage: /eloadm
+
 permissions:
 
   fam.admin:
