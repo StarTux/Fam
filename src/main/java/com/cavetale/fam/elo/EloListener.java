@@ -83,6 +83,10 @@ public final class EloListener implements Listener {
         } else if (players.size() > 2) {
             // Maybe draw, maybe teams
             // We simplify this and adjust the elo against every player unless they are in the same team.
+            final Map<UUID, Double> ratings = new HashMap<>();
+            for (SQLElo elo : elos.values()) {
+                ratings.put(elo.getPlayer(), elo.getRating());
+            }
             for (SQLElo elo : elos.values()) {
                 elo.increaseGames();
                 final double oldRating = elo.getRating();
@@ -93,12 +97,13 @@ public final class EloListener implements Listener {
                     }
                     final boolean weWin = winners.contains(elo.getPlayer());
                     final boolean theyWin = winners.contains(opponent.getPlayer());
+                    final double opponentRating = ratings.get(opponent.getPlayer());
                     if (weWin == theyWin) {
-                        elo.updateRatingAgainst(opponent.getRating(), 0.5);
+                        elo.updateRatingAgainst(opponentRating, 0.5);
                     } else if (weWin) {
-                        elo.updateRatingAgainst(opponent.getRating(), 1.0);
+                        elo.updateRatingAgainst(opponentRating, 1.0);
                     } else {
-                        elo.updateRatingAgainst(opponent.getRating(), 0.0);
+                        elo.updateRatingAgainst(opponentRating, 0.0);
                     }
                 }
                 saveRating(elo);
