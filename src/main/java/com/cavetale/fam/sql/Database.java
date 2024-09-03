@@ -58,7 +58,8 @@ public final class Database {
                        SQLBirthday.class,
                        SQLTrophy.class,
                        SQLPlayer.class,
-                       SQLAdventPlayer.class);
+                       SQLAdventPlayer.class,
+                       SQLElo.class);
     }
 
     public static boolean init() {
