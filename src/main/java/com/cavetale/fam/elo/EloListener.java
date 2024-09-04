@@ -57,8 +57,12 @@ public final class EloListener implements Listener {
             final double ratingB = eloB.getRating();
             eloA.increaseGames();
             eloB.increaseGames();
-            updateRating(type, eloA, ratingB, (draw ? 0.5 : (winners.contains(playerA) ? 1.0 : 0.0)));
-            updateRating(type, eloB, ratingA, (draw ? 0.5 : (winners.contains(playerB) ? 1.0 : 0.0)));
+            final boolean winnerA = winners.contains(playerA);
+            final boolean winnerB = winners.contains(playerB);
+            if (winnerA) eloA.increaseWins();
+            if (winnerB) eloB.increaseWins();
+            updateRating(type, eloA, ratingB, (draw ? 0.5 : (winnerA ? 1.0 : 0.0)));
+            updateRating(type, eloB, ratingA, (draw ? 0.5 : (winnerB ? 1.0 : 0.0)));
         } else if (players.size() > 2 && !draw && playerTeamQuery.hasTeams()) {
             // We assume that all winners are in the same team.
             double winnerRating = 0.0;
@@ -76,6 +80,7 @@ public final class EloListener implements Listener {
                 elo.increaseGames();
                 if (winners.contains(elo.getPlayer())) {
                     updateRating(type, elo, loserRating, 1.0);
+                    elo.increaseWins();
                 } else {
                     updateRating(type, elo, winnerRating, 0.0);
                 }
@@ -88,14 +93,15 @@ public final class EloListener implements Listener {
                 ratings.put(elo.getPlayer(), elo.getRating());
             }
             for (SQLElo elo : elos.values()) {
-                elo.increaseGames();
                 final double oldRating = elo.getRating();
+                final boolean weWin = winners.contains(elo.getPlayer());
+                elo.increaseGames();
+                if (weWin) elo.increaseWins();
                 for (SQLElo opponent : elos.values()) {
                     if (elo == opponent) continue;
                     if (playerTeamQuery.hasTeams() && playerTeamQuery.getTeam(elo.getPlayer()) == playerTeamQuery.getTeam(opponent.getPlayer())) {
                         continue;
                     }
-                    final boolean weWin = winners.contains(elo.getPlayer());
                     final boolean theyWin = winners.contains(opponent.getPlayer());
                     final double opponentRating = ratings.get(opponent.getPlayer());
                     if (weWin == theyWin) {
@@ -122,7 +128,11 @@ public final class EloListener implements Listener {
     }
 
     private void saveRating(SQLElo elo) {
-        Database.db().update(elo, "rating", "games", "lastUpdate");
+        // Quick hack to guess a player's initial Elo
+        if (elo.getGames() == 3 && elo.getWins() > 0) {
+            elo.setRating(elo.getRating() + elo.getWins() * 200.0);
+        }
+        Database.db().update(elo, "rating", "games", "wins", "lastUpdate");
     }
 
     private void logRating(MinigameMatchType type, SQLElo elo, double oldRating) {

@@ -22,6 +22,7 @@ public final class SQLElo implements SQLRow {
     private UUID player;
     private double rating;
     private int games;
+    private int wins;
     private Date lastUpdate;
 
     public SQLElo() { }
@@ -50,5 +51,9 @@ public final class SQLElo implements SQLRow {
 
     public void increaseGames() {
         games += 1;
+    }
+
+    public void increaseWins() {
+        wins += 1;
     }
 }

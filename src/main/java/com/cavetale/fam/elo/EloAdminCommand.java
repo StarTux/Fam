@@ -72,7 +72,7 @@ public final class EloAdminCommand extends AbstractCommand<FamPlugin> {
             sender.sendMessage(textOfChildren(text((index + 1), GRAY),
                                               text(" " + fmt(elo.getRating()), YELLOW),
                                               text(" " + PlayerCache.nameForUuid(elo.getPlayer())),
-                                              text("(" + elo.getGames() + ")", DARK_GRAY)));
+                                              text(" (", DARK_GRAY), text(elo.getWins()), text("/", DARK_GRAY), text(elo.getGames()), text(")", DARK_GRAY)));
         }
         return true;
     }
@@ -119,8 +119,10 @@ public final class EloAdminCommand extends AbstractCommand<FamPlugin> {
         elo1.updateRatingAgainst(rating2, result);
         elo2.increaseGames();
         elo2.updateRatingAgainst(rating1, 1.0 - result);
-        Database.db().update(elo1, "rating", "games", "lastUpdate");
-        Database.db().update(elo2, "rating", "games", "lastUpdate");
+        if (result == 1.0) elo1.increaseWins();
+        if (result == 0.0) elo2.increaseWins();
+        Database.db().update(elo1, "rating", "games", "wins", "lastUpdate");
+        Database.db().update(elo2, "rating", "games", "wins", "lastUpdate");
         sender.sendMessage(text(player1.name + " #" + elo1.getGames() + " " + fmt(rating1) + " => " + fmt(elo1.getRating()), YELLOW));
         sender.sendMessage(text(player2.name + " #" + elo2.getGames() + " " + fmt(rating2) + " => " + fmt(elo2.getRating()), YELLOW));
         return true;
