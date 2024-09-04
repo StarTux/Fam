@@ -129,8 +129,8 @@ public final class EloListener implements Listener {
 
     private void saveRating(SQLElo elo) {
         // Quick hack to guess a player's initial Elo
-        if (elo.getGames() == 3 && elo.getWins() > 0) {
-            elo.setRating(elo.getRating() + elo.getWins() * 200.0);
+        if (elo.getGames() == 5 && elo.getWins() > 0) {
+            elo.setRating(elo.getRating() + elo.getWins() * 100.0);
         }
         Database.db().update(elo, "rating", "games", "wins", "lastUpdate");
     }
