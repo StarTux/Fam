@@ -79,8 +79,8 @@ public final class EloListener implements Listener {
             for (SQLElo elo : elos.values()) {
                 elo.increaseGames();
                 if (winners.contains(elo.getPlayer())) {
-                    updateRating(type, elo, loserRating, 1.0, 2);
                     elo.increaseWins();
+                    updateRating(type, elo, loserRating, 1.0, 2);
                 } else {
                     updateRating(type, elo, winnerRating, 0.0, 2);
                 }
