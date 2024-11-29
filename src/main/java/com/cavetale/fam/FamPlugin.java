@@ -22,8 +22,8 @@ import com.cavetale.fam.sql.SQLProgress;
 import com.cavetale.fam.trophy.Trophies;
 import com.cavetale.fam.trophy.TrophyDialogue;
 import com.cavetale.fam.util.Colors;
-import com.cavetale.fam.util.Gui;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.util.Gui;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
 import java.util.ArrayList;
@@ -101,6 +101,7 @@ public final class FamPlugin extends JavaPlugin {
         eventHosts.enable();
         Database.init();
         Timer.enable();
+        advent.enable();
         sessions.enable();
         NetworkServer networkServer = NetworkServer.current();
         if (networkServer.category.isSurvival()) {
@@ -122,9 +123,7 @@ public final class FamPlugin extends JavaPlugin {
             Database.fillCacheAsync(player);
             Database.storePlayerProfileAsync(player).fetchPlayerSkinAsync();
         }
-        Gui.enable(this);
         famFriendsSupplier.register();
-        advent.enable();
         skinProvider.register();
         new EloListener().enable();
         new EloAdminCommand(this).enable();
@@ -189,10 +188,11 @@ public final class FamPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        sessions.disable();
         skinProvider.unregister();
         famFriendsSupplier.unregister();
         eventHosts.disable();
-        Gui.disable(this);
+        advent.disable();
         database.waitForAsyncTask();
         database.close();
     }
@@ -770,6 +770,10 @@ public final class FamPlugin extends JavaPlugin {
     }
 
     public static FamPlugin plugin() {
+        return instance;
+    }
+
+    public static FamPlugin famPlugin() {
         return instance;
     }
 }

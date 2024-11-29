@@ -4,6 +4,7 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.fam.Relation;
 import com.cavetale.fam.Timer;
 import com.cavetale.fam.advent.SQLAdventPlayer;
+import com.cavetale.fam.advent.SQLAdventSession;
 import com.cavetale.fam.trophy.SQLTrophy;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.winthier.sql.SQLDatabase;
@@ -59,6 +60,7 @@ public final class Database {
                        SQLTrophy.class,
                        SQLPlayer.class,
                        SQLAdventPlayer.class,
+                       SQLAdventSession.class,
                        SQLElo.class);
     }
 

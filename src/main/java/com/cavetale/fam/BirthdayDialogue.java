@@ -5,8 +5,8 @@ import com.cavetale.core.font.DefaultFont;
 import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
-import com.cavetale.fam.util.Gui;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.util.Gui;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.List;
@@ -115,18 +115,18 @@ public final class BirthdayDialogue {
         gui.setItem(size - 8, Mytems.OK.createIcon(List.of(text("Yes, my birthday is on " + birthdayName, GREEN))), click -> {
                 if (!click.isLeftClick()) return;
                 confirm(player, false);
-                gui.close(player);
+                player.closeInventory();
                 click(player);
             });
         gui.setItem(size - 6, Mytems.BOMB.createIcon(List.of(text("Yes, but keep it a secret", AQUA))), click -> {
                 if (!click.isLeftClick()) return;
-                gui.close(player);
+                player.closeInventory();
                 confirm(player, true);
                 click(player);
             });
         gui.setItem(size - 2, Mytems.NO.createIcon(List.of(text("No, go back!", RED))), click -> {
                 if (!click.isLeftClick()) return;
-                gui.close(player);
+                player.closeInventory();
                 month = null;
                 day = 0;
                 open(player);

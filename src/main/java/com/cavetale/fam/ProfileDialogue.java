@@ -9,8 +9,8 @@ import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.trophy.TrophyDialogue;
-import com.cavetale.fam.util.Gui;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.util.Gui;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import java.time.Month;
 import java.time.format.TextStyle;
@@ -208,7 +208,7 @@ public final class ProfileDialogue {
         gui.setItem(birthdayIndex, birthdayIcon, click -> {
                 if (!click.isLeftClick()) return;
                 click(player);
-                gui.close(player);
+                player.closeInventory();
                 new BirthdayDialogue(plugin).open(player);
             });
         gui.setItem(trophyIndex,
