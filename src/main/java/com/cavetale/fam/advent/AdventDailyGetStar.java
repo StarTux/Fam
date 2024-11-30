@@ -40,7 +40,7 @@ public final class AdventDailyGetStar extends AbstractAdventDaily {
         final Player player = session.getPlayer();
         if (!tag.hasStar) {
             tag.starHolder.update(player);
-            if (starLocation.contains(player.getLocation())) {
+            if (Vec3i.of(player.getLocation()).maxDistance(starLocation) < 2) {
                 tag.hasStar = true;
                 tag.starHolder.remove();
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 0.75f);
