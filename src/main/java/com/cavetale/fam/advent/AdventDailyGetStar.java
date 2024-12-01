@@ -42,6 +42,7 @@ public final class AdventDailyGetStar extends AbstractAdventDaily {
             tag.starHolder.update(player);
             if (Vec3i.of(player.getLocation()).maxDistance(starLocation) < 2) {
                 tag.hasStar = true;
+                session.save(null);
                 tag.starHolder.remove();
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 0.75f);
             }
@@ -52,6 +53,8 @@ public final class AdventDailyGetStar extends AbstractAdventDaily {
                                  new Particle.DustOptions(Color.YELLOW, 1f));
             if (tag.hasStarTicks > 200) {
                 tag.complete = true;
+                session.stopDaily();
+                session.save(null);
                 Advent.unlock(player.getUniqueId(), Advent.THIS_YEAR, getDay(), result -> {
                         Bungee.send(player, "hub");
                     });
@@ -63,7 +66,6 @@ public final class AdventDailyGetStar extends AbstractAdventDaily {
     public void unload(AdventSession session) {
         Tag tag = (Tag) session.getTag();
         tag.starHolder.remove();
-        tag.starHolder = null;
     }
 
     @Override
@@ -73,7 +75,7 @@ public final class AdventDailyGetStar extends AbstractAdventDaily {
 
     static final class Tag extends AdventDailyTag {
         private transient ItemDisplayHolder starHolder;
-        private transient boolean hasStar;
+        private boolean hasStar;
         private transient int hasStarTicks = 0;
         private transient boolean complete;
     }

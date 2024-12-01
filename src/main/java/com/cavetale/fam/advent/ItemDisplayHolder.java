@@ -33,7 +33,7 @@ public final class ItemDisplayHolder {
             final World world = Bukkit.getWorld(worldName);
             if (world == null) return;
             if (!world.isChunkLoaded(vector.x >> 4, vector.z >> 4)) return;
-            final Location location = vector.toCenterFloorLocation(world);
+            final Location location = vector.toCenterLocation(world);
             itemDisplay = world.spawn(location, ItemDisplay.class, e -> {
                     e.setPersistent(false);
                     Entities.setTransient(e);

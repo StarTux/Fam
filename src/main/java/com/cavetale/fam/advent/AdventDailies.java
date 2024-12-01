@@ -19,9 +19,19 @@ public final class AdventDailies {
     }
 
     protected static void enable() {
+        // 01
         final AdventDailyGetStar daily01 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(364, 127, 262));
         daily01.setDescription(List.of(textOfChildren(Mytems.STAR, text("Climb the gingerbread castle."))));
         setDaily(1, daily01);
+        // 02
+        final AdventDailyCollectItems daily02 = new AdventDailyCollectItems("advent_2024_01",
+                                                                            Vec3i.of(256, 65, 253),
+                                                                            Mytems.GOLDEN_COIN.createItemStack(),
+                                                                            List.of(Vec3i.of(263, 65, 252),
+                                                                                    Vec3i.of(268, 65, 259),
+                                                                                    Vec3i.of(263, 65, 256)));
+        setDaily(2, daily02);
+        // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
             if (i < 7) {
