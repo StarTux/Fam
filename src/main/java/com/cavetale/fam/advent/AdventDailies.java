@@ -9,6 +9,7 @@ import java.util.Set;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.World;
 import static com.cavetale.fam.FamPlugin.famPlugin;
@@ -69,6 +70,7 @@ public final class AdventDailies {
                 world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
                 world.setGameRule(GameRule.NATURAL_REGENERATION, false);
                 world.setGameRule(GameRule.MOB_GRIEFING, true);
+                world.setDifficulty(Difficulty.NORMAL);
             }
         }
     }
