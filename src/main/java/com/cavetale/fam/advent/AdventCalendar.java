@@ -156,8 +156,18 @@ public final class AdventCalendar {
         GuiOverlay.Builder builder = GuiOverlay.HOLES.builder(27, RED)
             .title(text("Advent Calendar Day " + day, GREEN));
         gui.setEditable(true);
-        gui.setItem(12, Mytems.KITTY_COIN.createItemStack());
-        gui.setItem(14, Mytems.KITTY_COIN.createItemStack());
+        gui.setItem(2, 1, Mytems.KITTY_COIN.createItemStack(), null);
+        gui.setItem(6, 1, Mytems.KITTY_COIN.createItemStack(), null);
+
+        gui.setItem(1, 1, Mytems.RUBY.createItemStack(), null);
+        gui.setItem(5, 1, Mytems.RUBY.createItemStack(), null);
+        gui.setItem(3, 1, Mytems.RUBY.createItemStack(), null);
+        gui.setItem(7, 1, Mytems.RUBY.createItemStack(), null);
+        gui.setItem(2, 0, Mytems.RUBY.createItemStack(), null);
+        gui.setItem(6, 0, Mytems.RUBY.createItemStack(), null);
+        gui.setItem(2, 2, Mytems.RUBY.createItemStack(), null);
+        gui.setItem(6, 2, Mytems.RUBY.createItemStack(), null);
+
         gui.setItem(13, switch (day) {
             case 22 -> Mytems.SANTA_BOOTS.createItemStack();
             case 23 -> Mytems.SANTA_PANTS.createItemStack();
