@@ -73,13 +73,11 @@ public final class AdventMobs implements Listener {
 
     @EventHandler
     private void onEntityDeath(EntityDeathEvent event) {
-        famPlugin().getLogger().info(event.getEventName());
         died(event.getEntity().getUniqueId());
     }
 
     @EventHandler
     private void onEntityExplode(EntityExplodeEvent event) {
-        famPlugin().getLogger().info(event.getEventName());
         died(event.getEntity().getUniqueId());
         event.blockList().clear();
     }
