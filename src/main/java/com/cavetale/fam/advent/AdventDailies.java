@@ -6,18 +6,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 import static com.cavetale.fam.FamPlugin.famPlugin;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class AdventDailies {
+    @Getter
     private static List<AdventDaily> dailies = new ArrayList<>(25);
     private static Set<String> adventWorldNames = new HashSet<>();
 
@@ -45,6 +48,12 @@ public final class AdventDailies {
                                                                                     Vec3i.of(211, 65, 256)));
         daily02.setDescription(List.of(textOfChildren(Mytems.RUBY_COIN, text("Find the six red rubies."))));
         setDaily(2, daily02);
+        // 03
+        final AdventDailyKillMob daily03 = new AdventDailyKillMob("advent_2024_01",
+                                                                  Vec3i.of(347, 93, 254),
+                                                                  EntityType.IRON_GOLEM);
+        daily03.setDescription(List.of(text("Defeat the Iron Golem")));
+        setDaily(3, daily03);
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);

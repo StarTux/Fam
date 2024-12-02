@@ -1,10 +1,15 @@
 package com.cavetale.fam.advent;
 
 import com.cavetale.core.bungee.Bungee;
+import com.cavetale.core.event.hud.PlayerHudEvent;
+import com.cavetale.core.event.hud.PlayerHudPriority;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -54,5 +59,29 @@ public final class AdventListener implements Listener {
         default:
             break;
         }
+    }
+
+    @EventHandler
+    private void onEntityDeath(EntityDeathEvent event) {
+        if (!(event.getEntity() instanceof Mob mob)) return;
+        if (!AdventDailies.isAdventWorld(mob.getWorld())) return;
+        final Player killer = mob.getKiller();
+        if (killer == null) return;
+        for (AdventDaily daily : AdventDailies.getDailies()) {
+            if (daily instanceof AdventDailyKillMob killMob) {
+                killMob.onKillMob(killer, mob);
+            }
+        }
+    }
+
+    @EventHandler
+    private void onPlayerHud(PlayerHudEvent event) {
+        final Player player = event.getPlayer();
+        if (!AdventDailies.isAdventWorld(player.getWorld())) return;
+        final AdventSession session = AdventSession.of(player);
+        session.ifDaily(daily -> {
+                if (daily.getDescription().isEmpty()) return;
+                event.bossbar(PlayerHudPriority.HIGH, daily.getDescription().get(0), BossBar.Color.RED, BossBar.Overlay.PROGRESS, 1f);
+            });
     }
 }
