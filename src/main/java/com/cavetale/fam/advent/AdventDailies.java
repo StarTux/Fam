@@ -46,7 +46,7 @@ public final class AdventDailies {
                                                                                     Vec3i.of(348, 75, 291),
                                                                                     Vec3i.of(274, 66, 280),
                                                                                     Vec3i.of(211, 65, 256)));
-        daily02.setDescription(List.of(textOfChildren(Mytems.RUBY_COIN, text("Find the six red rubies."))));
+        daily02.setDescription(List.of(textOfChildren(Mytems.RUBY, text("Find the six red rubies."))));
         setDaily(2, daily02);
         // 03
         final AdventDailyKillMob daily03 = new AdventDailyKillMob("advent_2024_01",

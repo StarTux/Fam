@@ -1,6 +1,7 @@
 package com.cavetale.fam.advent;
 
 import com.cavetale.core.bungee.Bungee;
+import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.hud.PlayerHudEvent;
 import com.cavetale.core.event.hud.PlayerHudPriority;
 import net.kyori.adventure.bossbar.BossBar;
@@ -40,7 +41,9 @@ public final class AdventListener implements Listener {
         final Player player = event.getPlayer();
         if (!AdventDailies.isAdventWorld(player.getWorld())) return;
         event.setRespawnLocation(player.getWorld().getSpawnLocation());
-        Bungee.send(player, "hub");
+        if (!NetworkServer.BETA.isThisServer()) {
+            Bungee.send(player, "hub");
+        }
     }
 
     @EventHandler

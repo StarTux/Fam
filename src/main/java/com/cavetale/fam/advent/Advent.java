@@ -2,7 +2,6 @@ package com.cavetale.fam.advent;
 
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.fam.Timer;
-import com.cavetale.mytems.Mytems;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,14 +9,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import static com.cavetale.fam.FamPlugin.famPlugin;
 import static com.cavetale.fam.sql.Database.db;
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.Component.textOfChildren;
-import static net.kyori.adventure.text.event.ClickEvent.runCommand;
-import static net.kyori.adventure.text.event.HoverEvent.showText;
-import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 @Getter
 public final class Advent {
@@ -105,13 +98,6 @@ public final class Advent {
             .async(res -> {
                     if (res != 0) {
                         famPlugin().getLogger().info("Solved: " + uuid + ", " + year + ", " + day);
-                        final Player player = Bukkit.getPlayer(uuid);
-                        if (player != null) {
-                            player.sendMessage(textOfChildren(Mytems.CHRISTMAS_TOKEN,
-                                                              text("You completed day " + day + " of the Advent Calendar", GREEN))
-                                               .hoverEvent(showText(text("/advent", GRAY)))
-                                               .clickEvent(runCommand("/advent")));
-                        }
                     }
                     if (callback != null) {
                         callback.accept(res != 0);

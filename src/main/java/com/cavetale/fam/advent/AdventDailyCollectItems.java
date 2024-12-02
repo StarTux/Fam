@@ -1,6 +1,5 @@
 package com.cavetale.fam.advent;
 
-import com.cavetale.core.bungee.Bungee;
 import com.cavetale.core.item.ItemKinds;
 import com.cavetale.core.struct.Vec3i;
 import com.cavetale.mytems.Mytems;
@@ -94,26 +93,16 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
                 player.sendMessage(textOfChildren(text("Collection complete! Now find the ", GREEN),
                                                   Mytems.STAR));
             }
-        } else if (!tag.hasStar) {
-            tag.starHolder.update(player);
+        } else {
             if (Vec3i.of(player.getLocation()).maxDistance(starLocation) < 2) {
-                tag.hasStar = true;
                 tag.starHolder.remove();
-                session.save(null);
-                AdventMusic.deckTheHalls(player);
-            }
-        } else if (!tag.complete) {
-            tag.hasStarTicks += 1;
-            player.spawnParticle(Particle.DUST, starLocation.toCenterLocation(player.getWorld()),
-                                 16, 1.0, 1.0, 1.0, 0.125,
-                                 new Particle.DustOptions(Color.YELLOW, 1f));
-            if (tag.hasStarTicks > 200) {
-                tag.complete = true;
                 session.stopDaily();
                 session.save(null);
                 Advent.unlock(player.getUniqueId(), Advent.THIS_YEAR, getDay(), result -> {
-                        Bungee.send(player, "hub");
+                        new AdventCelebration(player, worldName, starLocation, getDay()).start();
                     });
+            } else {
+                tag.starHolder.update(player);
             }
         }
     }
@@ -138,8 +127,5 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
         private transient List<ItemDisplayHolder> itemHolders;
         private transient ItemDisplayHolder starHolder;
         private boolean hasAllItems;
-        private boolean hasStar;
-        private transient int hasStarTicks = 0;
-        private transient boolean complete;
     }
 }
