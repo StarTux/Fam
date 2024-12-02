@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import static com.cavetale.fam.FamPlugin.famPlugin;
@@ -24,7 +26,8 @@ public final class AdventListener implements Listener {
         event.setDroppedExp(0);
         final AdventSession session = AdventSession.of(player);
         session.stopDaily();
-        session.save(() -> Bungee.send(player, "hub"));
+        session.save(null);
+        AdventMusic.grinch(player);
     }
 
     @EventHandler
@@ -32,5 +35,24 @@ public final class AdventListener implements Listener {
         final Player player = event.getPlayer();
         if (!AdventDailies.isAdventWorld(player.getWorld())) return;
         event.setRespawnLocation(player.getWorld().getSpawnLocation());
+        Bungee.send(player, "hub");
+    }
+
+    @EventHandler
+    private void onFoodLevelChange(FoodLevelChangeEvent event) {
+        if (!AdventDailies.isAdventWorld(event.getEntity().getWorld())) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    private void onEntityRegainHealth(EntityRegainHealthEvent event) {
+        if (!AdventDailies.isAdventWorld(event.getEntity().getWorld())) return;
+        switch (event.getRegainReason()) {
+        case SATIATED:
+            event.setCancelled(true);
+            break;
+        default:
+            break;
+        }
     }
 }

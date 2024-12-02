@@ -32,22 +32,22 @@ public final class AdventMobs implements Listener {
         Bukkit.getScheduler().runTaskTimer(famPlugin(), this::tick, 1L, 1L);
         mobs.add(new AdventMob("advent_2024_01", // under first bridge
                                Vec3i.of(286, 65, 257),
-                               location -> location.getWorld().spawn(location, Creeper.class)));
+                               this::spawnCreeper));
         mobs.add(new AdventMob("advent_2024_01", // first mountain pass
                                Vec3i.of(330, 73, 248),
-                               location -> location.getWorld().spawn(location, Creeper.class)));
+                               this::spawnCreeper));
         mobs.add(new AdventMob("advent_2024_01", // straight from spawn to the right
                                Vec3i.of(310, 65, 275),
-                               location -> location.getWorld().spawn(location, Creeper.class)));
+                               this::spawnCreeper));
         mobs.add(new AdventMob("advent_2024_01", // under 2nd bridge
                                Vec3i.of(325, 65, 235),
-                               location -> location.getWorld().spawn(location, Creeper.class)));
+                               this::spawnCreeper));
         mobs.add(new AdventMob("advent_2024_01", // near spawn to the left
                                Vec3i.of(275, 65, 224),
-                               location -> location.getWorld().spawn(location, Creeper.class)));
+                               this::spawnCreeper));
         mobs.add(new AdventMob("advent_2024_01", // behind spawn
                                Vec3i.of(210, 65, 253),
-                               location -> location.getWorld().spawn(location, Creeper.class)));
+                               this::spawnCreeper));
 
         mobs.add(new AdventMob("advent_2024_01", // under 2nd bridge
                                Vec3i.of(339, 90, 254),
@@ -87,7 +87,7 @@ public final class AdventMobs implements Listener {
     private void died(UUID uuid) {
         for (AdventMob it : mobs) {
             if (it.mob != null && it.mob.getUniqueId().equals(uuid)) {
-                it.die();
+                it.died();
             }
         }
     }
@@ -101,10 +101,9 @@ public final class AdventMobs implements Listener {
         private boolean dead;
         private int deathTimer;
 
-        private void die() {
+        private void died() {
             if (mob == null) return;
             famPlugin().getLogger().info("Died " + mob.getType() + " from " + worldName + " " + spawnVector);
-            mob.remove();
             mob = null;
             dead = true;
             deathTimer = 0;
@@ -138,5 +137,11 @@ public final class AdventMobs implements Listener {
             mob.remove();
             mob = null;
         }
+    }
+
+    private Mob spawnCreeper(Location location) {
+        return location.getWorld().spawn(location, Creeper.class, e -> {
+                e.setHealth(3);
+            });
     }
 }

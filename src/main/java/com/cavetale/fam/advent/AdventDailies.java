@@ -7,8 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.GameRule;
 import org.bukkit.World;
+import static com.cavetale.fam.FamPlugin.famPlugin;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -31,7 +34,7 @@ public final class AdventDailies {
         // 02
         final AdventDailyCollectItems daily02 = new AdventDailyCollectItems("advent_2024_01",
                                                                             Vec3i.of(262, 67, 255),
-                                                                            Mytems.RUBY_COIN.createItemStack(),
+                                                                            Mytems.RUBY.createItemStack(),
                                                                             Color.RED,
                                                                             List.of(Vec3i.of(289, 66, 254),
                                                                                     Vec3i.of(324, 66, 236),
@@ -39,7 +42,7 @@ public final class AdventDailies {
                                                                                     Vec3i.of(348, 75, 291),
                                                                                     Vec3i.of(274, 66, 280),
                                                                                     Vec3i.of(211, 65, 256)));
-        daily02.setDescription(List.of(textOfChildren(Mytems.RUBY_COIN, text("Find the six ruby coins."))));
+        daily02.setDescription(List.of(textOfChildren(Mytems.RUBY_COIN, text("Find the six red rubies."))));
         setDaily(2, daily02);
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
@@ -56,6 +59,17 @@ public final class AdventDailies {
         }
         for (AdventDaily daily : dailies) {
             daily.enable();
+        }
+        if (Advent.advent().isAdventServer()) {
+            for (String worldName : adventWorldNames) {
+                World world = Bukkit.getWorld(worldName);
+                if (world == null) continue;
+                // We want to change some game rules from the creative server.
+                famPlugin().getLogger().info("[Advent] Changing game rules in world " + world.getName());
+                world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
+                world.setGameRule(GameRule.NATURAL_REGENERATION, false);
+                world.setGameRule(GameRule.MOB_GRIEFING, true);
+            }
         }
     }
 

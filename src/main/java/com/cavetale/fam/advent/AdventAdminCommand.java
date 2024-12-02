@@ -45,6 +45,9 @@ public final class AdventAdminCommand extends AbstractCommand<FamPlugin> {
             .description("Get player info")
             .completers(CommandArgCompleter.ONLINE_PLAYERS)
             .senderCaller(this::info);
+        rootNode.addChild("music").denyTabCompletion()
+            .description("Music test")
+            .playerCaller(this::music);
     }
 
     private boolean unlock(CommandSender sender, String[] args) {
@@ -121,5 +124,9 @@ public final class AdventAdminCommand extends AbstractCommand<FamPlugin> {
                            + " daily:" + (session.getDaily() != null ? session.getDaily().getDay() : "N/A")
                            + (session.getDaily() != null ? "/" + session.getDaily().getClass().getSimpleName() : ""));
         return true;
+    }
+
+    private void music(Player player) {
+        AdventMusic.deckTheHalls(player);
     }
 }
