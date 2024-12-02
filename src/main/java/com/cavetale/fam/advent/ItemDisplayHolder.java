@@ -38,7 +38,7 @@ public final class ItemDisplayHolder {
                     e.setPersistent(false);
                     Entities.setTransient(e);
                     e.setItemStack(itemStack);
-                    e.setVisibleByDefault(true);
+                    e.setVisibleByDefault(false);
                     if (glowColor != null) {
                         e.setGlowing(true);
                         e.setGlowColorOverride(glowColor);
