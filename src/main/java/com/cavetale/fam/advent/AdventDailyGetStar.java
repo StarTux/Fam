@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bukkit.Color;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 @Data
@@ -44,7 +43,7 @@ public final class AdventDailyGetStar extends AbstractAdventDaily {
                 tag.hasStar = true;
                 session.save(null);
                 tag.starHolder.remove();
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 0.75f);
+                AdventMusic.deckTheHalls(player);
             }
         } else if (!tag.complete) {
             tag.hasStarTicks += 1;

@@ -13,6 +13,8 @@ public interface AdventDaily {
 
     String getWarp();
 
+    String getWorldName();
+
     void setWarp(String warp);
 
     List<Component> getDescription();

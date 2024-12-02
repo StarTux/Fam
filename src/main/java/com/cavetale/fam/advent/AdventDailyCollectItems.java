@@ -23,6 +23,7 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
     private final String worldName;
     private final Vec3i starLocation;
     private final ItemStack collectible;
+    private final Color glowColor;
     private final List<Vec3i> itemLocations;
 
     @Override
@@ -53,7 +54,7 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
                 tag.itemHolders.add(new ItemDisplayHolder(collectible.clone(),
                                                           worldName,
                                                           vec,
-                                                          null));
+                                                          glowColor));
             }
         }
     }
@@ -90,14 +91,16 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
             if (tag.itemFoundCount >= itemLocations.size()) {
                 tag.hasAllItems = true;
                 session.save(null);
+                player.sendMessage(textOfChildren(text("Collection complete! Now find the ", GREEN),
+                                                  Mytems.STAR));
             }
         } else if (!tag.hasStar) {
             tag.starHolder.update(player);
             if (Vec3i.of(player.getLocation()).maxDistance(starLocation) < 2) {
                 tag.hasStar = true;
                 tag.starHolder.remove();
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 0.75f);
                 session.save(null);
+                AdventMusic.deckTheHalls(player);
             }
         } else if (!tag.complete) {
             tag.hasStarTicks += 1;

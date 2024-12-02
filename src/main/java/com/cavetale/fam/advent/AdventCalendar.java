@@ -127,6 +127,7 @@ public final class AdventCalendar {
         for (Component line : getPage(day)) {
             text.add(line.color(WHITE));
         }
+        text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Play", GRAY)));
         return tooltip(Mytems.CHECKBOX.createItemStack(), text);
     }
 
@@ -146,6 +147,7 @@ public final class AdventCalendar {
         for (Component line : getPage(day)) {
             text.add(line.color(GRAY));
         }
+        text.add(textOfChildren(Mytems.MOUSE_LEFT, text(" Repeat (no reward)", GRAY)));
         return tooltip(Mytems.CHECKED_CHECKBOX.createItemStack(), text);
     }
 

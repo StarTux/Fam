@@ -22,6 +22,7 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 @Getter
 public final class Advent {
     private boolean adventServer;
+    private AdventMobs adventMobs;
 
     public void enable() {
         adventServer = switch (NetworkServer.current()) {
@@ -33,10 +34,19 @@ public final class Advent {
         new AdventAdminCommand(famPlugin()).enable();
         AdventDailies.enable();
         famPlugin().getLogger().info("Is Advent Server: " + adventServer);
+        if (adventServer) {
+            new AdventListener().enable();
+            adventMobs = new AdventMobs();
+            adventMobs.enable();
+            AdventMusic.enable();
+        }
     }
 
     public void disable() {
-        AdventDailies.enable();
+        AdventDailies.disable();
+        if (adventMobs != null) {
+            adventMobs.disable();
+        }
     }
 
     public static final int MAX_DAY = 25;
