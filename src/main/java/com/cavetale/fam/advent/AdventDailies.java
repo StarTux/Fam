@@ -53,7 +53,7 @@ public final class AdventDailies {
         final AdventDailyKillMob daily03 = new AdventDailyKillMob("advent_2024_01",
                                                                   Vec3i.of(347, 93, 254),
                                                                   EntityType.IRON_GOLEM);
-        daily03.setDescription(List.of(text("Defeat the Iron Golem")));
+        daily03.setDescription(List.of(text("Defeat the Iron Golem.")));
         setDaily(3, daily03);
         // 04
         final AdventDailyGetStar daily04 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(377, 117, 253));
