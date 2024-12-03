@@ -6,10 +6,13 @@ import com.cavetale.core.event.hud.PlayerHudEvent;
 import com.cavetale.core.event.hud.PlayerHudPriority;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -86,5 +89,13 @@ public final class AdventListener implements Listener {
                 if (daily.getDescription().isEmpty()) return;
                 event.bossbar(PlayerHudPriority.HIGH, daily.getDescription().get(0), BossBar.Color.RED, BossBar.Overlay.PROGRESS, 1f);
             });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!AdventDailies.isAdventWorld(event.getEntity().getWorld())) return;
+        if (event.getEntity().getType() == EntityType.IRON_GOLEM) {
+            event.setCancelled(false);
+        }
     }
 }
