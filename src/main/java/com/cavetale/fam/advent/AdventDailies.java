@@ -1,5 +1,6 @@
 package com.cavetale.fam.advent;
 
+import com.cavetale.core.font.VanillaPaintings;
 import com.cavetale.core.struct.Vec3i;
 import com.cavetale.mytems.Mytems;
 import java.util.ArrayList;
@@ -54,6 +55,12 @@ public final class AdventDailies {
                                                                   EntityType.IRON_GOLEM);
         daily03.setDescription(List.of(text("Defeat the Iron Golem")));
         setDaily(3, daily03);
+        // 04
+        final AdventDailyGetStar daily04 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(377, 117, 253));
+        daily04.setDescription(List.of(textOfChildren(text("Jump through the "),
+                                                      VanillaPaintings.HUMBLE,
+                                                      text(" painting."))));
+        setDaily(4, daily04);
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
