@@ -77,19 +77,24 @@ public final class AdventDailies {
         final AdventDailyCollectItems daily06 = new AdventDailyCollectItems("advent_2024_01", Vec3i.of(262, 67, 255),
                                                                             Items.colorized(Mytems.C_NOTE.createItemStack(), pink),
                                                                             pink);
-        daily06.addItemLocation(253, 69, 255) // near spawn
+        daily06.addItemLocation(262, 67, 255) // near spawn
             .addItemLocation(249, 100, 228) // clock tower
             .addItemLocation(249, 107, 232) // above clock tower
+            .addItemLocation(245, 107, 228)
+            .addItemLocation(249, 107, 224)
+            .addItemLocation(253, 107, 228)
             .addItemLocation(239, 118, 307) // ice tower x 4
             .addItemLocation(230, 117, 299)
             .addItemLocation(222, 117, 307)
             .addItemLocation(230, 117, 316)
             .addItemLocation(366, 126, 232) // castle
-            .addItemLocation(385, 156, 267) // climbable tower
+            .addItemLocation(379, 136, 266) // bottom of climbable
+            .addItemLocation(385, 156, 267) // top of climbable tower
+            .addItemLocation(374, 154, 261) // directional hint
             .addItemLocation(362, 175, 248) // cactus
             .addItemLocation(371, 162, 236) // gold block
             .addItemLocation(377, 183, 241); // tallest  tower
-        daily06.setDescription(List.of(textOfChildren(Mytems.C_NOTE, text("Find the 12 musical notes."))));
+        daily06.setDescription(List.of(textOfChildren(Mytems.C_NOTE, text("Find the 17 musical notes."))));
         setDaily(6, daily06);
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
