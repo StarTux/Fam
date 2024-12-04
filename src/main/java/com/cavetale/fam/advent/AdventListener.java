@@ -4,6 +4,7 @@ import com.cavetale.core.bungee.Bungee;
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.hud.PlayerHudEvent;
 import com.cavetale.core.event.hud.PlayerHudPriority;
+import com.cavetale.mytems.item.music.PlayerPlayInstrumentEvent;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
@@ -72,12 +73,12 @@ public final class AdventListener implements Listener {
         if (!(event.getEntity() instanceof Mob mob)) return;
         if (!AdventDailies.isAdventWorld(mob.getWorld())) return;
         final Player killer = mob.getKiller();
-        if (killer == null) return;
-        for (AdventDaily daily : AdventDailies.getDailies()) {
-            if (daily instanceof AdventDailyKillMob killMob) {
-                killMob.onKillMob(killer, mob);
-            }
-        }
+        final AdventSession session = AdventSession.of(killer);
+        session.ifDaily(daily -> {
+                if (daily instanceof AdventDailyKillMob killMob) {
+                    killMob.onKillMob(killer, mob);
+                }
+            });
     }
 
     @EventHandler
@@ -97,5 +98,17 @@ public final class AdventListener implements Listener {
         if (event.getEntity().getType() == EntityType.IRON_GOLEM) {
             event.setCancelled(false);
         }
+    }
+
+    @EventHandler
+    private void onPlayerPlayInstrument(PlayerPlayInstrumentEvent event) {
+        final Player player = event.getPlayer();
+        if (!AdventDailies.isAdventWorld(player.getWorld())) return;
+        final AdventSession session = AdventSession.of(player);
+        session.ifDaily(daily -> {
+                if (daily instanceof AdventDailyPlayMusic playMusic) {
+                    playMusic.onPlayTouch(player, event.getTouch());
+                }
+            });
     }
 }

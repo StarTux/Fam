@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
+import org.bukkit.Note;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import static com.cavetale.fam.FamPlugin.famPlugin;
@@ -61,6 +62,16 @@ public final class AdventDailies {
                                                       VanillaPaintings.HUMBLE,
                                                       text(" painting."))));
         setDaily(4, daily04);
+        // 05
+        final AdventDailyPlayMusic daily05 = new AdventDailyPlayMusic("advent_2024_01", Vec3i.of(301, 75, 231), EntityType.SNOW_GOLEM);
+        daily05.setDescription(List.of(textOfChildren(Mytems.C_NOTE, text("Play the clocktower song to the snowman."))));
+        daily05.addMusicTag(Note.Tone.A)
+            .addMusicTag(Note.Tone.D)
+            .addMusicTag(Note.Tone.F)
+            .addMusicTag(Note.Tone.A)
+            .addMusicTag(Note.Tone.D)
+            .addMusicTag(Note.Tone.F);
+        setDaily(5, daily05);
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
