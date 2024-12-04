@@ -12,8 +12,8 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.IronGolem;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -94,8 +94,8 @@ public final class AdventMobs implements Listener {
     private static final class AdventMob {
         private final String worldName;
         private final Vec3i spawnVector;
-        private final Function<Location, Mob> spawnFunction;
-        private Mob mob;
+        private final Function<Location, Entity> spawnFunction;
+        private Entity mob;
         private boolean dead;
         private int deathTimer;
 
@@ -137,7 +137,7 @@ public final class AdventMobs implements Listener {
         }
     }
 
-    private Mob spawnCreeper(Location location) {
+    private Entity spawnCreeper(Location location) {
         return location.getWorld().spawn(location, Creeper.class, e -> {
                 e.setHealth(3);
             });
