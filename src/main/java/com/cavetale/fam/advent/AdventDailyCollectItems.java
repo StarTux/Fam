@@ -23,7 +23,7 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
     private final Vec3i starLocation;
     private final ItemStack collectible;
     private final Color glowColor;
-    private final List<Vec3i> itemLocations;
+    private final List<Vec3i> itemLocations = new ArrayList<>();
 
     @Override
     public void enable() {
@@ -105,6 +105,11 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
                 tag.starHolder.update(player);
             }
         }
+    }
+
+    public AdventDailyCollectItems addItemLocation(int x, int y, int z) {
+        itemLocations.add(Vec3i.of(x, y, z));
+        return this;
     }
 
     @Override

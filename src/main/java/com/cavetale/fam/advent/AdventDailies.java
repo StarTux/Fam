@@ -3,6 +3,7 @@ package com.cavetale.fam.advent;
 import com.cavetale.core.font.VanillaPaintings;
 import com.cavetale.core.struct.Vec3i;
 import com.cavetale.mytems.Mytems;
+import com.cavetale.mytems.util.Items;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,16 +39,15 @@ public final class AdventDailies {
         daily01.setDescription(List.of(textOfChildren(Mytems.STAR, text("Climb the gingerbread castle."))));
         setDaily(1, daily01);
         // 02
-        final AdventDailyCollectItems daily02 = new AdventDailyCollectItems("advent_2024_01",
-                                                                            Vec3i.of(262, 67, 255),
+        final AdventDailyCollectItems daily02 = new AdventDailyCollectItems("advent_2024_01", Vec3i.of(262, 67, 255),
                                                                             Mytems.RUBY.createItemStack(),
-                                                                            Color.RED,
-                                                                            List.of(Vec3i.of(289, 66, 254),
-                                                                                    Vec3i.of(324, 66, 236),
-                                                                                    Vec3i.of(251, 67, 225),
-                                                                                    Vec3i.of(348, 75, 291),
-                                                                                    Vec3i.of(274, 66, 280),
-                                                                                    Vec3i.of(211, 65, 256)));
+                                                                            Color.RED);
+        daily02.addItemLocation(289, 66, 254)
+            .addItemLocation(324, 66, 236)
+            .addItemLocation(251, 67, 225)
+            .addItemLocation(348, 75, 291)
+            .addItemLocation(274, 66, 280)
+            .addItemLocation(211, 65, 256);
         daily02.setDescription(List.of(textOfChildren(Mytems.RUBY, text("Find the six red rubies."))));
         setDaily(2, daily02);
         // 03
@@ -72,6 +72,25 @@ public final class AdventDailies {
             .addMusicTag(Note.Tone.D)
             .addMusicTag(Note.Tone.F);
         setDaily(5, daily05);
+        // 06
+        final Color pink = Color.fromRGB(0xFF69B4);
+        final AdventDailyCollectItems daily06 = new AdventDailyCollectItems("advent_2024_01", Vec3i.of(262, 67, 255),
+                                                                            Items.colorized(Mytems.C_NOTE.createItemStack(), pink),
+                                                                            pink);
+        daily06.addItemLocation(253, 69, 255) // near spawn
+            .addItemLocation(249, 100, 228) // clock tower
+            .addItemLocation(249, 107, 232) // above clock tower
+            .addItemLocation(239, 118, 307) // ice tower x 4
+            .addItemLocation(230, 117, 299)
+            .addItemLocation(222, 117, 307)
+            .addItemLocation(230, 117, 316)
+            .addItemLocation(366, 126, 232) // castle
+            .addItemLocation(385, 156, 267) // climbable tower
+            .addItemLocation(362, 175, 248) // cactus
+            .addItemLocation(371, 162, 236) // gold block
+            .addItemLocation(377, 183, 241); // tallest  tower
+        daily06.setDescription(List.of(textOfChildren(Mytems.C_NOTE, text("Find the 12 musical notes."))));
+        setDaily(6, daily06);
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);

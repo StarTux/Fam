@@ -44,6 +44,11 @@ public final class ItemDisplayHolder {
                         e.setGlowColorOverride(glowColor);
                     }
                 });
+            famPlugin().getLogger().info("[Advent] ItemDisplayHolder spawned"
+                                         + " " + itemStack.getType()
+                                         + " for " + player.getName()
+                                         + " at " + vector
+                                         + " " + itemDisplay.getUniqueId());
             player.showEntity(famPlugin(), itemDisplay);
         }
     }
