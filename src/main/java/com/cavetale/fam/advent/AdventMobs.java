@@ -16,6 +16,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Snowman;
+import org.bukkit.entity.boat.OakBoat;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -61,6 +62,10 @@ public final class AdventMobs implements Listener {
                                        e.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.0);
                                        e.setCollidable(false);
                                    })));
+
+        mobs.add(new AdventMob("advent_2024_01",
+                               Vec3i.of(287, 73, 269),
+                               location -> location.getWorld().spawn(location, OakBoat.class)));
     }
 
     public void disable() {

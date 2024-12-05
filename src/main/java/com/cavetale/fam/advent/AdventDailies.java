@@ -1,5 +1,6 @@
 package com.cavetale.fam.advent;
 
+import com.cavetale.core.font.VanillaItems;
 import com.cavetale.core.font.VanillaPaintings;
 import com.cavetale.core.struct.Vec3i;
 import com.cavetale.mytems.Mytems;
@@ -72,6 +73,7 @@ public final class AdventDailies {
             .addMusicTag(Note.Tone.D)
             .addMusicTag(Note.Tone.F);
         setDaily(5, daily05);
+
         // 06
         final Color pink = Color.fromRGB(0xFF69B4);
         final AdventDailyCollectItems daily06 = new AdventDailyCollectItems("advent_2024_01", Vec3i.of(262, 67, 255),
@@ -96,6 +98,25 @@ public final class AdventDailies {
             .addItemLocation(377, 183, 241); // tallest  tower
         daily06.setDescription(List.of(textOfChildren(Mytems.C_NOTE, text("Find the 17 musical notes."))));
         setDaily(6, daily06);
+
+        // 07
+        final AdventDailyFloatBoat daily07 = new AdventDailyFloatBoat("advent_2024_01", Vec3i.of(374, 208, 253));
+        daily07.addBoatLocation(282, 82, 266)
+            .addBoatLocation(264, 90, 212)
+            .addBoatLocation(217, 95, 216)
+            .addBoatLocation(196, 102, 271)
+            .addBoatLocation(214, 102, 331)
+            .addBoatLocation(259, 102, 323)
+            .addBoatLocation(293, 128, 262)
+            .addBoatLocation(346, 171, 223)
+            .addBoatLocation(402, 200, 220)
+            .addBoatLocation(412, 211, 259)
+            .addBoatLocation(377, 219, 274)
+            .addBoatLocation(372, 219, 247)
+            .addBoatLocation(380, 211, 238);
+        daily07.setDescription(List.of(textOfChildren(VanillaItems.OAK_BOAT, text("Go on a boat ride."))));
+        setDaily(7, daily07);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);

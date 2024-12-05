@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.boat.OakBoat;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,6 +19,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import static com.cavetale.fam.FamPlugin.famPlugin;
 
@@ -110,5 +112,17 @@ public final class AdventListener implements Listener {
                     playMusic.onPlayTouch(player, event.getTouch());
                 }
             });
+    }
+
+    @EventHandler
+    private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        final Player player = event.getPlayer();
+        if (!AdventDailies.isAdventWorld(player.getWorld())) return;
+        if (!(event.getRightClicked() instanceof OakBoat boat)) return;
+        event.setCancelled(true);
+        final AdventSession session = AdventSession.of(player);
+        if (session.getDaily() instanceof AdventDailyFloatBoat floatBoat) {
+            floatBoat.onClickBoat(player, session, boat);
+        }
     }
 }
