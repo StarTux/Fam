@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -15,6 +16,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.IronGolem;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.boat.OakBoat;
 import org.bukkit.event.EventHandler;
@@ -54,6 +56,8 @@ public final class AdventMobs implements Listener {
         mobs.add(new AdventMob("advent_2024_01", // under 2nd bridge
                                Vec3i.of(339, 90, 254),
                                location -> location.getWorld().spawn(location, IronGolem.class, e -> {
+                                       e.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.125);
+                                       e.getAttribute(Attribute.SCALE).setBaseValue(2.0);
                                        e.setHealth(3.0);
                                    })));
         mobs.add(new AdventMob("advent_2024_01",
@@ -131,11 +135,17 @@ public final class AdventMobs implements Listener {
                 }
             } else if (mob == null) {
                 if (!world.isChunkLoaded(spawnVector.x >> 4, spawnVector.z >> 4)) return;
+                if (world.getChunkAt(spawnVector.x >> 4, spawnVector.z >> 4).getLoadLevel() != Chunk.LoadLevel.ENTITY_TICKING) {
+                    return;
+                }
                 famPlugin().getLogger().info("Spawning mob at " + worldName + " " + spawnVector);
                 mob = spawnFunction.apply(spawnVector.toCenterFloorLocation(world));
                 if (mob == null) return;
                 mob.setPersistent(false);
                 Entities.setTransient(mob);
+                if (mob instanceof Mob m) {
+                    m.setRemoveWhenFarAway(false);
+                }
             }
         }
 
