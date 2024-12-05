@@ -113,7 +113,7 @@ public final class AdventDailies {
             .addBoatLocation(412, 211, 259)
             .addBoatLocation(377, 219, 274)
             .addBoatLocation(372, 219, 247)
-            .addBoatLocation(380, 211, 238);
+            .addBoatLocation(380, 212, 238);
         daily07.setDescription(List.of(textOfChildren(VanillaItems.OAK_BOAT, text("Go on a boat ride."))));
         setDaily(7, daily07);
 
