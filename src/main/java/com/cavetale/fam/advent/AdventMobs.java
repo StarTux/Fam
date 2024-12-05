@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.IronGolem;
@@ -56,7 +57,10 @@ public final class AdventMobs implements Listener {
                                    })));
         mobs.add(new AdventMob("advent_2024_01",
                                Vec3i.of(297, 73, 232),
-                               location -> location.getWorld().spawn(location, Snowman.class)));
+                               location -> location.getWorld().spawn(location, Snowman.class, e -> {
+                                       e.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.0);
+                                       e.setCollidable(false);
+                                   })));
     }
 
     public void disable() {
