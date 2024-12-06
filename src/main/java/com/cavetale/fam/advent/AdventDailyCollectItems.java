@@ -12,6 +12,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionType;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -74,6 +75,7 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
                     if (Vec3i.of(player.getLocation()).maxDistance(vector) < 2) {
                         tag.itemFoundCount += 1;
                         tag.itemsFound.set(i, true);
+                        player.addPotionEffects(PotionType.HEALING.getPotionEffects());
                         player.spawnParticle(Particle.DUST, vector.toCenterLocation(player.getWorld()),
                                              16, 1.0, 1.0, 1.0, 0.125,
                                              new Particle.DustOptions(Color.GREEN, 1f));
