@@ -3,6 +3,7 @@ package com.cavetale.fam.advent;
 import com.cavetale.core.connect.NetworkServer;
 import com.cavetale.core.event.item.PlayerReceiveItemsEvent;
 import com.cavetale.core.font.GuiOverlay;
+import com.cavetale.core.menu.MenuItemEvent;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Gui;
 import com.cavetale.mytems.util.Items;
@@ -106,6 +107,10 @@ public final class AdventCalendar {
             }
         }
         gui.title(builder.build());
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                if (!click.isLeftClick()) return;
+                MenuItemEvent.openMenu(player);
+            });
         gui.open(player);
     }
 
