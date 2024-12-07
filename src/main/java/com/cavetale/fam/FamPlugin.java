@@ -127,6 +127,7 @@ public final class FamPlugin extends JavaPlugin {
         skinProvider.register();
         new EloListener().enable();
         new EloAdminCommand(this).enable();
+        new MenuListener().enable();
     }
 
     public List<Reward> getRewardList() {

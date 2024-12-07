@@ -118,7 +118,7 @@ public final class BirthdayDialogue {
                 player.closeInventory();
                 click(player);
             });
-        gui.setItem(size - 6, Mytems.BOMB.createIcon(List.of(text("Yes, but keep it a secret", AQUA))), click -> {
+        gui.setItem(size - 6, Mytems.BLIND_EYE.createIcon(List.of(text("Yes, but keep it a secret", AQUA))), click -> {
                 if (!click.isLeftClick()) return;
                 player.closeInventory();
                 confirm(player, true);

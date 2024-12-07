@@ -2,6 +2,7 @@ package com.cavetale.fam;
 
 import com.cavetale.core.font.GlyphPolicy;
 import com.cavetale.core.font.GuiOverlay;
+import com.cavetale.core.menu.MenuItemEvent;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.core.text.LineWrap;
 import com.cavetale.fam.session.Session;
@@ -218,6 +219,10 @@ public final class ProfileDialogue {
                         click(player);
                         new TrophyDialogue(plugin.trophies, new PlayerCache(player.getUniqueId(), player.getName())).open(player);
                     });
+        gui.setItem(Gui.OUTSIDE, null, click -> {
+                if (!click.isLeftClick()) return;
+                MenuItemEvent.openMenu(player);
+            });
         gui.open(player);
         return gui;
     }
