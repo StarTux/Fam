@@ -64,6 +64,9 @@ public final class AdventCalendar {
             } else if (!row.isOpened()) {
                 gui.setItem(guix, guiy, openableItem(day), click -> {
                         if (!click.isLeftClick()) return;
+                        if (AdventDailies.getDaily(day) instanceof AdventDailyDummy) {
+                            return;
+                        }
                         if (bigLock) return;
                         bigLock = true;
                         famPlugin().getDatabase().update(SQLAdventPlayer.class)
