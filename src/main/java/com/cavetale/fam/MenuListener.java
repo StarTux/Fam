@@ -1,20 +1,19 @@
 package com.cavetale.fam;
 
-import com.cavetale.core.menu.MenuItemClickEvent;
 import com.cavetale.core.menu.MenuItemEvent;
-import com.cavetale.fam.session.Session;
 import com.cavetale.fam.util.Colors;
 import com.cavetale.mytems.Mytems;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import static com.cavetale.fam.util.Items.makeSkull;
+import static com.cavetale.mytems.util.Items.tooltip;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class MenuListener implements Listener {
     public static final String MENU_KEY = "fam:profile";
-    public static final String MENU_PERMISSION = "fam.friends";
 
     protected void enable() {
         Bukkit.getPluginManager().registerEvents(this, FamPlugin.famPlugin());
@@ -22,33 +21,30 @@ public final class MenuListener implements Listener {
 
     @EventHandler
     private void onMenuItem(MenuItemEvent event) {
-        if (event.getPlayer().hasPermission(MENU_PERMISSION)) {
+        if (event.getPlayer().hasPermission("fam.friends")) {
             event.addItem(builder -> builder
-                          .key(MENU_KEY)
-                          .icon(Mytems.HEART.createIcon(List.of(text("Profile", Colors.BLUE),
-                                                                text("Friends", Colors.HOTPINK),
-                                                                text("Trophies", Colors.GOLD),
+                          .key("fam:profile")
+                          .command("profile")
+                          .icon(tooltip(makeSkull(event.getPlayer()),
+                                        List.of(text("Profile", Colors.BLUE),
+                                                text("Friends", Colors.HOTPINK),
+                                                text("Trophies", Colors.GOLD),
+                                                text("Birthdays", Colors.LIGHT_BLUE)))));
+            event.addItem(builder -> builder
+                          .key("fam:friends")
+                          .command("friends")
+                          .icon(Mytems.HEART.createIcon(List.of(text("Friends", Colors.HOTPINK),
                                                                 text("Birthdays", Colors.LIGHT_BLUE)))));
+            event.addItem(builder -> builder
+                          .key("fam:trophy")
+                          .command("trophy")
+                          .icon(Mytems.GOLDEN_CUP.createIcon(List.of(text("Trophies", Colors.GOLD)))));
         }
         if (event.getPlayer().hasPermission("fam.advent")) {
             event.addItem(builder -> builder
                           .key("fam:advent")
                           .command("advent")
                           .icon(Mytems.CHRISTMAS_TOKEN.createIcon(List.of(text("Advent Calendar", RED)))));
-        }
-    }
-
-    @EventHandler
-    private void onMenuItemClick(MenuItemClickEvent event) {
-        if (MENU_KEY.equals(event.getEntry().getKey())) {
-            if (!event.getPlayer().hasPermission(MENU_PERMISSION)) {
-                return;
-            }
-            final Session session = Session.of(event.getPlayer());
-            if (!session.isReady()) {
-                return;
-            }
-            new ProfileDialogue(FamPlugin.famPlugin(), session).open(event.getPlayer());
         }
     }
 }
