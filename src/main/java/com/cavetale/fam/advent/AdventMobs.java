@@ -52,6 +52,9 @@ public final class AdventMobs implements Listener {
         mobs.add(new AdventMob("advent_2024_01", // behind spawn
                                Vec3i.of(210, 65, 253),
                                this::spawnCreeper));
+        mobs.add(new AdventMob("advent_2024_01", // sewer
+                               Vec3i.of(342, 66, 262),
+                               this::spawnCreeper));
 
         mobs.add(new AdventMob("advent_2024_01", // under 2nd bridge
                                Vec3i.of(339, 90, 254),

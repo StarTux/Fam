@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import static com.cavetale.fam.FamPlugin.famPlugin;
 
@@ -123,6 +124,20 @@ public final class AdventListener implements Listener {
         final AdventSession session = AdventSession.of(player);
         if (session.getDaily() instanceof AdventDailyFloatBoat floatBoat) {
             floatBoat.onClickBoat(player, session, boat);
+        }
+    }
+
+    @EventHandler
+    private void onPlayerInteractBlock(PlayerInteractEvent event) {
+        switch (event.getAction()) {
+        case RIGHT_CLICK_BLOCK: break;
+        default: return;
+        }
+        final Player player = event.getPlayer();
+        if (!AdventDailies.isAdventWorld(player.getWorld())) return;
+        final AdventSession session = AdventSession.of(player);
+        if (session.getDaily() instanceof AdventDailyShrinkStar shrinkStar) {
+            shrinkStar.onInteract(player, session, event.getClickedBlock());
         }
     }
 }

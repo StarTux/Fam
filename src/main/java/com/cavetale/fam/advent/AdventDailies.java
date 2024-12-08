@@ -122,6 +122,12 @@ public final class AdventDailies {
         daily08.setDescription(List.of(textOfChildren(Mytems.STAR, text("Explore the ice palace."))));
         setDaily(8, daily08);
 
+        // 09
+        final AdventDailyShrinkStar daily09 = new AdventDailyShrinkStar("advent_2024_01", Vec3i.of(376, 81, 267));
+        daily09.setDescription(List.of(text("Fix the castle plumbing.")));
+        daily09.addShrinkLocation(357, 79, 262);
+        setDaily(9, daily09);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
