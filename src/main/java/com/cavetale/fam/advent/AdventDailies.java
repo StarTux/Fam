@@ -117,17 +117,18 @@ public final class AdventDailies {
         daily07.setDescription(List.of(textOfChildren(VanillaItems.OAK_BOAT, text("Go on a boat ride."))));
         setDaily(7, daily07);
 
+        // 08
+        final AdventDailyGetStar daily08 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(308, 88, 292));
+        daily08.setDescription(List.of(textOfChildren(Mytems.STAR, text("Explore the ice palace."))));
+        setDaily(8, daily08);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
-            if (i < 7) {
+            if (i < 14) {
                 daily.setWarp("Advent2024-01");
-            } else if (i < 14) {
-                daily.setWarp("Advent2024-02");
-            } else if (i < 21) {
-                daily.setWarp("Advent2024-03");
             } else {
-                daily.setWarp("Advent2024-04");
+                daily.setWarp("Advent2024-02");
             }
         }
         for (AdventDaily daily : dailies) {
