@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bukkit.Color;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -51,7 +52,7 @@ public final class AdventDailyShrinkStar extends AbstractAdventDaily {
             if (scale <= tag.toScale) {
                 tag.doShrink = false;
             } else {
-                scale = Math.max(tag.toScale, scale - 0.05);
+                scale = Math.max(tag.toScale, scale - 0.025);
                 player.getAttribute(Attribute.SCALE).setBaseValue(scale);
                 player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.1 * scale);
                 player.getAttribute(Attribute.JUMP_STRENGTH).setBaseValue(0.42 * scale);
@@ -106,6 +107,7 @@ public final class AdventDailyShrinkStar extends AbstractAdventDaily {
         tag.toScale = scale;
         tag.doShrink = true;
         famPlugin().getLogger().info("[Advent] Shrink " + player.getName() + " to " + tag.toScale);
+        player.playSound(block.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.5f);
     }
 
     static final class Tag extends AdventDailyTag {
