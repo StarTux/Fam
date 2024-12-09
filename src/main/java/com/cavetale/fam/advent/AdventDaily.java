@@ -2,6 +2,8 @@ package com.cavetale.fam.advent;
 
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 /**
  * An interface for the entire Advent Daily lifecycle.
@@ -14,6 +16,10 @@ public interface AdventDaily {
     String getWarp();
 
     String getWorldName();
+
+    default World getWorld() {
+        return Bukkit.getWorld(getWorldName());
+    }
 
     void setWarp(String warp);
 

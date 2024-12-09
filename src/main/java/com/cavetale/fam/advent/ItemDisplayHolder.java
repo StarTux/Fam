@@ -4,6 +4,7 @@ import com.cavetale.core.struct.Vec3i;
 import com.cavetale.mytems.util.Entities;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -33,6 +34,9 @@ public final class ItemDisplayHolder {
             final World world = Bukkit.getWorld(worldName);
             if (world == null) return;
             if (!world.isChunkLoaded(vector.x >> 4, vector.z >> 4)) return;
+            if (world.getChunkAt(vector.x >> 4, vector.z >> 4).getLoadLevel() != Chunk.LoadLevel.ENTITY_TICKING) {
+                return;
+            }
             final Location location = vector.toCenterLocation(world);
             itemDisplay = world.spawn(location, ItemDisplay.class, e -> {
                     e.setPersistent(false);

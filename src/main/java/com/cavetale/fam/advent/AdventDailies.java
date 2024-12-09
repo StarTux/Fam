@@ -18,6 +18,7 @@ import org.bukkit.GameRule;
 import org.bukkit.Note;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Rabbit;
 import static com.cavetale.fam.FamPlugin.famPlugin;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -39,6 +40,7 @@ public final class AdventDailies {
         final AdventDailyGetStar daily01 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(364, 127, 262));
         daily01.setDescription(List.of(textOfChildren(Mytems.STAR, text("Climb the gingerbread castle."))));
         setDaily(1, daily01);
+
         // 02
         final AdventDailyCollectItems daily02 = new AdventDailyCollectItems("advent_2024_01", Vec3i.of(262, 67, 255),
                                                                             Mytems.RUBY.createItemStack(),
@@ -127,6 +129,35 @@ public final class AdventDailies {
         daily09.setDescription(List.of(text("Fix the castle plumbing.")));
         daily09.addShrinkLocation(357, 79, 262);
         setDaily(9, daily09);
+
+        // 10
+        final AdventDailyFollowEntity daily10 = new AdventDailyFollowEntity("advent_2024_01", Vec3i.of(369, 69, 288),
+                                                                            Vec3i.of(262, 66, 255),
+                                                                            location -> location.getWorld().spawn(location, Rabbit.class, e -> {
+                                                                                    e.setRabbitType(Rabbit.Type.WHITE);
+                                                                                    e.setAdult();
+                                                                                    e.setAgeLock(true);
+                                                                                }));
+        daily10.setDescription(List.of(textOfChildren(VanillaItems.CARROT, text("Follow the white rabbit."))));
+        daily10.addEntityGoal(270, 65, 255);
+        daily10.addEntityGoal(296, 65, 270);
+        daily10.addEntityGoal(297, 65, 283);
+        daily10.addEntityGoal(282, 65, 301);
+        daily10.addEntityGoal(299, 65, 318);
+        daily10.addEntityGoal(324, 65, 316);
+        daily10.addEntityGoal(331, 65, 299);
+        daily10.addEntityGoal(324, 65, 285);
+        daily10.addEntityGoal(320, 65, 252);
+        daily10.addEntityGoal(326, 65, 231);
+        daily10.addEntityGoal(356, 65, 211);
+        daily10.addEntityGoal(390, 65, 215);
+        daily10.addEntityGoal(401, 65, 232);
+        daily10.addEntityGoal(404, 65, 255);
+        daily10.addEntityGoal(401, 65, 282);
+        daily10.addEntityGoal(385, 65, 302);
+        daily10.addEntityGoal(369, 65, 297);
+        daily10.addEntityGoal(369, 67, 291);
+        setDaily(10, daily10);
 
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
