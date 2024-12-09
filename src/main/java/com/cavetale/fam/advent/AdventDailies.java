@@ -159,6 +159,11 @@ public final class AdventDailies {
         daily10.addEntityGoal(369, 67, 291);
         setDaily(10, daily10);
 
+        // 11
+        final AdventDailyGetStar daily11 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(260, 105, 307));
+        daily11.setDescription(List.of(text("Take a leap of faith.")));
+        setDaily(11, daily11);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
