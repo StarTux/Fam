@@ -169,6 +169,13 @@ public final class AdventDailies {
         daily12.setDescription(List.of(text("Find the little Christmas tree.")));
         setDaily(12, daily12);
 
+        // 13
+        final AdventDailyShrinkStar daily13 = new AdventDailyShrinkStar("advent_2024_01", Vec3i.of(381, 77, 250));
+        daily13.setDescription(List.of(text("Become a sewer rat.")));
+        daily13.addShrinkLocation(357, 79, 262);
+        daily13.addShrinkLocation(378, 79, 257);
+        setDaily(13, daily13);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);

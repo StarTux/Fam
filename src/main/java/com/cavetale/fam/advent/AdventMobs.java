@@ -14,9 +14,11 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Endermite;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Mob;
+import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.boat.OakBoat;
 import org.bukkit.event.EventHandler;
@@ -76,6 +78,15 @@ public final class AdventMobs implements Listener {
         mobs.add(new AdventMob("advent_2024_01",
                                Vec3i.of(287, 73, 269),
                                location -> location.getWorld().spawn(location, OakBoat.class)));
+
+        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(384, 79, 262),
+                               location -> location.getWorld().spawn(location, Silverfish.class, e -> {
+                                       e.setHealth(1.0);
+                                   })));
+        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(384, 79, 268),
+                               location -> location.getWorld().spawn(location, Endermite.class, e -> {
+                                       e.setHealth(1.0);
+                                   })));
     }
 
     public void disable() {
