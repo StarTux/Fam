@@ -176,6 +176,16 @@ public final class AdventDailies {
         daily13.addShrinkLocation(378, 79, 257);
         setDaily(13, daily13);
 
+        // 14
+        final AdventDailyGetStar daily14 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(249, 93, 230));
+        daily14.setDescription(List.of(text("Fix the clockwork.")));
+        setDaily(14, daily14);
+
+        // 15
+        final AdventDailyGetStar daily15 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(363, 68, 217));
+        daily15.setDescription(List.of(text("Walk through the chimney.")));
+        setDaily(15, daily15);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
