@@ -164,6 +164,11 @@ public final class AdventDailies {
         daily11.setDescription(List.of(text("Take a leap of faith.")));
         setDaily(11, daily11);
 
+        // 12
+        final AdventDailyGetStar daily12 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(343, 67, 239));
+        daily12.setDescription(List.of(text("Find the little Christmas tree.")));
+        setDaily(12, daily12);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
