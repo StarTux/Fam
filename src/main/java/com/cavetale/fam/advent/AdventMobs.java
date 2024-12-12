@@ -18,8 +18,10 @@ import org.bukkit.entity.Endermite;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Mob;
+import org.bukkit.entity.PufferFish;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Snowman;
+import org.bukkit.entity.Stray;
 import org.bukkit.entity.boat.OakBoat;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -86,6 +88,38 @@ public final class AdventMobs implements Listener {
         mobs.add(new AdventMob("advent_2024_01", Vec3i.of(384, 79, 268),
                                location -> location.getWorld().spawn(location, Endermite.class, e -> {
                                        e.setHealth(1.0);
+                                   })));
+
+        // Sewer pufferfish
+        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(368, 60, 257),
+                               location -> location.getWorld().spawn(location, PufferFish.class, e -> e.setHealth(1.0))));
+        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(351, 60, 233),
+                               location -> location.getWorld().spawn(location, PufferFish.class, e -> e.setHealth(1.0))));
+
+        // Ice Palace Basement
+        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(308, 65, 307),
+                               location -> location.getWorld().spawn(location, Stray.class, e -> {
+                                       e.getEquipment().setItemInMainHand(null);
+                                       e.setHealth(1.0);
+                                       e.setSilent(true);
+                                   })));
+        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(301, 65, 299),
+                               location -> location.getWorld().spawn(location, Stray.class, e -> {
+                                       e.getEquipment().setItemInMainHand(null);
+                                       e.setHealth(1.0);
+                                       e.setSilent(true);
+                                   })));
+        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(308, 65, 292),
+                               location -> location.getWorld().spawn(location, Stray.class, e -> {
+                                       e.getEquipment().setItemInMainHand(null);
+                                       e.setHealth(1.0);
+                                       e.setSilent(true);
+                                   })));
+        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(315, 65, 299),
+                               location -> location.getWorld().spawn(location, Stray.class, e -> {
+                                       e.getEquipment().setItemInMainHand(null);
+                                       e.setHealth(1.0);
+                                       e.setSilent(true);
                                    })));
     }
 

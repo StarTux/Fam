@@ -51,7 +51,7 @@ public final class AdventDailyPlayMusic extends AbstractAdventDaily {
             if (tag.musicIndex >= musicTags.size()) {
                 tag.musicPlayed = true;
                 session.save(null);
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2f);
                 player.closeInventory();
             }
         } else {

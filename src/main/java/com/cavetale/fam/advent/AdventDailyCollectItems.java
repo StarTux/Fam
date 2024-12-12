@@ -79,7 +79,7 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
                         player.spawnParticle(Particle.DUST, vector.toCenterLocation(player.getWorld()),
                                              16, 1.0, 1.0, 1.0, 0.125,
                                              new Particle.DustOptions(Color.GREEN, 1f));
-                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
+                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2f);
                         player.sendMessage(textOfChildren(ItemKinds.icon(collectible),
                                                           text(tag.itemFoundCount, GREEN),
                                                           text("/", GRAY),

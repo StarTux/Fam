@@ -90,7 +90,7 @@ public final class AdventDailyFollowEntity extends AbstractAdventDaily {
         if (tag.entity == null || tag.entity.isDead()) return;
         if (tag.goalIndex >= entityGoals.size()) {
             tag.goalReached = true;
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2f);
             return;
         }
         final Vec3i entityGoal = entityGoals.get(tag.goalIndex);

@@ -16,6 +16,7 @@ public final class AdventDailyKillMob extends AbstractAdventDaily {
     private final String worldName;
     private final Vec3i starLocation;
     private final EntityType entityType;
+    private final int amount;
 
     @Override
     public void enable() {
@@ -58,9 +59,12 @@ public final class AdventDailyKillMob extends AbstractAdventDaily {
         final AdventSession session = AdventSession.of(player);
         if (!(session.getTag() instanceof Tag tag)) return;
         if (tag.hasKilled) return;
-        tag.hasKilled = true;
+        tag.amount += 1;
+        if (tag.amount >= amount) {
+            tag.hasKilled = true;
+        }
         session.save(null);
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2f);
     }
 
     @Override
@@ -76,6 +80,7 @@ public final class AdventDailyKillMob extends AbstractAdventDaily {
 
     static final class Tag extends AdventDailyTag {
         private transient ItemDisplayHolder starHolder;
+        private int amount;
         private boolean hasKilled;
     }
 }

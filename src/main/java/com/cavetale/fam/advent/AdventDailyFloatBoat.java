@@ -53,7 +53,7 @@ public final class AdventDailyFloatBoat extends AbstractAdventDaily {
                 tag.goalReached = true;
                 session.save(null);
                 boat.eject();
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2f);
             } else {
                 final Vec3i boatVector = boatLocations.get(tag.boatIndex);
                 final Location goalLocation = boatVector.toCenterLocation(player.getWorld());

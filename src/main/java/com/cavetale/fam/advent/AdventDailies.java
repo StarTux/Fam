@@ -56,7 +56,7 @@ public final class AdventDailies {
         // 03
         final AdventDailyKillMob daily03 = new AdventDailyKillMob("advent_2024_01",
                                                                   Vec3i.of(347, 93, 254),
-                                                                  EntityType.IRON_GOLEM);
+                                                                  EntityType.IRON_GOLEM, 1);
         daily03.setDescription(List.of(text("Defeat the Iron Golem.")));
         setDaily(3, daily03);
         // 04
@@ -185,6 +185,18 @@ public final class AdventDailies {
         final AdventDailyGetStar daily15 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(363, 68, 217));
         daily15.setDescription(List.of(text("Walk through the chimney.")));
         setDaily(15, daily15);
+
+        // 16
+        final AdventDailyGetStar daily16 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(368, 60, 246));
+        daily16.setDescription(List.of(text("Dive in the sewers.")));
+        setDaily(16, daily16);
+
+        // 17
+        final AdventDailyKillMob daily17 = new AdventDailyKillMob("advent_2024_01",
+                                                                  Vec3i.of(308, 67, 299),
+                                                                  EntityType.STRAY, 4);
+        daily17.setDescription(List.of(text("Explore the cellar of the Ice Palace.")));
+        setDaily(17, daily17);
 
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
