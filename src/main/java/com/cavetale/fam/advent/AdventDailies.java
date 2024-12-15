@@ -204,7 +204,7 @@ public final class AdventDailies {
             if (i < 14) {
                 daily.setWarp("Advent2024-01");
             } else {
-                daily.setWarp("Advent2024-02");
+                daily.setWarp("Advent2024-01");
             }
         }
         for (AdventDaily daily : dailies) {
