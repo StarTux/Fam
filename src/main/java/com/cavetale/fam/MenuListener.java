@@ -26,10 +26,7 @@ public final class MenuListener implements Listener {
                           .key("fam:profile")
                           .command("profile")
                           .icon(tooltip(makeSkull(event.getPlayer()),
-                                        List.of(text("Profile", Colors.BLUE),
-                                                text("Friends", Colors.HOTPINK),
-                                                text("Trophies", Colors.GOLD),
-                                                text("Birthdays", Colors.LIGHT_BLUE)))));
+                                        List.of(text("Profile", Colors.BLUE)))));
             event.addItem(builder -> builder
                           .key("fam:friends")
                           .command("friends")
