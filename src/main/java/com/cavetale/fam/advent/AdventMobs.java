@@ -38,89 +38,109 @@ public final class AdventMobs implements Listener {
     public void enable() {
         Bukkit.getPluginManager().registerEvents(this, famPlugin());
         Bukkit.getScheduler().runTaskTimer(famPlugin(), this::tick, 1L, 1L);
-        mobs.add(new AdventMob("advent_2024_01", // under first bridge
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // under first bridge
                                Vec3i.of(286, 65, 257),
                                this::spawnCreeper));
-        mobs.add(new AdventMob("advent_2024_01", // first mountain pass
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // first mountain pass
                                Vec3i.of(330, 73, 248),
                                this::spawnCreeper));
-        mobs.add(new AdventMob("advent_2024_01", // straight from spawn to the right
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // straight from spawn to the right
                                Vec3i.of(310, 65, 275),
                                this::spawnCreeper));
-        mobs.add(new AdventMob("advent_2024_01", // under 2nd bridge
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // under 2nd bridge
                                Vec3i.of(325, 65, 235),
                                this::spawnCreeper));
-        mobs.add(new AdventMob("advent_2024_01", // near spawn to the left
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // near spawn to the left
                                Vec3i.of(275, 65, 224),
                                this::spawnCreeper));
-        mobs.add(new AdventMob("advent_2024_01", // behind spawn
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // behind spawn
                                Vec3i.of(210, 65, 253),
                                this::spawnCreeper));
-        mobs.add(new AdventMob("advent_2024_01", // sewer
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // sewer
                                Vec3i.of(342, 66, 262),
                                this::spawnCreeper));
-        mobs.add(new AdventMob("advent_2024_01", // behind ice palace
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // behind ice palace
                                Vec3i.of(309, 65, 318),
                                this::spawnCreeper));
 
-        mobs.add(new AdventMob("advent_2024_01", // under 2nd bridge
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, // under 2nd bridge
                                Vec3i.of(339, 90, 254),
                                location -> location.getWorld().spawn(location, IronGolem.class, e -> {
                                        e.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.125);
                                        e.getAttribute(Attribute.SCALE).setBaseValue(2.0);
                                        e.setHealth(3.0);
                                    })));
-        mobs.add(new AdventMob("advent_2024_01",
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1,
                                Vec3i.of(297, 73, 232),
                                location -> location.getWorld().spawn(location, Snowman.class, e -> {
                                        e.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.0);
                                        e.setCollidable(false);
                                    })));
 
-        mobs.add(new AdventMob("advent_2024_01",
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1,
                                Vec3i.of(287, 73, 269),
                                location -> location.getWorld().spawn(location, OakBoat.class)));
 
-        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(384, 79, 262),
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, Vec3i.of(384, 79, 262),
                                location -> location.getWorld().spawn(location, Silverfish.class, e -> {
                                        e.setHealth(1.0);
                                    })));
-        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(384, 79, 268),
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, Vec3i.of(384, 79, 268),
                                location -> location.getWorld().spawn(location, Endermite.class, e -> {
                                        e.setHealth(1.0);
                                    })));
 
         // Sewer pufferfish
-        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(368, 60, 257),
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, Vec3i.of(368, 60, 257),
                                location -> location.getWorld().spawn(location, PufferFish.class, e -> e.setHealth(1.0))));
-        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(351, 60, 233),
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, Vec3i.of(351, 60, 233),
                                location -> location.getWorld().spawn(location, PufferFish.class, e -> e.setHealth(1.0))));
 
         // Ice Palace Basement
-        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(308, 65, 307),
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, Vec3i.of(308, 65, 307),
                                location -> location.getWorld().spawn(location, Stray.class, e -> {
                                        e.getEquipment().setItemInMainHand(null);
                                        e.setHealth(1.0);
                                        e.setSilent(true);
                                    })));
-        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(301, 65, 299),
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, Vec3i.of(301, 65, 299),
                                location -> location.getWorld().spawn(location, Stray.class, e -> {
                                        e.getEquipment().setItemInMainHand(null);
                                        e.setHealth(1.0);
                                        e.setSilent(true);
                                    })));
-        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(308, 65, 292),
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, Vec3i.of(308, 65, 292),
                                location -> location.getWorld().spawn(location, Stray.class, e -> {
                                        e.getEquipment().setItemInMainHand(null);
                                        e.setHealth(1.0);
                                        e.setSilent(true);
                                    })));
-        mobs.add(new AdventMob("advent_2024_01", Vec3i.of(315, 65, 299),
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_1, Vec3i.of(315, 65, 299),
                                location -> location.getWorld().spawn(location, Stray.class, e -> {
                                        e.getEquipment().setItemInMainHand(null);
                                        e.setHealth(1.0);
                                        e.setSilent(true);
                                    })));
+
+        // Advent World 3
+        List<Vec3i> world3Creepers = List.of(Vec3i.of(177, 66, 179),
+                                             Vec3i.of(128, 67, 196),
+                                             Vec3i.of(66, 67, 182),
+                                             Vec3i.of(65, 66, 114),
+                                             Vec3i.of(101, 66, 67),
+                                             Vec3i.of(142, 66, 69));
+        for (Vec3i vector : world3Creepers) {
+            mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_3, vector, this::spawnCreeper));
+        }
+        List<Vec3i> world3Snowmen = List.of(Vec3i.of(121, 66, 139),
+                                            Vec3i.of(141, 66, 123),
+                                            Vec3i.of(125, 66, 104),
+                                            Vec3i.of(109, 66, 122));
+        for (Vec3i vector : world3Snowmen) {
+            mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_3, vector, location -> location.getWorld().spawn(location, Snowman.class, e -> {
+                            e.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.05);
+                        })));
+        }
     }
 
     public void disable() {

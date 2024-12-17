@@ -25,6 +25,8 @@ import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class AdventDailies {
+    public static final String ADVENT_WORLD_1 = "advent_2024_01";
+    public static final String ADVENT_WORLD_3 = "advent_2024_03";
     @Getter
     private static List<AdventDaily> dailies = new ArrayList<>(25);
     private static Set<String> adventWorldNames = new HashSet<>();
@@ -37,12 +39,12 @@ public final class AdventDailies {
 
     protected static void enable() {
         // 01
-        final AdventDailyGetStar daily01 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(364, 127, 262));
+        final AdventDailyGetStar daily01 = new AdventDailyGetStar(ADVENT_WORLD_1, Vec3i.of(364, 127, 262));
         daily01.setDescription(List.of(textOfChildren(Mytems.STAR, text("Climb the gingerbread castle."))));
         setDaily(1, daily01);
 
         // 02
-        final AdventDailyCollectItems daily02 = new AdventDailyCollectItems("advent_2024_01", Vec3i.of(262, 67, 255),
+        final AdventDailyCollectItems daily02 = new AdventDailyCollectItems(ADVENT_WORLD_1, Vec3i.of(262, 67, 255),
                                                                             Mytems.RUBY.createItemStack(),
                                                                             Color.RED);
         daily02.addItemLocation(289, 66, 254)
@@ -54,19 +56,19 @@ public final class AdventDailies {
         daily02.setDescription(List.of(textOfChildren(Mytems.RUBY, text("Find the six red rubies."))));
         setDaily(2, daily02);
         // 03
-        final AdventDailyKillMob daily03 = new AdventDailyKillMob("advent_2024_01",
+        final AdventDailyKillMob daily03 = new AdventDailyKillMob(ADVENT_WORLD_1,
                                                                   Vec3i.of(347, 93, 254),
                                                                   EntityType.IRON_GOLEM, 1);
         daily03.setDescription(List.of(text("Defeat the Iron Golem.")));
         setDaily(3, daily03);
         // 04
-        final AdventDailyGetStar daily04 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(377, 117, 253));
+        final AdventDailyGetStar daily04 = new AdventDailyGetStar(ADVENT_WORLD_1, Vec3i.of(377, 117, 253));
         daily04.setDescription(List.of(textOfChildren(text("Jump through the "),
                                                       VanillaPaintings.HUMBLE,
                                                       text(" painting."))));
         setDaily(4, daily04);
         // 05
-        final AdventDailyPlayMusic daily05 = new AdventDailyPlayMusic("advent_2024_01", Vec3i.of(301, 75, 231), EntityType.SNOW_GOLEM);
+        final AdventDailyPlayMusic daily05 = new AdventDailyPlayMusic(ADVENT_WORLD_1, Vec3i.of(301, 75, 231), EntityType.SNOW_GOLEM);
         daily05.setDescription(List.of(textOfChildren(Mytems.C_NOTE, text("Play the clocktower song to the snowman."))));
         daily05.addMusicTag(Note.Tone.A)
             .addMusicTag(Note.Tone.D)
@@ -78,7 +80,7 @@ public final class AdventDailies {
 
         // 06
         final Color pink = Color.fromRGB(0xFF69B4);
-        final AdventDailyCollectItems daily06 = new AdventDailyCollectItems("advent_2024_01", Vec3i.of(262, 67, 255),
+        final AdventDailyCollectItems daily06 = new AdventDailyCollectItems(ADVENT_WORLD_1, Vec3i.of(262, 67, 255),
                                                                             Items.colorized(Mytems.C_NOTE.createItemStack(), pink),
                                                                             pink);
         daily06.addItemLocation(262, 67, 255) // near spawn
@@ -102,7 +104,7 @@ public final class AdventDailies {
         setDaily(6, daily06);
 
         // 07
-        final AdventDailyFloatBoat daily07 = new AdventDailyFloatBoat("advent_2024_01", Vec3i.of(374, 208, 253));
+        final AdventDailyFloatBoat daily07 = new AdventDailyFloatBoat(ADVENT_WORLD_1, Vec3i.of(374, 208, 253));
         daily07.addBoatLocation(282, 82, 266)
             .addBoatLocation(264, 90, 212)
             .addBoatLocation(217, 95, 216)
@@ -120,18 +122,18 @@ public final class AdventDailies {
         setDaily(7, daily07);
 
         // 08
-        final AdventDailyGetStar daily08 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(308, 88, 292));
+        final AdventDailyGetStar daily08 = new AdventDailyGetStar(ADVENT_WORLD_1, Vec3i.of(308, 88, 292));
         daily08.setDescription(List.of(textOfChildren(Mytems.STAR, text("Explore the ice palace."))));
         setDaily(8, daily08);
 
         // 09
-        final AdventDailyShrinkStar daily09 = new AdventDailyShrinkStar("advent_2024_01", Vec3i.of(376, 81, 267));
+        final AdventDailyShrinkStar daily09 = new AdventDailyShrinkStar(ADVENT_WORLD_1, Vec3i.of(376, 81, 267));
         daily09.setDescription(List.of(text("Fix the castle plumbing.")));
         daily09.addShrinkLocation(357, 79, 262);
         setDaily(9, daily09);
 
         // 10
-        final AdventDailyFollowEntity daily10 = new AdventDailyFollowEntity("advent_2024_01", Vec3i.of(369, 69, 288),
+        final AdventDailyFollowEntity daily10 = new AdventDailyFollowEntity(ADVENT_WORLD_1, Vec3i.of(369, 69, 288),
                                                                             Vec3i.of(262, 66, 255),
                                                                             location -> location.getWorld().spawn(location, Rabbit.class, e -> {
                                                                                     e.setRabbitType(Rabbit.Type.WHITE);
@@ -160,51 +162,76 @@ public final class AdventDailies {
         setDaily(10, daily10);
 
         // 11
-        final AdventDailyGetStar daily11 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(260, 105, 307));
+        final AdventDailyGetStar daily11 = new AdventDailyGetStar(ADVENT_WORLD_1, Vec3i.of(260, 105, 307));
         daily11.setDescription(List.of(text("Take a leap of faith.")));
         setDaily(11, daily11);
 
         // 12
-        final AdventDailyGetStar daily12 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(343, 67, 239));
+        final AdventDailyGetStar daily12 = new AdventDailyGetStar(ADVENT_WORLD_1, Vec3i.of(343, 67, 239));
         daily12.setDescription(List.of(text("Find the little Christmas tree.")));
         setDaily(12, daily12);
 
         // 13
-        final AdventDailyShrinkStar daily13 = new AdventDailyShrinkStar("advent_2024_01", Vec3i.of(381, 77, 250));
+        final AdventDailyShrinkStar daily13 = new AdventDailyShrinkStar(ADVENT_WORLD_1, Vec3i.of(381, 77, 250));
         daily13.setDescription(List.of(text("Become a sewer rat.")));
         daily13.addShrinkLocation(357, 79, 262);
         daily13.addShrinkLocation(378, 79, 257);
         setDaily(13, daily13);
 
         // 14
-        final AdventDailyGetStar daily14 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(249, 93, 230));
+        final AdventDailyGetStar daily14 = new AdventDailyGetStar(ADVENT_WORLD_1, Vec3i.of(249, 93, 230));
         daily14.setDescription(List.of(text("Fix the clockwork.")));
         setDaily(14, daily14);
 
         // 15
-        final AdventDailyGetStar daily15 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(363, 68, 217));
+        final AdventDailyGetStar daily15 = new AdventDailyGetStar(ADVENT_WORLD_1, Vec3i.of(363, 68, 217));
         daily15.setDescription(List.of(text("Walk through the chimney.")));
         setDaily(15, daily15);
 
         // 16
-        final AdventDailyGetStar daily16 = new AdventDailyGetStar("advent_2024_01", Vec3i.of(368, 60, 246));
+        final AdventDailyGetStar daily16 = new AdventDailyGetStar(ADVENT_WORLD_1, Vec3i.of(368, 60, 246));
         daily16.setDescription(List.of(text("Dive in the sewers.")));
         setDaily(16, daily16);
 
         // 17
-        final AdventDailyKillMob daily17 = new AdventDailyKillMob("advent_2024_01",
+        final AdventDailyKillMob daily17 = new AdventDailyKillMob(ADVENT_WORLD_1,
                                                                   Vec3i.of(308, 67, 299),
                                                                   EntityType.STRAY, 4);
         daily17.setDescription(List.of(text("Explore the cellar of the Ice Palace.")));
         setDaily(17, daily17);
 
+        // 18
+        final AdventDailyCollectItems daily18 = new AdventDailyCollectItems(ADVENT_WORLD_3, Vec3i.of(128, 67, 126),
+                                                                            Mytems.KITTY_COIN.createItemStack(),
+                                                                            Color.YELLOW);
+        daily18.addItemLocation(215, 68, 126);
+        daily18.addItemLocation(191, 68, 185);
+        daily18.addItemLocation(125, 74, 214); // Ladder
+        daily18.addItemLocation(7, 69, 118);
+        daily18.addItemLocation(66, 68, 52);
+        daily18.addItemLocation(127, 66, 90); // Lake
+        daily18.addItemLocation(131, 66, 145); // Lake
+        daily18.addItemLocation(198, 65, 50); // Underground
+        daily18.setDescription(List.of(textOfChildren(Mytems.KITTY_COIN, text("Find the eight Kitty Coins."))));
+        setDaily(18, daily18);
+
+        // 19
+        final AdventDailyGetStar daily19 = new AdventDailyGetStar(ADVENT_WORLD_3, Vec3i.of(127, 62, 118));
+        daily19.setDescription(List.of(textOfChildren(Mytems.STAR, text("Dive under the ice."))));
+        setDaily(19, daily19);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
-            if (i < 14) {
+            switch (daily.getWorldName()) {
+            case ADVENT_WORLD_1:
                 daily.setWarp("Advent2024-01");
-            } else {
-                daily.setWarp("Advent2024-01");
+                break;
+            case ADVENT_WORLD_3:
+                daily.setWarp("Advent2024-03");
+                break;
+            default:
+                break;
             }
         }
         for (AdventDaily daily : dailies) {
