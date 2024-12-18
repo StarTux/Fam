@@ -220,6 +220,12 @@ public final class AdventDailies {
         daily19.setDescription(List.of(textOfChildren(Mytems.STAR, text("Dive under the ice."))));
         setDaily(19, daily19);
 
+        // 20
+        final AdventDailyShrinkStar daily20 = new AdventDailyShrinkStar(ADVENT_WORLD_3, Vec3i.of(33, 112, 44));
+        daily20.setDescription(List.of(text("Climb the tallest tree.")));
+        daily20.addShrinkLocation(34, 69, 41);
+        setDaily(20, daily20);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
