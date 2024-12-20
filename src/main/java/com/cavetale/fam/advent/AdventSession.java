@@ -30,7 +30,7 @@ public final class AdventSession {
 
     public void enable() {
         if (adventServer) {
-            Bukkit.getScheduler().runTaskTimer(famPlugin(), this::tick, 1L, 1L);
+            task = Bukkit.getScheduler().runTaskTimer(famPlugin(), this::tick, 1L, 1L);
         }
         db().scheduleAsyncTask(() -> {
                 row = db().find(SQLAdventSession.class).eq("player", session.getUuid()).findUnique();
@@ -99,6 +99,10 @@ public final class AdventSession {
      */
     private void tick() {
         ifDaily(daily -> daily.tick(this));
+        final Player player = getPlayer();
+        if (AdventDailies.isAdventWorld(player.getWorld()) && player.getLocation().getY() < 32.0) {
+            player.damage(4.0);
+        }
     }
 
     public void startDaily(AdventDaily daily) {
