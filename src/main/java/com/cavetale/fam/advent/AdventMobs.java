@@ -23,6 +23,7 @@ import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Stray;
 import org.bukkit.entity.boat.OakBoat;
+import org.bukkit.entity.boat.SpruceBoat;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -141,6 +142,19 @@ public final class AdventMobs implements Listener {
                             e.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.05);
                         })));
         }
+
+        // Advent World 4
+
+        // Slippin Slide
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_4, Vec3i.of(244, 174, 262), location -> {
+                    location.setYaw(180f);
+                    return location.getWorld().spawn(location, SpruceBoat.class);
+        }));
+        // By snowman
+        mobs.add(new AdventMob(AdventDailies.ADVENT_WORLD_4, Vec3i.of(214, 186, 260), location -> {
+                    location.setYaw(180f);
+                    return location.getWorld().spawn(location, SpruceBoat.class);
+        }));
     }
 
     public void disable() {

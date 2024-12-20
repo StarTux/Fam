@@ -7,10 +7,12 @@ import com.cavetale.core.event.hud.PlayerHudPriority;
 import com.cavetale.mytems.item.music.PlayerPlayInstrumentEvent;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.boat.OakBoat;
+import org.bukkit.entity.boat.SpruceBoat;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,6 +24,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import static com.cavetale.fam.FamPlugin.famPlugin;
 
 public final class AdventListener implements Listener {
@@ -119,11 +122,19 @@ public final class AdventListener implements Listener {
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         final Player player = event.getPlayer();
         if (!AdventDailies.isAdventWorld(player.getWorld())) return;
-        if (!(event.getRightClicked() instanceof OakBoat boat)) return;
-        event.setCancelled(true);
-        final AdventSession session = AdventSession.of(player);
-        if (session.getDaily() instanceof AdventDailyFloatBoat floatBoat) {
-            floatBoat.onClickBoat(player, session, boat);
+        if (event.getRightClicked() instanceof OakBoat boat) {
+            event.setCancelled(true);
+            final AdventSession session = AdventSession.of(player);
+            if (session.getDaily() instanceof AdventDailyFloatBoat floatBoat) {
+                floatBoat.onClickBoat(player, session, boat);
+            }
+        } else if (event.getRightClicked() instanceof SpruceBoat boat) {
+            Bukkit.getScheduler().runTask(famPlugin(), () -> {
+                    final SpruceBoat boatCopy = player.getWorld().spawn(boat.getLocation().add(0.0, 1.0, -3.0), SpruceBoat.class, e -> {
+                            e.setPersistent(false);
+                        });
+                    boatCopy.addPassenger(player);
+                });
         }
     }
 
@@ -139,5 +150,13 @@ public final class AdventListener implements Listener {
         if (session.getDaily() instanceof AdventDailyShrinkStar shrinkStar) {
             shrinkStar.onInteract(player, session, event.getClickedBlock());
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    private void onVehicleExit(VehicleExitEvent event) {
+        if (!AdventDailies.isAdventWorld(event.getVehicle().getWorld())) return;
+        if (!(event.getExited() instanceof Player player)) return;
+        if (!(event.getVehicle() instanceof Boat boat)) return;
+        Bukkit.getScheduler().runTask(famPlugin(), () -> boat.remove());
     }
 }

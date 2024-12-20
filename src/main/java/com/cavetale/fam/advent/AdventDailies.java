@@ -27,6 +27,7 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 public final class AdventDailies {
     public static final String ADVENT_WORLD_1 = "advent_2024_01";
     public static final String ADVENT_WORLD_3 = "advent_2024_03";
+    public static final String ADVENT_WORLD_4 = "advent_2024_04";
     @Getter
     private static List<AdventDaily> dailies = new ArrayList<>(25);
     private static Set<String> adventWorldNames = new HashSet<>();
@@ -226,6 +227,43 @@ public final class AdventDailies {
         daily20.addShrinkLocation(34, 69, 41);
         setDaily(20, daily20);
 
+        // 21
+        final AdventDailyGetStar daily21 = new AdventDailyGetStar(ADVENT_WORLD_4, Vec3i.of(271, 71, 262));
+        daily21.setBoatRequired(true);
+        daily21.setDescription(List.of(text("Slip slidin' away throug the chimney.")));
+        setDaily(21, daily21);
+
+        // 22
+        final AdventDailyCollectItems daily22 = new AdventDailyCollectItems(ADVENT_WORLD_4, Vec3i.of(345, 135, 231),
+                                                                            Mytems.KITTY_COIN.createItemStack(), null);
+        daily22.setDescription(List.of(textOfChildren(Mytems.KITTY_COIN, text("Collect the 25 Kitty Coins."))));
+        daily22.addItemLocation(263, 184, 266); // Backwards
+        daily22.addItemLocation(260, 186, 259); // Staircase
+        daily22.addItemLocation(252, 190, 259);
+        daily22.addItemLocation(233, 190, 262);
+        daily22.addItemLocation(214, 189, 263); // Snowman
+        daily22.addItemLocation(214, 182, 247);
+        daily22.addItemLocation(205, 177, 207);
+        daily22.addItemLocation(200, 171, 161);
+        daily22.addItemLocation(173, 170, 151);
+        daily22.addItemLocation(178, 165, 175);
+        daily22.addItemLocation(178, 160, 195);
+        daily22.addItemLocation(172, 154, 219);
+        daily22.addItemLocation(181, 146, 251);
+        daily22.addItemLocation(178, 139, 279);
+        daily22.addItemLocation(178, 137, 293);
+        daily22.addItemLocation(191, 137, 292); // Snowman bottom
+        daily22.addItemLocation(205, 132, 305);
+        daily22.addItemLocation(225, 127, 307); // Air bridge start
+        daily22.addItemLocation(226, 133, 286);
+        daily22.addItemLocation(251, 134, 286);
+        daily22.addItemLocation(270, 133, 286);
+        daily22.addItemLocation(317, 133, 286);
+        daily22.addItemLocation(341, 133, 274);
+        daily22.addItemLocation(348, 133, 271);
+        daily22.addItemLocation(348, 133, 251); // Bridge
+        setDaily(22, daily22);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
@@ -235,6 +273,9 @@ public final class AdventDailies {
                 break;
             case ADVENT_WORLD_3:
                 daily.setWarp("Advent2024-03");
+                break;
+            case ADVENT_WORLD_4:
+                daily.setWarp("Advent2024-04");
                 break;
             default:
                 break;

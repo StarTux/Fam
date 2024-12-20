@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 public final class AdventDailyGetStar extends AbstractAdventDaily {
     private final String worldName;
     private final Vec3i starLocation;
+    private boolean boatRequired;
 
     @Override
     public void enable() {
@@ -35,15 +36,19 @@ public final class AdventDailyGetStar extends AbstractAdventDaily {
     public void tick(AdventSession session) {
         Tag tag = (Tag) session.getTag();
         final Player player = session.getPlayer();
-        if (Vec3i.of(player.getLocation()).maxDistance(starLocation) < 2) {
+        if (boatRequired && !isInBoat(player)) {
             tag.starHolder.remove();
-            session.stopDaily();
-            session.save(null);
-            Advent.unlock(player.getUniqueId(), Advent.THIS_YEAR, getDay(), result -> {
-                    new AdventCelebration(player, worldName, starLocation, getDay()).start();
-                });
         } else {
-            tag.starHolder.update(player);
+            if (Vec3i.of(player.getLocation()).maxDistance(starLocation) < 2) {
+                tag.starHolder.remove();
+                session.stopDaily();
+                session.save(null);
+                Advent.unlock(player.getUniqueId(), Advent.THIS_YEAR, getDay(), result -> {
+                        new AdventCelebration(player, worldName, starLocation, getDay()).start();
+                    });
+            } else {
+                tag.starHolder.update(player);
+            }
         }
     }
 
