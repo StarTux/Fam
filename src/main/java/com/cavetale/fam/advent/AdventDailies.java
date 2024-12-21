@@ -2,6 +2,7 @@ package com.cavetale.fam.advent;
 
 import com.cavetale.core.font.VanillaItems;
 import com.cavetale.core.font.VanillaPaintings;
+import com.cavetale.core.struct.Cuboid;
 import com.cavetale.core.struct.Vec3i;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.util.Items;
@@ -17,6 +18,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.Note;
 import org.bukkit.World;
+import org.bukkit.entity.Chicken;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Rabbit;
 import static com.cavetale.fam.FamPlugin.famPlugin;
@@ -230,7 +232,7 @@ public final class AdventDailies {
         // 21
         final AdventDailyGetStar daily21 = new AdventDailyGetStar(ADVENT_WORLD_4, Vec3i.of(271, 71, 262));
         daily21.setBoatRequired(true);
-        daily21.setDescription(List.of(text("Slip slidin' away throug the chimney.")));
+        daily21.setDescription(List.of(text("Slip slidin' away through the chimney.")));
         setDaily(21, daily21);
 
         // 22
@@ -263,6 +265,15 @@ public final class AdventDailies {
         daily22.addItemLocation(348, 133, 271);
         daily22.addItemLocation(348, 133, 251); // Bridge
         setDaily(22, daily22);
+
+        // 23
+        final AdventDailyEscortEntity daily23 = new AdventDailyEscortEntity(ADVENT_WORLD_4, Vec3i.of(274, 72, 301),
+                                                                            Vec3i.of(246, 192, 261),
+                                                                            new Cuboid(272, 69, 294,
+                                                                                       276, 77, 298),
+                                                                            location -> location.getWorld().spawn(location, Chicken.class));
+        daily23.setDescription(List.of(textOfChildren(Mytems.CHICKEN_FACE, text("Reunite the chicken and mother penguin."))));
+        setDaily(23, daily23);
 
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
