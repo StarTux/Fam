@@ -275,6 +275,104 @@ public final class AdventDailies {
         daily23.setDescription(List.of(textOfChildren(Mytems.CHICKEN_FACE, text("Reunite the chicken and mother penguin."))));
         setDaily(23, daily23);
 
+        // 24
+        final AdventDailyCollectItems daily24 = new AdventDailyCollectItems(ADVENT_WORLD_4, Vec3i.of(265, 72, 268),
+                                                                            Mytems.GREEN_MOON.createItemStack(), null);
+        daily24.setDescription(List.of(textOfChildren(Mytems.GREEN_MOON, text("Collect 78 moons on the slippin' slide."))));
+        daily24.setBoatRequired(true);
+        // First slide
+        daily24.addItemLocation(244, 173, 253);
+        daily24.addItemLocation(244, 172, 245);
+        daily24.addItemLocation(244, 171, 237);
+        daily24.addItemLocation(244, 170, 229);
+        daily24.addItemLocation(244, 169, 221);
+        daily24.addItemLocation(244, 168, 213);
+        daily24.addItemLocation(244, 167, 205);
+        daily24.addItemLocation(244, 166, 197);
+        daily24.addItemLocation(244, 165, 188);
+        // First turn
+        daily24.addItemLocation(250, 163, 178);
+        daily24.addItemLocation(262, 161, 174);
+        daily24.addItemLocation(267, 161, 175);
+        daily24.addItemLocation(276, 159, 187);
+        // 2nd slope
+        daily24.addItemLocation(277, 157, 198);
+        daily24.addItemLocation(277, 154, 209);
+        daily24.addItemLocation(277, 150, 225);
+        // Turn left
+        daily24.addItemLocation(257, 145, 239);
+        daily24.addItemLocation(247, 143, 242);
+        daily24.addItemLocation(242, 141, 250);
+        daily24.addItemLocation(244, 140, 258);
+        daily24.addItemLocation(252, 139, 262);
+        daily24.addItemLocation(261, 137, 264);
+        daily24.addItemLocation(265, 136, 267);
+        daily24.addItemLocation(273, 134, 264);
+        // Into hidden tunnel
+        daily24.addItemLocation(281, 132, 261);
+        daily24.addItemLocation(284, 131, 258);
+        daily24.addItemLocation(286, 131, 256);
+        daily24.addItemLocation(288, 131, 255);
+        daily24.addItemLocation(290, 131, 255);
+        // Secret tunnel
+        daily24.addItemLocation(299, 127, 254);
+        daily24.addItemLocation(317, 118, 254);
+        daily24.addItemLocation(328, 113, 257);
+        daily24.addItemLocation(324, 108, 271);
+        daily24.addItemLocation(314, 103, 263);
+        daily24.addItemLocation(304, 99, 258);
+        daily24.addItemLocation(293, 94, 258);
+        daily24.addItemLocation(285, 90, 258);
+        daily24.addItemLocation(276, 85, 258);
+        daily24.addItemLocation(269, 82, 259);
+        daily24.addItemLocation(269, 82, 258);
+        // Past tunnel
+        daily24.addItemLocation(286, 129, 243);
+        daily24.addItemLocation(286, 128, 235);
+        daily24.addItemLocation(286, 127, 227);
+        daily24.addItemLocation(286, 126, 219);
+        daily24.addItemLocation(286, 125, 211);
+        // Turn
+        daily24.addItemLocation(283, 124, 204);
+        daily24.addItemLocation(275, 123, 204);
+        daily24.addItemLocation(267, 122, 207);
+        daily24.addItemLocation(259, 121, 209);
+        daily24.addItemLocation(251, 120, 207);
+        daily24.addItemLocation(246, 118, 198);
+        daily24.addItemLocation(247, 117, 190);
+        daily24.addItemLocation(246, 116, 182);
+        daily24.addItemLocation(248, 115, 174);
+        // Turn
+        daily24.addItemLocation(262, 113, 175);
+        daily24.addItemLocation(279, 111, 175);
+        daily24.addItemLocation(302, 95, 174);
+        daily24.addItemLocation(310, 94, 175);
+        daily24.addItemLocation(318, 93, 175);
+        // Turn
+        daily24.addItemLocation(325, 91, 186);
+        daily24.addItemLocation(325, 90, 194);
+        daily24.addItemLocation(325, 89, 202);
+        daily24.addItemLocation(326, 88, 210);
+        daily24.addItemLocation(325, 87, 218);
+        // Final tunnel
+        daily24.addItemLocation(326, 84, 242);
+        daily24.addItemLocation(325, 83, 250);
+        daily24.addItemLocation(326, 82, 258);
+        // Final turn
+        daily24.addItemLocation(318, 80, 263);
+        daily24.addItemLocation(310, 78, 263);
+        daily24.addItemLocation(302, 76, 262);
+        daily24.addItemLocation(294, 74, 263);
+        daily24.addItemLocation(286, 72, 262);
+        // Final bridge
+        daily24.addItemLocation(282, 71, 263);
+        daily24.addItemLocation(280, 71, 263);
+        daily24.addItemLocation(278, 71, 263);
+        daily24.addItemLocation(276, 71, 263);
+        daily24.addItemLocation(274, 71, 263);
+        daily24.addItemLocation(272, 71, 263);
+        setDaily(24, daily24);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);

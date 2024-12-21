@@ -16,7 +16,7 @@ public final class SQLAdventSession implements SQLRow {
     @Id private Integer id;
     private UUID player;
     private int day;
-    private String tag;
+    @Text private String tag;
     private Date updated;
 
     public SQLAdventSession() { }

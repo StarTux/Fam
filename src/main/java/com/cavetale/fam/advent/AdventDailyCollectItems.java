@@ -25,6 +25,7 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
     private final ItemStack collectible;
     private final Color glowColor;
     private final List<Vec3i> itemLocations = new ArrayList<>();
+    private boolean boatRequired;
 
     @Override
     public void enable() {
@@ -64,6 +65,12 @@ public final class AdventDailyCollectItems extends AbstractAdventDaily {
         Tag tag = (Tag) session.getTag();
         final Player player = session.getPlayer();
         if (!tag.hasAllItems) {
+            if (boatRequired && !isInBoat(player)) {
+                for (ItemDisplayHolder it : tag.itemHolders) {
+                    it.remove();
+                }
+                return;
+            }
             for (int i = 0; i < itemLocations.size(); i += 1) {
                 final Vec3i vector = itemLocations.get(i);
                 final boolean found = tag.itemsFound.get(i);
