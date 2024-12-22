@@ -373,6 +373,11 @@ public final class AdventDailies {
         daily24.addItemLocation(272, 71, 263);
         setDaily(24, daily24);
 
+        // 25
+        final AdventDailyGetStar daily25 = new AdventDailyGetStar(ADVENT_WORLD_4, Vec3i.of(233, 88, 290));
+        daily25.setDescription(List.of(textOfChildren(Mytems.STAR, text("Land on the floating island."))));
+        setDaily(25, daily25);
+
         // Finis
         for (int i = 0; i < dailies.size(); i += 1) {
             AdventDaily daily = dailies.get(i);
