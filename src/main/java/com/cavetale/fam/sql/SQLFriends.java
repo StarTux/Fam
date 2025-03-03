@@ -25,6 +25,7 @@ public final class SQLFriends implements SQLRow, Comparable<SQLFriends> {
     @Keyed private UUID playerB;
     @Default("0") private int friendship;
     @Default("0") private int dailyGift;
+    @Default("0") private int dailyMinigame;
     @Keyed @Nullable private String relation;
     // When did they change their status, especially marriage
     @Default("NOW()") private Date changed;
@@ -125,6 +126,10 @@ public final class SQLFriends implements SQLRow, Comparable<SQLFriends> {
 
     public boolean dailyGiftGiven() {
         return dailyGift == Timer.getDayId();
+    }
+
+    public boolean dailyMinigamePlayed() {
+        return dailyMinigame == Timer.getDayId();
     }
 
     public String getCachedName(UUID perspective) {

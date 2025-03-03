@@ -69,6 +69,7 @@ public final class Database {
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();
+        db().getTable(SQLFriends.class).createColumnIfMissing("dailyMinigame");
         return res;
     }
 
@@ -169,6 +170,25 @@ public final class Database {
                 + " SET `daily_gift` = " + day
                 + " WHERE `id` = " + row.getId()
                 + " AND `daily_gift` != " + day;
+            return 0 != db().executeUpdate(sql);
+        }
+    }
+
+    /**
+     * Copied from above.
+     */
+    public static boolean dailyMinigame(UUID a, UUID b, int day) {
+        SQLFriends row = findFriends(a, b);
+        if (row == null) {
+            row = new SQLFriends(sorted(a, b));
+            row.setDailyMinigame(day);
+            return 0 != db().insertIgnore(row);
+        } else {
+            if (row.getDailyMinigame() == day) return false;
+            String sql = "UPDATE `" + db().getTable(SQLFriends.class).getTableName() + "`"
+                + " SET `daily_minigame` = " + day
+                + " WHERE `id` = " + row.getId()
+                + " AND `daily_minigame` != " + day;
             return 0 != db().executeUpdate(sql);
         }
     }

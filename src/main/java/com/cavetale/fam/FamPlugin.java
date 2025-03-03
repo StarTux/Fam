@@ -114,6 +114,7 @@ public final class FamPlugin extends JavaPlugin {
                 new SidebarListener(this).enable();
             }
         }
+        new MinigameListener(this).enable();
         if (networkServer == NetworkServer.HUB || networkServer == NetworkServer.BETA) {
             computePossibleDaybreak();
             doDaybreak = true;
@@ -257,6 +258,11 @@ public final class FamPlugin extends JavaPlugin {
             text.add(text("\u2611 Daily Gift", Colors.HOTPINK));
         } else {
             text.add(text("\u2610 Daily Gift", Colors.DARK_GRAY));
+        }
+        if (row.dailyMinigamePlayed()) {
+            text.add(text("\u2611 Daily Minigame", Colors.HOTPINK));
+        } else {
+            text.add(text("\u2610 Daily Minigame", Colors.DARK_GRAY));
         }
         if (birthday != null) {
             text.add(text("Birthday ", DARK_GRAY)
