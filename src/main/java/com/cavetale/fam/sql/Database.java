@@ -69,7 +69,6 @@ public final class Database {
         boolean res = db().createAllTables();
         if (!res) return false;
         loadProfileCacheAsync();
-        db().getTable(SQLFriends.class).createColumnIfMissing("dailyMinigame");
         return res;
     }
 
