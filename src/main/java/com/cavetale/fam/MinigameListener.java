@@ -6,7 +6,7 @@ import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
 import com.cavetale.fam.util.Colors;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -29,12 +29,13 @@ public final class MinigameListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onMinigameMatchComplete(MinigameMatchCompleteEvent event) {
-        final Set<UUID> uuids = event.getPlayerUuids();
         final int dayId = Timer.getDayId();
+        final List<UUID> uuids = List.copyOf(event.getPlayerUuids());
         Database.db().scheduleAsyncTask(() -> {
-                for (UUID a : uuids) {
-                    for (UUID b : uuids) {
-                        if (a == b) continue;
+                for (int i = 0; i < uuids.size() - 1; i += 1) {
+                    final UUID a = uuids.get(i);
+                    for (int j = i + 1; j < uuids.size(); j += 1) {
+                        final UUID b = uuids.get(j);
                         boolean res = Database.dailyMinigame(a, b, dayId);
                         if (!res) continue;
                         final int amount = 5;
