@@ -82,14 +82,11 @@ public final class ProfileDialogue {
 
     private Gui openLoaded(Player player) {
         if (!player.isValid()) return null;
-        int size = 4 * 9;
-        GuiOverlay.Builder builder = GuiOverlay.BLANK
-            .builder(size, BLUE)
+        Gui gui = new Gui(plugin)
+            .size(6 * 9)
+            .layer(GuiOverlay.BLANK, BLUE)
             .layer(GuiOverlay.TOP_BAR, DARK_BLUE)
             .title(text("Your Profile", BLUE));
-        Gui gui = new Gui(plugin)
-            .size(size)
-            .title(builder.build());
         gui.setItem(4, makeSkull(player));
         int friendsIndex = 19;
         int marriedIndex = 20;

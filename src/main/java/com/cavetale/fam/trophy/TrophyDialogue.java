@@ -34,7 +34,6 @@ import static org.bukkit.Sound.*;
 import static org.bukkit.SoundCategory.*;
 
 public final class TrophyDialogue {
-    private static final int GUI_SIZE = 4 * 9;
     protected final Trophies trophies;
     protected final PlayerCache target;
     List<String> categoryList = new ArrayList<>();
@@ -71,13 +70,12 @@ public final class TrophyDialogue {
     }
 
     private void openOverview(Player player) {
-        Gui gui = new Gui(trophies.plugin).size(GUI_SIZE);
-        final int pageSize = GUI_SIZE - 9;
+        final Gui gui = new Gui(trophies.plugin).size(6 * 9);
+        final int pageSize = 5 * 9;
         final int pageOffset = pageIndex * pageSize;
         final int pageCount = (categoryList.size() - 1) / pageSize + 1;
-        GuiOverlay.Builder builder = GuiOverlay.BLANK
-            .builder(GUI_SIZE, GRAY)
-            .layer(GuiOverlay.TOP_BAR, DARK_GRAY)
+        gui.layer(GuiOverlay.BLANK, GRAY)
+        .layer(GuiOverlay.TOP_BAR, DARK_GRAY)
             .title(join(noSeparators(),
                         (pageCount > 0
                          ? text((pageIndex + 1) + "/" + pageCount + " ", GRAY)
@@ -95,7 +93,7 @@ public final class TrophyDialogue {
             List<SQLTrophy> trophyList = trophyMap.get(category);
             if (trophyList.isEmpty()) continue;
             SQLTrophy trophy = trophyList.get(0);
-            if (owner && !trophy.seen) builder.highlightSlot(guiIndex, trophy.getQualityColor());
+            if (owner && !trophy.seen) gui.highlight(guiIndex, trophy.getQualityColor());
             ItemStack icon = tooltip(trophy.getIcon(), trophy.getTooltip());
             gui.setItem(guiIndex, icon, click -> {
                     if (click.isLeftClick()) {
@@ -135,18 +133,16 @@ public final class TrophyDialogue {
                 }
                 click(player);
             });
-        gui.title(builder.build());
         gui.open(player);
     }
 
     private void openCategory(final Player player, final String category, final int thePageIndex) {
-        Gui gui = new Gui(trophies.plugin).size(GUI_SIZE);
-        final int pageSize = GUI_SIZE - 9;
+        Gui gui = new Gui(trophies.plugin).size(6 * 9);
+        final int pageSize = 5 * 9;
         final int pageOffset = thePageIndex * pageSize;
         List<SQLTrophy> trophyList = trophyMap.get(category);
         final int pageCount = (trophyList.size() - 1) / pageSize + 1;
-        GuiOverlay.Builder builder = GuiOverlay.BLANK
-            .builder(GUI_SIZE, color(0x777777))
+        gui.layer(GuiOverlay.BLANK, color(0x777777))
             .layer(GuiOverlay.TOP_BAR, color(0x222222))
             .title(join(noSeparators(),
                         (pageCount > 0
@@ -158,7 +154,7 @@ public final class TrophyDialogue {
             int guiIndex = i + 9;
             if (trophyIndex >= trophyList.size()) break;
             SQLTrophy trophy = trophyList.get(trophyIndex);
-            if (owner && !trophy.seen) builder.highlightSlot(guiIndex, trophy.getQualityColor());
+            if (owner && !trophy.seen) gui.highlight(guiIndex, trophy.getQualityColor());
             List<Component> tooltip = new ArrayList<>();
             tooltip.addAll(trophy.getTooltip());
             if (owner && !trophy.seen) {
@@ -230,7 +226,6 @@ public final class TrophyDialogue {
         };
         gui.setItem(Gui.OUTSIDE, null, back);
         gui.setItem(4, Mytems.TURN_LEFT.createIcon(List.of(text("Go Back", GRAY))), back);
-        gui.title(builder.build());
         gui.open(player);
     }
 

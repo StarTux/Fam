@@ -1,7 +1,7 @@
 package com.cavetale.fam;
 
 import com.cavetale.core.event.player.PluginPlayerEvent;
-import com.cavetale.core.font.DefaultFont;
+import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.fam.session.Session;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLBirthday;
@@ -46,10 +46,8 @@ public final class BirthdayDialogue {
         int size = 36;
         Gui gui = new Gui(plugin)
             .size(size)
-            .title(Component.text()
-                   .append(DefaultFont.guiBlankOverlay(size, BG))
-                   .append(Component.text("Birthday Month", COLOR))
-                   .build());
+            .layer(GuiOverlay.BLANK, BG)
+            .title(text("Birthday Month", COLOR));
         for (int i = 0; i < 12; i += 1) {
             final Month theMonth = Month.of(i + 1);
             ItemStack icon = Mytems.CHECKBOX.createIcon(List.of(text(theMonth.getDisplayName(TextStyle.FULL, LOCALE))));
@@ -78,10 +76,8 @@ public final class BirthdayDialogue {
         String monthName = month.getDisplayName(TextStyle.FULL, LOCALE);
         Gui gui = new Gui(plugin)
             .size(size)
-            .title(Component.text()
-                   .append(DefaultFont.guiBlankOverlay(size, BG))
-                   .append(Component.text("Birthday in " + monthName, COLOR))
-                   .build());
+            .layer(GuiOverlay.BLANK, BG)
+            .title(text("Birthday in " + monthName, COLOR));
         for (int i = 0; i < length; i += 1) {
             int theDay = i + 1;
             ItemStack icon = Mytems.CHECKBOX.createIcon(List.of(text(monthName + " " + theDay)));
@@ -108,10 +104,8 @@ public final class BirthdayDialogue {
         String birthdayName = Objects.requireNonNull(month).getDisplayName(TextStyle.FULL, LOCALE) + " " + day;
         Gui gui = new Gui(plugin)
             .size(size)
-            .title(Component.text()
-                   .append(DefaultFont.guiBlankOverlay(size, BG))
-                   .append(Component.text("Your birthday is on " + birthdayName + "?", COLOR))
-                   .build());
+            .layer(GuiOverlay.BLANK, BG)
+            .title(text("Your birthday is " + birthdayName + "?", COLOR));
         gui.setItem(size - 8, Mytems.OK.createIcon(List.of(text("Yes, my birthday is on " + birthdayName, GREEN))), click -> {
                 if (!click.isLeftClick()) return;
                 confirm(player, false);

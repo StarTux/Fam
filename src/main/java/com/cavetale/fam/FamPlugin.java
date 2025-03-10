@@ -367,19 +367,17 @@ public final class FamPlugin extends JavaPlugin {
     public static Gui openFriendsGui(Player player, List<SQLFriends> friendsList, Map<UUID, SQLBirthday> birthdays, FriendsListView type, int pageNumber) {
         if (!player.isValid()) return null;
         final UUID uuid = player.getUniqueId();
-        Gui gui = new Gui(instance);
-        int pageSize = 3 * 9;
+        int pageSize = 5 * 9;
         int pageCount = (friendsList.size() - 1) / pageSize + 1;
         int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         int offset = pageIndex * pageSize;
-        gui.size(pageSize + 9);
-        gui.title(GuiOverlay.builder(pageSize + 9)
-                  .layer(GuiOverlay.BLANK, type.menuColor)
-                  .layer(GuiOverlay.TOP_BAR, TextColor.lerp(0.5f, type.menuColor, BLACK))
-                  .title(pageCount > 1
-                         ? text(type.menuTitle + " " + pageNumber + "/" + pageCount, WHITE)
-                         : text(type.menuTitle, WHITE))
-                  .build());
+        Gui gui = new Gui(instance)
+            .size(pageSize + 9)
+            .layer(GuiOverlay.BLANK, type.menuColor)
+            .layer(GuiOverlay.TOP_BAR, TextColor.lerp(0.5f, type.menuColor, BLACK))
+            .title(pageCount > 1
+                   ? text(type.menuTitle + " " + pageNumber + "/" + pageCount, WHITE)
+                   : text(type.menuTitle, WHITE));
         for (int i = 0; i < pageSize; i += 1) {
             int friendsIndex = offset + i;
             if (friendsIndex >= friendsList.size()) break;
@@ -480,8 +478,6 @@ public final class FamPlugin extends JavaPlugin {
         final UUID friendUuid = row.getOther(player.getUniqueId());
         final PlayerProfile profile = Database.getCachedPlayerProfile(friendUuid);
         final PlayerCache playerCache = PlayerCache.forUuid(friendUuid);
-        final Gui gui = new Gui(instance);
-        final int size = 4 * 9;
         final TextColor color;
         final int friendship = row.getFriendship();
         if (friendship < 20) {
@@ -497,11 +493,11 @@ public final class FamPlugin extends JavaPlugin {
         } else {
             color = GOLD;
         }
-        gui.title(GuiOverlay.BLANK.builder(size, DARK_GRAY)
-                  .layer(GuiOverlay.TOP_BAR, color)
-                  .title(text(playerCache.name, WHITE))
-                  .build());
-        gui.size(size);
+        final Gui gui = new Gui(instance)
+            .size(6 * 9)
+            .layer(GuiOverlay.BLANK, DARK_GRAY)
+            .layer(GuiOverlay.TOP_BAR, color)
+            .title(text(playerCache.name, WHITE));
         final var hearts = row.getHeartIcons();
         for (int i = 0; i < 5; i += 1) {
             final ItemStack heart = hearts.get(i).createItemStack();
@@ -541,10 +537,10 @@ public final class FamPlugin extends JavaPlugin {
         int available = row != null ? row.getAvailable() : 0;
         final int size = instance.getRewardList().size();
         final int guiSize = ((size - 1) / 9) * 9 + 18;
-        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(guiSize, Colors.HOTPINK)
+        Gui gui = new Gui(instance)
+            .size(guiSize)
+            .layer(GuiOverlay.BLANK, Colors.HOTPINK)
             .title(text("Valentine Score " + score, WHITE));
-        Gui gui = new Gui(instance);
-        gui.size(guiSize);
         for (int i = 0; i < size; i += 1) {
             final int index = i;
             List<Component> text = new ArrayList<>();
@@ -597,7 +593,6 @@ public final class FamPlugin extends JavaPlugin {
                 });
         }
         gui.setItem(guiSize - 5, makeTodaysGiftIcon(true));
-        gui.title(builder.build());
         gui.open(player);
         player.playSound(player.getLocation(), BLOCK_CHEST_OPEN, MASTER, 0.5f, 1.2f);
         return gui;
@@ -616,14 +611,13 @@ public final class FamPlugin extends JavaPlugin {
     public Gui giveReward(Player player, int index, boolean isForReal) {
         final int size = 3 * 9;
         Reward reward = instance.getRewardList().get(index);
-        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, (isForReal ? WHITE : Colors.HOTPINK))
+        Gui gui = new Gui(instance)
+            .size(size)
+            .layer(GuiOverlay.BLANK, (isForReal ? WHITE : Colors.HOTPINK))
             .title(isForReal
                    ? textOfChildren(text("Valentine Reward ", WHITE), Mytems.HEART, text((index + 1), WHITE))
                    : textOfChildren(text("Valentine Reward Preview ", WHITE), Mytems.HEART, text((index + 1), WHITE)));
-        if (isForReal) builder.layer(GuiOverlay.HOLES, Colors.HOTPINK);
-        Gui gui = new Gui(instance);
-        gui.size(size);
-        gui.title(builder.build());
+        if (isForReal) gui.layer(GuiOverlay.HOLES, Colors.HOTPINK);
         if (reward.getItems().size() == 1) {
             gui.getInventory().setItem(9 + 4, reward.getItems().get(0).clone());
         } else {
@@ -674,16 +668,15 @@ public final class FamPlugin extends JavaPlugin {
             player.sendMessage(text("No highscores to show", RED));
             return null;
         }
-        final Gui gui = new Gui(instance);
         final int pageSize = 3 * 9;
         final int pageCount = (list.size() - 1) / pageSize + 1;
         final int pageIndex = Math.max(0, Math.min(pageNumber - 1, pageCount - 1));
         final int offset = pageIndex * pageSize;
         final int size = pageSize + 9;
-        gui.size(size);
-        GuiOverlay.Builder builder = GuiOverlay.BLANK.builder(size, Colors.HOTPINK)
+        final Gui gui = new Gui(instance)
+            .size(size)
+            .layer(GuiOverlay.BLANK, Colors.HOTPINK)
             .title(text("Valentine Highscore " + pageNumber + "/" + pageCount, WHITE));
-        gui.title(builder.build());
         int score = -1;
         int rank = 0;
         for (int i = 0; i < list.size(); i += 1) {
