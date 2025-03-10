@@ -1,10 +1,10 @@
 package com.cavetale.fam.sql;
 
-import com.cavetale.fam.util.Json;
+import com.cavetale.core.util.Json;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import com.winthier.sql.SQLRow;
 import com.winthier.sql.SQLRow.Name;
+import com.winthier.sql.SQLRow;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
