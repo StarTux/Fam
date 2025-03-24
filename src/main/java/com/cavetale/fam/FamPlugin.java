@@ -76,7 +76,7 @@ public final class FamPlugin extends JavaPlugin {
     private boolean doDaybreak;
     private final FamFriendsSupplier famFriendsSupplier = new FamFriendsSupplier();
     private final Sessions sessions = new Sessions();
-    private final Advent advent = new Advent();
+    private final Advent advent = null;
     private final CorePlayerSkinProvider skinProvider = new CorePlayerSkinProvider();
 
     @Override
@@ -101,7 +101,7 @@ public final class FamPlugin extends JavaPlugin {
         eventHosts.enable();
         Database.init();
         Timer.enable();
-        advent.enable();
+        if (advent != null) advent.enable();
         sessions.enable();
         NetworkServer networkServer = NetworkServer.current();
         if (networkServer.category.isSurvival()) {
@@ -194,7 +194,7 @@ public final class FamPlugin extends JavaPlugin {
         skinProvider.unregister();
         famFriendsSupplier.unregister();
         eventHosts.disable();
-        advent.disable();
+        if (advent != null) advent.disable();
         database.waitForAsyncTask();
         database.close();
     }
