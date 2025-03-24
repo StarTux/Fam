@@ -56,6 +56,7 @@ import static org.bukkit.SoundCategory.*;
 
 @Getter
 public final class FamPlugin extends JavaPlugin {
+    public static final boolean DO_ADVENT = false;
     @Getter protected static FamPlugin instance;
     private final FamCommand famCommand = new FamCommand(this);
     private final FriendsCommand friendsCommand = new FriendsCommand(this);
@@ -76,7 +77,7 @@ public final class FamPlugin extends JavaPlugin {
     private boolean doDaybreak;
     private final FamFriendsSupplier famFriendsSupplier = new FamFriendsSupplier();
     private final Sessions sessions = new Sessions();
-    private final Advent advent = null;
+    private Advent advent = null;
     private final CorePlayerSkinProvider skinProvider = new CorePlayerSkinProvider();
 
     @Override
@@ -101,7 +102,10 @@ public final class FamPlugin extends JavaPlugin {
         eventHosts.enable();
         Database.init();
         Timer.enable();
-        if (advent != null) advent.enable();
+        if (DO_ADVENT) {
+            advent = new Advent();
+            advent.enable();
+        }
         sessions.enable();
         NetworkServer networkServer = NetworkServer.current();
         if (networkServer.category.isSurvival()) {
