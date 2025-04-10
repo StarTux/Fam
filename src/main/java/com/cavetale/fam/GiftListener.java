@@ -28,6 +28,7 @@ import static net.kyori.adventure.text.Component.textOfChildren;
 
 @RequiredArgsConstructor
 public final class GiftListener implements Listener {
+    private static final String PERMISSION = "fam.gift";
     private final FamPlugin plugin;
 
     public void enable() {
@@ -53,8 +54,8 @@ public final class GiftListener implements Listener {
         Player thrower = Bukkit.getPlayer(item.getThrower());
         if (thrower == null) return;
         if (player.equals(thrower)) return;
-        if (!player.hasPermission("fam.friends")) return;
-        if (!thrower.hasPermission("fam.friends")) return;
+        if (!player.hasPermission(PERMISSION)) return;
+        if (!thrower.hasPermission(PERMISSION)) return;
         final UUID a = thrower.getUniqueId();
         final UUID b = player.getUniqueId();
         final boolean birthday = Database.getCache(player).isBirthday() || Database.getCache(thrower).isBirthday();

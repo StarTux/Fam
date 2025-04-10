@@ -2,6 +2,7 @@ package com.cavetale.fam;
 
 import com.cavetale.core.chat.Chat;
 import com.cavetale.core.event.minigame.MinigameMatchCompleteEvent;
+import com.cavetale.core.perm.Perm;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.fam.sql.Database;
 import com.cavetale.fam.sql.SQLFriends;
@@ -34,8 +35,10 @@ public final class MinigameListener implements Listener {
         Database.db().scheduleAsyncTask(() -> {
                 for (int i = 0; i < uuids.size() - 1; i += 1) {
                     final UUID a = uuids.get(i);
+                    if (!Perm.get().has(a, "fam.minigame")) continue;
                     for (int j = i + 1; j < uuids.size(); j += 1) {
                         final UUID b = uuids.get(j);
+                        if (!Perm.get().has(b, "fam.minigame")) continue;
                         boolean res = Database.dailyMinigame(a, b, dayId);
                         if (!res) continue;
                         final int amount = 5;

@@ -112,6 +112,7 @@ public final class FamPlugin extends JavaPlugin {
             marriageListener.enable();
             new GiftListener(this).enable();
             new WeddingRingListener(this).enable();
+            new LovePotionListener(this).enable();
             getLogger().info("Survival features enabled: Gifts, Wedding Ring");
             if (Timer.isValentineSeason()) {
                 getLogger().info("Valentine sidebar enabled");

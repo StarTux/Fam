@@ -124,6 +124,18 @@ permissions:
     description: Make friends and use /friends
     default: op
 
+  fam.gift:
+    description: Give and receive daily friendship gifts
+    default: false
+
+  fam.lovepotion:
+    description: Use the love potion
+    default: false
+
+  fam.minigame:
+    description: Improve friendship via minigames
+    default: false
+
   fam.marriage:
     description: Get married
     default: false
