@@ -129,13 +129,10 @@ public final class Database {
 
     public static SQLFriends findFriends(UUID a, UUID b) {
         UUID[] arr = sorted(a, b);
-        final SQLFriends result = db().find(SQLFriends.class)
+        return = db().find(SQLFriends.class)
             .eq("player_a", arr[0])
             .eq("player_b", arr[1])
             .findUnique();
-        return result != null
-            ? result
-            : new SQLFriends(sorted(a, b));
     }
 
     public static List<SQLFriends> findFriendsList(UUID uuid) {
