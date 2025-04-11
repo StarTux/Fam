@@ -129,7 +129,7 @@ public final class Database {
 
     public static SQLFriends findFriends(UUID a, UUID b) {
         UUID[] arr = sorted(a, b);
-        return = db().find(SQLFriends.class)
+        return db().find(SQLFriends.class)
             .eq("player_a", arr[0])
             .eq("player_b", arr[1])
             .findUnique();
