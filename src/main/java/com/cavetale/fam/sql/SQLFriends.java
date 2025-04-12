@@ -33,6 +33,10 @@ public final class SQLFriends implements SQLRow, Comparable<SQLFriends> {
 
     public SQLFriends() { }
 
+    public SQLFriends(final UUID a, final UUID b) {
+        this(Database.sorted(a, b));
+    }
+
     public SQLFriends(final UUID[] uuids) {
         if (uuids.length != 2) throw new IllegalStateException("length=" + uuids.length);
         this.playerA = uuids[0];

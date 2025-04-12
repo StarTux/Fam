@@ -56,6 +56,7 @@ public final class LovePotionListener implements Listener {
     }
 
     private void callback(Player player, Player target, SQLFriends oldRow, SQLFriends newRow) {
+        if (oldRow == null) oldRow = new SQLFriends(player.getUniqueId(), target.getUniqueId());
         showEffect(player, target, oldRow, newRow);
         showEffect(target, player, oldRow, newRow);
     }

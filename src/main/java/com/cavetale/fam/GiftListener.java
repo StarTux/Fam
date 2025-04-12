@@ -75,6 +75,7 @@ public final class GiftListener implements Listener {
     }
 
     private void callback(Player player, Player thrower, SQLFriends oldRow, SQLFriends newRow, ItemStack itemStack) {
+        if (oldRow == null) oldRow = new SQLFriends(player.getUniqueId(), thrower.getUniqueId());
         plugin.getLogger().info(thrower.getName() + " and " + player.getName() + " shared friendship gifts: "
                                 + oldRow.getFriendship() + " => " + newRow.getFriendship());
         if (player.isOnline() && !Chat.doesIgnore(player.getUniqueId(), thrower.getUniqueId())) {
