@@ -77,22 +77,12 @@ public final class SQLProfile implements SQLRow {
         return tag;
     }
 
-    public static SQLProfile of(PlayerProfile profile) {
-        SQLProfile row = new SQLProfile(profile.getId(), profile.getName());
-        row.load(profile);
-        return row;
-    }
-
     /**
      * Load data from the given profile.
      * @return true if this row was updated with new information, false otherwise.
      */
     public boolean load(PlayerProfile profile) {
         boolean result = false;
-        if (!Objects.equals(name, profile.getName())) {
-            name = profile.getName();
-            result = true;
-        }
         if (tag == null) unpack();
         for (ProfileProperty prop : profile.getProperties()) {
             switch (prop.getName()) {

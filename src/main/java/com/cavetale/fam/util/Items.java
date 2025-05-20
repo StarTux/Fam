@@ -29,8 +29,7 @@ public final class Items {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setPlayerProfile(profile);
-        String name = profile.getName();
-        if (name == null) name = PlayerCache.nameForUuid(profile.getId());
+        String name = PlayerCache.nameForUuid(profile.getId());
         if (name == null) name = "?";
         meta.displayName(Component.text().content(name)
                          .color(NamedTextColor.WHITE)

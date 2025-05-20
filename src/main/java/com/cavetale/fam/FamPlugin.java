@@ -237,7 +237,6 @@ public final class FamPlugin extends JavaPlugin {
         Relation relation = row.getRelationFor(perspective.getUniqueId());
         String name = row.getCachedName(perspective.getUniqueId());
         if (name == null) name = PlayerCache.nameForUuid(friendUuid);
-        if (name == null) name = profile.getName();
         if (name == null) name = "?";
         TextColor color;
         if (relation == null) {
@@ -284,7 +283,7 @@ public final class FamPlugin extends JavaPlugin {
         PlayerProfile profile = Database.getCachedPlayerProfile(uuid);
         meta.setPlayerProfile(profile);
         String name = PlayerCache.nameForUuid(uuid);
-        if (name == null) name = profile.getName();
+        if (name == null) name = "?";
         tooltip(meta, List.of(text(name, WHITE)));
         item.setItemMeta(meta);
         return item;

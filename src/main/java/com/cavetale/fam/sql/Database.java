@@ -239,7 +239,7 @@ public final class Database {
     }
 
     public static PlayerProfile getCachedPlayerProfile(UUID uuid) {
-        PlayerProfile profile = Bukkit.createProfile(uuid);
+        PlayerProfile profile = Bukkit.createProfileExact(uuid, null);
         SQLProfile row = PROFILE_CACHE.get(uuid);
         if (row == null) return profile;
         row.fill(profile);
@@ -407,7 +407,7 @@ public final class Database {
                     callback.accept(null);
                     return;
                 }
-                PlayerProfile profile = Bukkit.createProfile(uuid, row.getName());
+                PlayerProfile profile = Bukkit.createProfileExact(uuid, null);
                 row.fill(profile);
                 callback.accept(profile);
             });
