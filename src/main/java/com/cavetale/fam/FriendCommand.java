@@ -1,5 +1,6 @@
 package com.cavetale.fam;
 
+import com.cavetale.core.chat.Chat;
 import com.cavetale.core.command.AbstractCommand;
 import com.cavetale.core.command.CommandArgCompleter;
 import com.cavetale.core.command.CommandWarn;
@@ -45,6 +46,9 @@ public final class FriendCommand extends AbstractCommand<FamPlugin> {
         final UUID b = target.getUniqueId();
         if (a.equals(b)) {
             throw new CommandWarn("You cannot friend yourself");
+        }
+        if (Chat.doesIgnore(b, a)) {
+            throw new CommandWarn("Player not found");
         }
         Database.db().scheduleAsyncTask(() -> {
                 SQLFriends friends = Database.findFriends(a, b);
