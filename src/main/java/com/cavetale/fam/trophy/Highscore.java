@@ -151,8 +151,8 @@ public final class Highscore {
             result.put(rewardSum, resultList);
             for (Highscore hi : rank) {
                 resultList.add(hi.uuid);
-                // Dry run.  Remove this after testing.
-                // Money.get().give(hi.uuid, (double) rewardSum, plugin, message);
+                plugin.getLogger().info("Giving " + PlayerCache.nameForUuid(hi.uuid) + " " + Money.get().format(rewardSum));
+                Money.get().give(hi.uuid, (double) rewardSum, plugin, message);
             }
         }
         return result;
