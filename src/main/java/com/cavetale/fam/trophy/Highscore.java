@@ -1,5 +1,6 @@
 package com.cavetale.fam.trophy;
 
+import com.cavetale.core.money.Money;
 import com.cavetale.core.playercache.PlayerCache;
 import com.cavetale.mytems.Mytems;
 import com.cavetale.mytems.item.font.Glyph;
@@ -7,6 +8,7 @@ import com.cavetale.mytems.item.trophy.TrophyCategory;
 import com.cavetale.mytems.item.trophy.TrophyType;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +17,7 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
+import org.bukkit.plugin.Plugin;
 import static com.cavetale.core.font.Unicode.subscript;
 import static net.kyori.adventure.text.Component.join;
 import static net.kyori.adventure.text.Component.space;
@@ -125,5 +128,45 @@ public final class Highscore {
                              Component title,
                              Function<Highscore, String> inscriptionMaker) {
         return reward(scoreMap, category, trophyCategory, title, inscriptionMaker, null);
+    }
+
+    public static Map<Integer, List<UUID>> rewardMoney(Plugin plugin, List<Highscore> list, String message) {
+        final List<Integer> rewards = List.of(1_000_000,
+                                              500_000,
+                                              250_000);
+        final List<List> ranks = List.of(new ArrayList<>(),
+                                         new ArrayList<>(),
+                                         new ArrayList<>());
+        for (Highscore hi : list) {
+            if (hi.placement > 2) continue;
+            ranks.get(hi.placement - 1).add(hi);
+        }
+        final Map<Integer, List<UUID>> result = new LinkedHashMap<>();
+        for (int rankIndex = 0; rankIndex < ranks.size(); rankIndex += 1) {
+            final List<Highscore> rank = ranks.get(rankIndex);
+            final int rewardSum = ranks.isEmpty()
+                ? rewards.get(rankIndex)
+                : rewards.get(rankIndex) / ranks.size();
+            final List<UUID> resultList = new ArrayList<>(rank.size());
+            result.put(rewardSum, resultList);
+            for (Highscore hi : rank) {
+                resultList.add(hi.uuid);
+                // Dry run.  Remove this after testing.
+                // Money.get().give(hi.uuid, (double) rewardSum, plugin, message);
+            }
+        }
+        return result;
+    }
+
+    public static List<Component> rewardMoneyWithFeedback(Plugin plugin, Map<UUID, Integer> scoreMap, String message) {
+        final Map<Integer, List<UUID>> map = rewardMoney(plugin, of(scoreMap), message);
+        final List<Component> result = new ArrayList<>();
+        for (Map.Entry<Integer, List<UUID>> rank : map.entrySet()) {
+            result.add(Money.get().toComponent(rank.getKey()));
+            for (UUID uuid : rank.getValue()) {
+                result.add(text(" " + PlayerCache.nameForUuid(uuid), WHITE));
+            }
+        }
+        return result;
     }
 }
