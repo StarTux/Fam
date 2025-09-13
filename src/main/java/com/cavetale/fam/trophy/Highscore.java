@@ -138,7 +138,7 @@ public final class Highscore {
                                          new ArrayList<>(),
                                          new ArrayList<>());
         for (Highscore hi : list) {
-            if (hi.placement > 2) continue;
+            if (hi.placement > 3) continue;
             ranks.get(hi.placement - 1).add(hi);
         }
         final Map<Integer, List<UUID>> result = new LinkedHashMap<>();
