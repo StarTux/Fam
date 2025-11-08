@@ -17,6 +17,7 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import static com.cavetale.core.font.Unicode.subscript;
 import static net.kyori.adventure.text.Component.join;
@@ -134,9 +135,11 @@ public final class Highscore {
         final List<Integer> rewards = List.of(1_000_000,
                                               500_000,
                                               250_000);
-        final List<List> ranks = List.of(new ArrayList<>(),
-                                         new ArrayList<>(),
-                                         new ArrayList<>());
+        final List<List<Highscore>> ranks = List.of(
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>()
+        );
         for (Highscore hi : list) {
             if (hi.placement > 3) continue;
             ranks.get(hi.placement - 1).add(hi);
@@ -168,5 +171,11 @@ public final class Highscore {
             }
         }
         return result;
+    }
+
+    public static void rewardMoneyWithFeedback(CommandSender sender, Plugin plugin, Map<UUID, Integer> scoreMap, String message) {
+        for (Component line : rewardMoneyWithFeedback(plugin, scoreMap, message)) {
+            sender.sendMessage(line);
+        }
     }
 }
