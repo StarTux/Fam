@@ -37,11 +37,5 @@ public final class MenuListener implements Listener {
                           .command("trophy")
                           .icon(Mytems.GOLDEN_CUP.createIcon(List.of(text("Trophies", Colors.GOLD)))));
         }
-        if (event.getPlayer().hasPermission("fam.advent")) {
-            event.addItem(builder -> builder
-                          .key("fam:advent")
-                          .command("advent")
-                          .icon(Mytems.CHRISTMAS_TOKEN.createIcon(List.of(text("Advent Calendar", RED)))));
-        }
     }
 }

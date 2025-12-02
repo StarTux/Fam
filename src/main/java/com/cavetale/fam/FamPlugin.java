@@ -7,7 +7,6 @@ import com.cavetale.core.event.player.PluginPlayerEvent;
 import com.cavetale.core.font.GuiOverlay;
 import com.cavetale.core.font.Unicode;
 import com.cavetale.core.playercache.PlayerCache;
-import com.cavetale.fam.advent.Advent;
 import com.cavetale.fam.core.CorePlayerSkinProvider;
 import com.cavetale.fam.elo.EloAdminCommand;
 import com.cavetale.fam.elo.EloListener;
@@ -56,7 +55,6 @@ import static org.bukkit.SoundCategory.*;
 
 @Getter
 public final class FamPlugin extends JavaPlugin {
-    public static final boolean DO_ADVENT = false;
     @Getter protected static FamPlugin instance;
     private final FamCommand famCommand = new FamCommand(this);
     private final FriendsCommand friendsCommand = new FriendsCommand(this);
@@ -77,7 +75,6 @@ public final class FamPlugin extends JavaPlugin {
     private boolean doDaybreak;
     private final FamFriendsSupplier famFriendsSupplier = new FamFriendsSupplier();
     private final Sessions sessions = new Sessions();
-    private Advent advent = null;
     private final CorePlayerSkinProvider skinProvider = new CorePlayerSkinProvider();
 
     @Override
@@ -102,10 +99,6 @@ public final class FamPlugin extends JavaPlugin {
         eventHosts.enable();
         Database.init();
         Timer.enable();
-        if (DO_ADVENT) {
-            advent = new Advent();
-            advent.enable();
-        }
         sessions.enable();
         NetworkServer networkServer = NetworkServer.current();
         if (networkServer.category.isSurvival()) {
@@ -199,7 +192,6 @@ public final class FamPlugin extends JavaPlugin {
         skinProvider.unregister();
         famFriendsSupplier.unregister();
         eventHosts.disable();
-        if (advent != null) advent.disable();
         database.waitForAsyncTask();
         database.close();
     }

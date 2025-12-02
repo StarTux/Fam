@@ -96,18 +96,6 @@ commands:
     permission: fam.eventhost
     usage: /eventhost
 
-  advent:
-    aliases: []
-    description: Open Advent Calendar
-    permission: fam.advent
-    usage: /advent
-
-  adventadmin:
-    aliases: [adventadm]
-    description: Advent admin command
-    permission: fam.adventadmin
-    usage: /adventadmin
-
   eloadmin:
     aliases: [eloadm]
     description: Elo admin command
@@ -158,12 +146,4 @@ permissions:
 
   fam.eventhost:
     description: Use /eventhost
-    default: op
-
-  fam.advent:
-    description: Use /advent
-    default: op
-
-  fam.adventadmin:
-    description: Use /adventadmin
     default: op

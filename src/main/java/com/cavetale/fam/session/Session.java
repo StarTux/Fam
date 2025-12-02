@@ -1,7 +1,5 @@
 package com.cavetale.fam.session;
 
-import com.cavetale.fam.FamPlugin;
-import com.cavetale.fam.advent.AdventSession;
 import com.cavetale.fam.sql.SQLPlayer;
 import java.util.UUID;
 import lombok.Getter;
@@ -15,7 +13,6 @@ public final class Session {
     protected String name;
     protected SQLPlayer playerRow;
     protected boolean ready;
-    private AdventSession adventSession;
 
     protected Session(final UUID uuid, final String name) {
         this.uuid = uuid;
@@ -28,16 +25,9 @@ public final class Session {
 
     protected void enable() {
         reload();
-        if (FamPlugin.DO_ADVENT) {
-            adventSession = new AdventSession(this);
-            adventSession.enable();
-        }
     }
 
     protected void disable() {
-        if (adventSession != null) {
-            adventSession.disable();
-        }
     }
 
     public void reload() {
