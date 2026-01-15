@@ -627,10 +627,7 @@ public final class FamPlugin extends JavaPlugin {
         gui.setEditable(isForReal);
         if (isForReal) {
             gui.onClose(event -> {
-                    PlayerReceiveItemsEvent itemsEvent = new PlayerReceiveItemsEvent(player, gui.getInventory());
-                    itemsEvent.giveItems();
-                    itemsEvent.callEvent();
-                    itemsEvent.dropItems();
+                    PlayerReceiveItemsEvent.receiveInventory(player, gui.getInventory());
                     if (index == 9) {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "titles unlockset " + player.getName() + " Cupid");
                     }
