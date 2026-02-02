@@ -132,9 +132,11 @@ public final class Highscore {
     }
 
     public static Map<Integer, List<UUID>> rewardMoney(Plugin plugin, List<Highscore> list, String message) {
-        final List<Integer> rewards = List.of(1_000_000,
-                                              500_000,
-                                              250_000);
+        final List<Integer> rewards = List.of(
+            1_000_000,
+            500_000,
+            250_000
+        );
         final List<List<Highscore>> ranks = List.of(
             new ArrayList<>(),
             new ArrayList<>(),
@@ -147,11 +149,12 @@ public final class Highscore {
         final Map<Integer, List<UUID>> result = new LinkedHashMap<>();
         for (int rankIndex = 0; rankIndex < ranks.size(); rankIndex += 1) {
             final List<Highscore> rank = ranks.get(rankIndex);
+            final int reward = rewards.get(rankIndex);
             final int rewardSum = rank.isEmpty()
-                ? rewards.get(rankIndex)
-                : rewards.get(rankIndex) / rank.size();
+                ? reward
+                : reward / rank.size();
             final List<UUID> resultList = new ArrayList<>(rank.size());
-            result.put(rewardSum, resultList);
+            result.put(reward, resultList);
             for (Highscore hi : rank) {
                 resultList.add(hi.uuid);
                 plugin.getLogger().info("Giving " + PlayerCache.nameForUuid(hi.uuid) + " " + Money.get().format(rewardSum));
