@@ -306,6 +306,7 @@ public final class FamCommand extends AbstractCommand<FamPlugin> {
                                                         : "You shared " + hi.score + " gifts"),
                                                        row -> row.setIcon(Mytems.LOVE_LETTER));
                     sender.sendMessage(text("Rewarded " + count + " trophies", YELLOW));
+                    Highscore.rewardMoneyWithFeedback(sender, plugin, scoreMap, "Valentine Gift Giving");
                 });
     }
 }
